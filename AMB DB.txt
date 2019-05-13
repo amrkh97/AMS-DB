@@ -1,6 +1,3 @@
-CREATE DATABASE IF NOT EXISTS KAN_EMS;
-USE KAN_EMS;
-
 CREATE TABLE IF NOT EXISTS Employee
 (
     UserID INT NOT NULL AUTO_INCREMENT,
@@ -51,22 +48,23 @@ CREATE TABLE IF NOT EXISTS AmbulanceCar (
     PRIMARY KEY (CarNumber)
 );
 
+-- Car --> Trip == (1 to X)
 CREATE TABLE IF NOT EXISTS Trip 
 (
-    TripID INTEGER NOT NULL AUTO_INCREMENT,
-    AmbulanceCarID VARCHAR(30) NOT NULL,
+    TripID INTEGER AUTO_INCREMENT,       -- by default primary key is NOT NULL and UNIQUE
+    AmbulanceCarID VARCHAR(10) NOT NULL,
     PatientID VARCHAR(30) NOT NULL,
     TripStartDate TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    TripFrom TEXT,
-    TripTo TEXT,
-    TripCost VARCHAR(5),
-    TripStatus VARCHAR(2),
+    TripFrom TEXT NOT NULL,
+    TripTo TEXT NOT NULL,
+    TripCost VARCHAR(5) NOT NULL,
+    TripStatus VARCHAR(2) NOT NULL,
     TripDriver VARCHAR(50),
     TripParamidic VARCHAR(50),
     FeedBack VARCHAR(50),
 
-    primary key (TripID),
-    foreign key (AmbulanceID) REFERENCES car(CarNumber)
+    PRIMARY KEY (TripID),
+    FOREIGN KEY (AmbulanceCarID) REFERENCES AmbulanceCar(CarNumber)
 );
 
 CREATE TABLE IF NOT EXISTS Medicine 
@@ -94,21 +92,25 @@ CREATE TABLE IF NOT EXISTS Batch (
 
 CREATE TABLE if not exists Receipt (
     ReceiptID VARCHAR(30),
-    TripID VARCHAR(30),
+    TripID INTEGER NOT NULL UNIQUE,
     CasheirID VARCHAR(30),
     ReceiptCreationDate VARCHAR(30),
     FTPFileLocation VARCHAR(300),
 
-    FOREIGN KEY (TripID) REFERENCES Trips(TripID)
+    FOREIGN KEY (TripID) REFERENCES Trip(TripID)
 );
 
 CREATE TABLE IF NOT EXISTS Address (
-    AddressID VARCHAR(30),
+    AddressID VARCHAR(30) AUTO_INCREMENT,
     City VARCHAR(30),
+    Longitude VARCHAR(10),          -- for patient return latitude and longitude
+    Latitude VARCHAR(10),           -- for patient return latitude and longitude
     Street VARCHAR(30),
     Apartement VARCHAR(30),
     PostalCode VARCHAR(10),
-    FloorLevel VARCHAR(30)
+    FloorLevel VARCHAR(30),
+
+    PRIMARY KEY (AddressID)
 );
 
 CREATE TABLE IF NOT EXISTS PharmaCo (
@@ -129,10 +131,11 @@ CREATE TABLE IF NOT EXISTS PharmaCoMedicine (
     FOREIGN KEY (MedicineID) REFERENCES Medicine (BarCode)
 );
 
+-- MR and Trip == (1 to 1)
 CREATE TABLE IF NOT EXISTS MedicalRecord
  (
     MedicalRecordID INTEGER NOT NULL AUTO_INCREMENT,
-    TripID VARCHAR(30) NOT NULL,
+    TripID INTEGER UNIQUE,                                      -- This Cuases 1 to 1 relationChip between (MedicalRecord and Trip) Tables
     TripStartDate TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     Gender VARCHAR(10),
     Age VARCHAR(3),
@@ -143,16 +146,38 @@ CREATE TABLE IF NOT EXISTS MedicalRecord
     CBC VARCHAR(50),
     EMG TEXT,
     ECG TEXT,
-    Hepatitis VARCHAR(1)
+    Hepatitis VARCHAR(1),
     PhysicalExaminationImage TEXT,
     MedicineApplied VARCHAR(100),
     ProcedureDoneInCar TEXT,
     PatientStatus VARCHAR(2),
     RecommendedProcedure TEXT,
     
-    PRIMARY KEY (MedicalRecordID)
-    -- FOREIGN KEY (TripID) REFERENCES Trips(TripID);
+    PRIMARY KEY (MedicalRecordID),
+    FOREIGN KEY (TripID) REFERENCES Trip(TripID)
 );
+
+-- 1 to 1 relationship between (patient and Address) tables
+CREATE TABLE IF NOT EXISTS Patient 
+(
+    PatientID VARCHAR(30),
+    PatientName VARCHAR(30),
+    Age VARCHAR(3),
+    Gender VARCHAR(10),
+    Phone VARCHAR(20),
+    PatientCallDate TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    PatientStatus VARCHAR(2),
+    LastBenifitedTime TIMESTAMP,
+    FirstBenifitedTime TIMESTAMP,
+    AddressID VARCHAR(30) UNIQUE,
+    NextOfKenName VARCHAR(30),
+    NextOfKenPhone VARCHAR(20),
+    NextOfKenAddress VARCHAR(30) UNIQUE,
+
+    PRIMARY KEY (PatientID),
+    FOREIGN KEY (AddressID) REFERENCES Address(AddressID),
+    FOREIGN KEY (NextOfKenAddress) REFERENCES Address(AddressID)
+); 
 
 CREATE TABLE IF NOT EXISTS Reports 
 (
