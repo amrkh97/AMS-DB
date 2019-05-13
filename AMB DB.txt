@@ -1,0 +1,166 @@
+CREATE DATABASE IF NOT EXISTS KAN_EMS;
+USE KAN_EMS;
+
+CREATE TABLE IF NOT EXISTS Employee
+(
+    UserID INT NOT NULL AUTO_INCREMENT,
+    FirstName VARCHAR(200),
+    LastName VARCHAR(200),
+    Email VARCHAR(200) UNIQUE,
+    Password VARCHAR(200),
+    Birthday DATE,
+    Gender VARCHAR(50),
+    Interests VARCHAR(200),
+    ContactNumber VARCHAR(150),
+    AddressContry VARCHAR(100),
+    AddressCity VARCHAR(200),
+    AddressState VARCHAR(200),
+    AddressStreet VARCHAR(300),
+    AddressNumber VARCHAR(10),
+    AddressPcode VARCHAR(20),
+    SubscriptionDate TIMESTAMP,
+    SignUpDate TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    DOB DATE,
+    PAN VARCHAR(16),
+    Name VARCHAR(16),
+    NaitonalID VARCHAR(14),
+    LogInTStamp DATETIME,
+    LogInGPS VARCHAR(25),
+    UserStatus VARCHAR(8),
+    BossID INT,
+    Photo VARCHAR(100),
+    PRIMARY KEY (UserID)
+);
+
+CREATE TABLE IF NOT EXISTS Jobs (
+    JobID VARCHAR(30) NOT NULL,
+    JobName VARCHAR(100) NOT NULL,
+    PRIMARY KEY (JobID)
+);
+
+CREATE TABLE IF NOT EXISTS AmbulanceCar (
+    CarNumber VARCHAR(10),
+    CarServiceStartDate TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    EngineNumber VARCHAR(10),
+    Carbrand VARCHAR(30),
+    ChasiahNumber VARCHAR(10),
+    CarModel VARCHAR(30),
+    DriverPhoneNumber VARCHAR(20),
+    CarStatus VARCHAR(2),
+
+    PRIMARY KEY (CarNumber)
+);
+
+CREATE TABLE IF NOT EXISTS Trip 
+(
+    TripID INTEGER NOT NULL AUTO_INCREMENT,
+    AmbulanceCarID VARCHAR(30) NOT NULL,
+    PatientID VARCHAR(30) NOT NULL,
+    TripStartDate TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    TripFrom TEXT,
+    TripTo TEXT,
+    TripCost VARCHAR(5),
+    TripStatus VARCHAR(2),
+    TripDriver VARCHAR(50),
+    TripParamidic VARCHAR(50),
+    FeedBack VARCHAR(50),
+
+    primary key (TripID),
+    foreign key (AmbulanceID) REFERENCES car(CarNumber)
+);
+
+CREATE TABLE IF NOT EXISTS Medicine 
+(
+    BarCode varchar(50) UNIQUE NOT NULL,
+    CountInStock VARCHAR(10),
+    Name VARCHAR(100),
+    Price VARCHAR(10),
+    Implications VARCHAR(10),
+    MedicineUsage TEXT,
+    SideEffects TEXT,
+    ActiveComponent TEXT
+);
+
+CREATE TABLE IF NOT EXISTS Batch (
+    BatchID VARCHAR(30) NOT NULL,
+    MedicineID varchar(50),
+    ExpirationDate TIMESTAMP,
+    BatchReleaseDate TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    Quantity INT,
+    PRIMARY KEY (BatchID),
+    FOREIGN KEY (MedicineID) REFERENCES Medicine (BarCode)
+);
+
+
+CREATE TABLE if not exists Receipt (
+    ReceiptID VARCHAR(30),
+    TripID VARCHAR(30),
+    CasheirID VARCHAR(30),
+    ReceiptCreationDate VARCHAR(30),
+    FTPFileLocation VARCHAR(300),
+
+    FOREIGN KEY (TripID) REFERENCES Trips(TripID)
+);
+
+CREATE TABLE IF NOT EXISTS Address (
+    AddressID VARCHAR(30),
+    City VARCHAR(30),
+    Street VARCHAR(30),
+    Apartement VARCHAR(30),
+    PostalCode VARCHAR(10),
+    FloorLevel VARCHAR(30)
+);
+
+CREATE TABLE IF NOT EXISTS PharmaCo (
+    CompanyID VARCHAR(30) UNIQUE,
+    CompanyName VARCHAR(50),
+    ContactPerson VARCHAR(26),
+    CompanyAddress VARCHAR(100),
+    CompanyPhone VARCHAR(20),
+    CompanyStatus VARCHAR(2)
+);
+
+CREATE TABLE IF NOT EXISTS PharmaCoMedicine (
+    EntryID INT NOT NULL AUTO_INCREMENT,
+    PharmaCoID VARCHAR(30),
+    MedicineID varchar(50),
+    primary key (EntryID),
+    FOREIGN KEY (PharmaCoID) REFERENCES PharmaCo (CompanyID),
+    FOREIGN KEY (MedicineID) REFERENCES Medicine (BarCode)
+);
+
+CREATE TABLE IF NOT EXISTS MedicalRecord
+ (
+    MedicalRecordID INTEGER NOT NULL AUTO_INCREMENT,
+    TripID VARCHAR(30) NOT NULL,
+    TripStartDate TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    Gender VARCHAR(10),
+    Age VARCHAR(3),
+    BloodPressure VARCHAR(10),
+    Temperature VARCHAR(30),
+    BloodType VARCHAR(10),
+    BloodSugar VARCHAR(10),
+    CBC VARCHAR(50),
+    EMG TEXT,
+    ECG TEXT,
+    Hepatitis VARCHAR(1)
+    PhysicalExaminationImage TEXT,
+    MedicineApplied VARCHAR(100),
+    ProcedureDoneInCar TEXT,
+    PatientStatus VARCHAR(2),
+    RecommendedProcedure TEXT,
+    
+    PRIMARY KEY (MedicalRecordID)
+    -- FOREIGN KEY (TripID) REFERENCES Trips(TripID);
+);
+
+CREATE TABLE IF NOT EXISTS Reports 
+(
+    ReportID VARCHAR(30) NOT NULL,
+    ReportTitle VARCHAR(100) NOT NULL,
+    ReportIssuedDate TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    PatientID VARCHAR(30) NOT NULL,
+    ReportDestination VARCHAR(100),
+    Status VARCHAR(2) NOT NULL,
+    PRIMARY KEY (ReportID)
+);
