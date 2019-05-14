@@ -1,3 +1,6 @@
+CREATE DATABASE IF NOT EXISTS KAN_EMS;
+USE KAN_EMS;
+
 CREATE TABLE IF NOT EXISTS Employee
 (
     UserID INT NOT NULL AUTO_INCREMENT,
@@ -29,13 +32,15 @@ CREATE TABLE IF NOT EXISTS Employee
     PRIMARY KEY (UserID)
 );
 
-CREATE TABLE IF NOT EXISTS Jobs (
+CREATE TABLE IF NOT EXISTS Job -- DONE
+(
     JobID VARCHAR(30) NOT NULL,
     JobName VARCHAR(100) NOT NULL,
     PRIMARY KEY (JobID)
 );
 
-CREATE TABLE IF NOT EXISTS AmbulanceCar (
+CREATE TABLE IF NOT EXISTS AmbulanceCar -- DONE
+(
     CarNumber VARCHAR(10),
     CarServiceStartDate TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     EngineNumber VARCHAR(10),
@@ -49,7 +54,7 @@ CREATE TABLE IF NOT EXISTS AmbulanceCar (
 );
 
 -- Car --> Trip == (1 to X)
-CREATE TABLE IF NOT EXISTS Trip 
+CREATE TABLE IF NOT EXISTS Trip -- DONE
 (
     TripID INTEGER AUTO_INCREMENT,       -- by default primary key is NOT NULL and UNIQUE
     AmbulanceCarID VARCHAR(10) NOT NULL,
@@ -67,25 +72,28 @@ CREATE TABLE IF NOT EXISTS Trip
     FOREIGN KEY (AmbulanceCarID) REFERENCES AmbulanceCar(CarNumber)
 );
 
-CREATE TABLE IF NOT EXISTS Medicine 
+CREATE TABLE IF NOT EXISTS Medicine -- DONE
 (
-    BarCode varchar(50) UNIQUE NOT NULL,
+    BarCode varchar(50),
     CountInStock VARCHAR(10),
     Name VARCHAR(100),
     Price VARCHAR(10),
     Implications VARCHAR(10),
     MedicineUsage TEXT,
     SideEffects TEXT,
-    ActiveComponent TEXT
+    ActiveComponent TEXT,
+
+    PRIMARY KEY(BarCode)
 );
 
-CREATE TABLE IF NOT EXISTS Batch (
-    BatchID VARCHAR(30) NOT NULL,
+CREATE TABLE IF NOT EXISTS Batch   -- DONE
+ (
+    BatchID INTEGER AUTO_INCREMENT,
     MedicineID varchar(50),
     ExpirationDate TIMESTAMP,
     BatchReleaseDate TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     Quantity INT,
-    PRIMARY KEY (BatchID),
+
     FOREIGN KEY (MedicineID) REFERENCES Medicine (BarCode)
 );
 
@@ -94,14 +102,15 @@ CREATE TABLE if not exists Receipt (
     ReceiptID VARCHAR(30),
     TripID INTEGER NOT NULL UNIQUE,
     CasheirID VARCHAR(30),
-    ReceiptCreationDate VARCHAR(30),
+    ReceiptCreationDate TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FTPFileLocation VARCHAR(300),
 
     FOREIGN KEY (TripID) REFERENCES Trip(TripID)
 );
 
-CREATE TABLE IF NOT EXISTS Address (
-    AddressID VARCHAR(30) AUTO_INCREMENT,
+CREATE TABLE IF NOT EXISTS Address  -- DONE
+ (
+    AddressID INTEGER AUTO_INCREMENT,
     City VARCHAR(30),
     Longitude VARCHAR(10),          -- for patient return latitude and longitude
     Latitude VARCHAR(10),           -- for patient return latitude and longitude
@@ -132,7 +141,7 @@ CREATE TABLE IF NOT EXISTS PharmaCoMedicine (
 );
 
 -- MR and Trip == (1 to 1)
-CREATE TABLE IF NOT EXISTS MedicalRecord
+CREATE TABLE IF NOT EXISTS MedicalRecord   -- DONE
  (
     MedicalRecordID INTEGER NOT NULL AUTO_INCREMENT,
     TripID INTEGER UNIQUE,                                      -- This Cuases 1 to 1 relationChip between (MedicalRecord and Trip) Tables
@@ -169,14 +178,14 @@ CREATE TABLE IF NOT EXISTS Patient
     PatientStatus VARCHAR(2),
     LastBenifitedTime TIMESTAMP,
     FirstBenifitedTime TIMESTAMP,
-    AddressID VARCHAR(30) UNIQUE,
+    AddressID INTEGER UNIQUE,
     NextOfKenName VARCHAR(30),
     NextOfKenPhone VARCHAR(20),
     NextOfKenAddress VARCHAR(30) UNIQUE,
 
     PRIMARY KEY (PatientID),
     FOREIGN KEY (AddressID) REFERENCES Address(AddressID),
-    FOREIGN KEY (NextOfKenAddress) REFERENCES Address(AddressID)
+    -- FOREIGN KEY (NextOfKenAddress) REFERENCES Address(AddressID)
 ); 
 
 CREATE TABLE IF NOT EXISTS Reports 
