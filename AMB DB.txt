@@ -58,10 +58,13 @@ CREATE TABLE IF NOT EXISTS Trip -- DONE
 (
     TripID INTEGER AUTO_INCREMENT,       -- by default primary key is NOT NULL and UNIQUE
     AmbulanceCarID VARCHAR(10) NOT NULL,
+    BatchID INTEGER,
     PatientID VARCHAR(30) NOT NULL,
     TripStartDate TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    TripFrom TEXT NOT NULL,
-    TripTo TEXT NOT NULL,
+    TripFromLongitude VARCHAR(10) NOT NULL,
+    TripFromLatitude VARCHAR(10) NOT NULL,
+    TripToLongitude VARCHAR(10) NOT NULL,
+    TripToLatitude VARCHAR(10) NOT NULL,
     TripCost VARCHAR(5) NOT NULL,
     TripStatus VARCHAR(2) NOT NULL,
     TripDriver VARCHAR(50),
@@ -69,6 +72,7 @@ CREATE TABLE IF NOT EXISTS Trip -- DONE
     FeedBack VARCHAR(50),
 
     PRIMARY KEY (TripID),
+    FOREIGN KEY (BatchID) REFERENCES Batch(BatchID)
     FOREIGN KEY (AmbulanceCarID) REFERENCES AmbulanceCar(CarNumber)
 );
 
@@ -78,6 +82,7 @@ CREATE TABLE IF NOT EXISTS Medicine -- DONE
     CountInStock VARCHAR(10),
     Name VARCHAR(100),
     Price VARCHAR(10),
+    ExpirationDate VARCHAR(30),
     Implications VARCHAR(10),
     MedicineUsage TEXT,
     SideEffects TEXT,
@@ -87,16 +92,24 @@ CREATE TABLE IF NOT EXISTS Medicine -- DONE
 );
 
 CREATE TABLE IF NOT EXISTS Batch   -- DONE
- (
+(
     BatchID INTEGER AUTO_INCREMENT,
-    MedicineID varchar(50),
-    ExpirationDate TIMESTAMP,
     BatchReleaseDate TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    Quantity INT,
 
-    FOREIGN KEY (MedicineID) REFERENCES Medicine (BarCode)
+    PRIMARY KEY(BatchID)
 );
 
+CREATE TABLE IF NOT EXISTS BatchMedicines
+(
+    EntryID BIGINT UNSIGNED AUTO_INCREMENT,
+    BatchID INTEGER,
+    MedicineID VARCHAR(50),
+    Quantity INTEGER,
+
+    PRIMARY KEY (EntryID),
+    FOREIGN KEY (BatchID) REFERENCES Batch(BatchID),
+    FOREIGN KEY (MedicineID) REFERENCES Medicine(BarCode)
+);
 
 CREATE TABLE if not exists Receipt (
     ReceiptID VARCHAR(30),
@@ -178,13 +191,13 @@ CREATE TABLE IF NOT EXISTS Patient
     PatientStatus VARCHAR(2),
     LastBenifitedTime TIMESTAMP,
     FirstBenifitedTime TIMESTAMP,
-    AddressID INTEGER UNIQUE,
+    AddressID INTEGER,
     NextOfKenName VARCHAR(30),
     NextOfKenPhone VARCHAR(20),
     NextOfKenAddress VARCHAR(30) UNIQUE,
 
     PRIMARY KEY (PatientID),
-    FOREIGN KEY (AddressID) REFERENCES Address(AddressID),
+    FOREIGN KEY (AddressID) REFERENCES Address(AddressID)
     -- FOREIGN KEY (NextOfKenAddress) REFERENCES Address(AddressID)
 ); 
 
