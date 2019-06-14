@@ -387,7 +387,91 @@ AS
 		VALUES (@DistributedAmt,@BID,@AmbVIN)
 	END
 
--- END of Company - Medicine Relation SP --
+-- END of Batch of Medicine Distribution SP --
+------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------
+-- Employee SP --
+
+--(1) Register --
+GO
+CREATE PROC usp_Employee_Register
+	@Fname nvarchar(32) = NULL,
+	@Lname nvarchar(32) = NULL,
+	@BDate Date = NULL,
+	@Email nvarchar(128),
+	@HashPassword nvarchar(128),
+	@Gender nvarchar(1) = NULL,
+	@ContactNumber nvarchar(64) = NULL,
+	@Country nvarchar(32) = NULL,
+    @City nvarchar(32) = NULL,
+    @AddressState nvarchar(32) = NULL,
+    @AddressStreet nvarchar(64) = NULL,
+    @AddressPcode VARCHAR(20) = NULL,
+    @PAN nvarchar(20) = NULL,
+    @NaitonalID nvarchar(14) = NULL,
+    @LogInTStamp DATETIME = NULL,
+    @LogInGPS nvarchar(20) = NULL,
+    @SuperSSN INT = NULL,
+	@JobID INT = NULL,
+    @Photo VARBINARY(MAX) = NULL,
+	@responseMessage NVARCHAR(128)='' OUTPUT
+WITH ENCRYPTION
+AS
+BEGIN
+	SET NOCOUNT ON
+
+	declare @id INT = null
+    BEGIN TRY
+		IF NOT EXISTS (SELECT TOP 1 EID FROM Employee WHERE Email=@Email)
+			BEGIN
+					INSERT INTO Employee (Fname, Lname, BDate, Email, HashPassword, Gender, ContactNumber, Country, 
+					City, AddressState, AddressStreet, AddressPcode, PAN, NaitonalID, LogInTStamp, LogInGPS, SuperSSN, JobID, Photo)
+					VALUES (@Fname,@Lname,@BDate,@Email,HASHBYTES('SHA1', @HashPassword),@Gender,@ContactNumber,@Country ,
+					@City ,@AddressState ,@AddressStreet ,@AddressPcode ,@PAN,@NaitonalID ,@LogInTStamp,@LogInGPS ,@SuperSSN ,@JobID ,@Photo)
+					SET @responseMessage='Success'
+			END
+		ELSE
+			BEGIN
+				SET @responseMessage='Email Already Exists'
+				return 1;
+			END
+
+	END TRY
+	BEGIN CATCH
+			SET @responseMessage=ERROR_MESSAGE()
+			return -1;
+	END CATCH
+END
+--(2) Login --
+GO
+CREATE PROC usp_Employee_Login 
+	@Email nvarchar(128),
+	@HashPassword nvarchar(128),
+    @responseMessage NVARCHAR(128)='' OUTPUT
+WITH ENCRYPTION
+AS
+BEGIN
+    SET NOCOUNT ON
+    DECLARE @userID INT
+    IF EXISTS (SELECT TOP 1 EID FROM Employee WHERE Email=@Email)
+    BEGIN
+       SET @userID=(SELECT EID FROM Employee WHERE Email=@Email AND HashPassword=HASHBYTES('SHA1', @HashPassword))
+       IF(@userID IS NULL)
+		 BEGIN
+		   SET @responseMessage='Incorrect password'
+		   return 2
+		 END
+       ELSE 
+           SET @responseMessage='User successfully logged in'
+    END
+    ELSE
+		BEGIN
+		   SET @responseMessage='Invalid email'
+		   return 1
+		END
+
+END
+-- END of Employee SP --
 ------------------------------------------------------------------------------------
 ------------------------------------------------------------------------------------
 -- Triggers --

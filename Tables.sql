@@ -175,12 +175,12 @@ CREATE TABLE Locations
 
 CREATE TABLE Employee
 (
-	Essn INT,
+	EID INT IDENTITY,
 	Fname nvarchar(32),
 	Lname nvarchar(32),
 	BDate Date,
-	Email nvarchar(32),
-	HashPassword nvarchar(512),
+	Email nvarchar(128) NOT NULL UNIQUE,
+	HashPassword nvarchar(128) NOT NULL,
 	Gender nvarchar(1),
 	ContactNumber nvarchar(64),
 	Country nvarchar(32),
@@ -199,10 +199,10 @@ CREATE TABLE Employee
     Photo VARBINARY(MAX),
 	Age as DATEDIFF(YEAR, BDate, GETDATE()),
 	
-	FOREIGN KEY (SuperSSN) REFERENCES Employee(Essn),
+	FOREIGN KEY (SuperSSN) REFERENCES Employee(EID),
 	FOREIGN KEY (JobID) REFERENCES Jobs(JobID),
 	FOREIGN KEY(EmpolyeeStatus) REFERENCES EntityStatus(EntityStatusID), 
-	PRIMARY KEY (Essn)
+	PRIMARY KEY (EID)
 	
 )
 
@@ -242,8 +242,8 @@ CREATE TABLE Responses
 	FOREIGN KEY (PickLocationID) REFERENCES Locations(LocationID),
 	FOREIGN KEY (DropLocationID) REFERENCES Locations(LocationID),
 	FOREIGN KEY (DestinationLocationID) REFERENCES Locations(LocationID),
-	FOREIGN KEY (DriverSSN) REFERENCES Employee(Essn),
-	FOREIGN KEY (ParamedicSSN) REFERENCES Employee(Essn),
+	FOREIGN KEY (DriverSSN) REFERENCES Employee(EID),
+	FOREIGN KEY (ParamedicSSN) REFERENCES Employee(EID),
 	FOREIGN KEY (RespStatus) REFERENCES ResponseStatuses(ResponseStatusID),
 	FOREIGN KEY (IncidentSQN) REFERENCES Incident(IncidentSequenceNumber),
 	FOREIGN KEY (RespAlarmLevel) REFERENCES AlarmLevels(AlarmLevelID),
@@ -276,7 +276,7 @@ CREATE TABLE Receipt (
 	PaymentMethod NVARCHAR(32),
 
 	FOREIGN KEY (RespSQN) REFERENCES Responses(SequenceNumber),
-	FOREIGN KEY (CasheirSSN) REFERENCES Employee(Essn),
+	FOREIGN KEY (CasheirSSN) REFERENCES Employee(EID),
 	FOREIGN KEY (PaymentMethod) REFERENCES PaymentMethods(MethodName),
 	FOREIGN KEY (ReceiptStatus) REFERENCES EntityStatus(EntityStatusID),
     PRIMARY KEY(ReceiptID)
