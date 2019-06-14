@@ -30,7 +30,7 @@ as
 		RETURN -1
 -- (2.3) Get Medicine By Status --
 GO
-create proc usp_Medicine_SelectBySts @MStatus nvarchar(32)
+create proc usp_Medicine_SelectBySts @MStatus INT
 as
 	select * from Medicine
 	where MedicineStatus = @MStatus
@@ -75,7 +75,7 @@ as
 			MedicineUsage = ISNULL(@MedicineUsage,MedicineUsage),
 			SideEffects = ISNULL(@SideEffects,SideEffects),
 			ActiveComponent = ISNULL(@ActiveComponent,ActiveComponent),
-			MedicineStatus = 'Updated'
+			MedicineStatus = 2
 			WHERE BarCode = @BarCode
 		END
 	ELSE
@@ -87,7 +87,7 @@ as
 	IF (@bCode IS NOT NULL)
 	BEGIN
 		UPDATE Medicine
-		SET MedicineStatus = 'Deleted'
+		SET MedicineStatus = 99
 		where BarCode = @bCode
 	END
 	ELSE 
@@ -114,9 +114,15 @@ as
 	END
 	ELSE 
 		RETURN -1
--- (2.2) Get Company By Status --
+-- (2.2) Get Company By ID --
 GO
-create proc usp_PharmaCompany_SelectBySts @CompStatus varchar(32)
+create proc usp_PharmaCompany_SelectByID @CompID INT
+as
+	select * from PharmaCompany
+	where CompanyID = @CompID
+-- (2.3) Get Company By Status --
+GO
+create proc usp_PharmaCompany_SelectBySts @CompStatus int
 as
 	select * from PharmaCompany
 	where CompanyStatus = @CompStatus
@@ -132,39 +138,39 @@ as
 		BEGIN
 			INSERT INTO PharmaCompany (CompanyName,ContactPerson,CompanyAddress,CompanyPhone)
 			values (@CompanyName,@ContactPerson,@CompanyAddress,@CompanyPhone)
-			return 0
 		END
 	ELSE
 		return -1
--- (4) Update Company By Name --
+-- (4) Update Company By ID --
 GO
 CREATE PROC usp_PharmaCompany_Update 
-	@CompanyName NVARCHAR(64),
+	@CompID INT,
+	@CompanyName NVARCHAR(64) = NULL,
     @ContactPerson NVARCHAR(32) = NULL,
     @CompanyAddress NVARCHAR(128) = NULL,
     @CompanyPhone NVARCHAR(32) = NULL
 as
-	IF (@CompanyName IS NOT NULL)
+	IF (@CompID IS NOT NULL)
 		BEGIN
 			UPDATE PharmaCompany
-			SET ContactPerson = ISNULL(@ContactPerson,ContactPerson),
+			SET CompanyName = ISNULL(@CompanyName,CompanyName), 
+			ContactPerson = ISNULL(@ContactPerson,ContactPerson),
 			CompanyAddress = ISNULL(@CompanyAddress,CompanyAddress),
 			CompanyPhone = ISNULL(@CompanyPhone,CompanyPhone),
-			CompanyStatus = 'Updated'
-			WHERE CompanyName = @CompanyName
-			return 0
+			CompanyStatus = 2
+			WHERE CompanyID = @CompID
 		END
 	ELSE
 		return -1
--- (5) Delete Medicine By Barcode --
+-- (5) Delete Company By ID --
 GO
-create proc usp_PharmaCompany_Delete  @CompanyName NVARCHAR(64)
+create proc usp_PharmaCompany_Delete  @CompID INT
 as
-	IF (@CompanyName IS NOT NULL)
+	IF (@CompID IS NOT NULL)
 	BEGIN
 		UPDATE PharmaCompany
-		SET CompanyStatus = 'Deleted'
-		where CompanyName = @CompanyName
+		SET CompanyStatus = 99
+		where CompanyID = @CompID
 	END
 	ELSE
 		return -1
@@ -176,19 +182,19 @@ as
 
 --(1) Insert a medicine to a company --
 GO
-CREATE PROC usp_CompanyMedicineMap_Insert @CompName NVARCHAR(64), @MedName NVARCHAR(64)
+CREATE PROC usp_CompanyMedicineMap_Insert @CompID INT, @MedBCode NVARCHAR(64)
 AS
 	BEGIN
-		INSERT INTO CompanyMedicineMap (CompName,MedName)
-		VALUES (@CompName,@MedName)
+		INSERT INTO CompanyMedicineMap (CompID,MedBCode)
+		VALUES (@CompID,@MedBCode)
 	END
 --(2) Delete a medicine from a company --
 GO
-CREATE PROC usp_CompanyMedicineMap_DELETE @CompName NVARCHAR(64), @MedName NVARCHAR(64)
+CREATE PROC usp_CompanyMedicineMap_DELETE @CompID INT, @MedBCode NVARCHAR(64)
 AS
 	BEGIN
 		DELETE FROM CompanyMedicineMap 
-		WHERE CompName = @CompName  AND MedName = @MedName
+		WHERE CompID = @CompID  AND MedBCode = @MedBCode
 	END
 -- END of Company - Medicine Relation SP --
 ------------------------------------------------------------------------------------
@@ -214,7 +220,7 @@ as
 		RETURN -1
 -- (2.2) Select Batch By Status --
 GO
-create proc usp_Batch_SelectBySts  @BatchSts nvarchar(32)
+create proc usp_Batch_SelectBySts  @BatchSts int
 as
 	select * from Batch
 	where BatchStatus = @BatchSts
@@ -222,20 +228,20 @@ as
 GO
 CREATE PROC usp_Batch_Insert 
 	@BatchID INT,
-	@BatchMedName NVARCHAR(64),
+	@BatchMedBCode NVARCHAR(64),
 	@Quantity INT = NULL,
 	@ExpiryDate DATE = NULL,
     @OrderDate DATETIME = NULL
 as
 	BEGIN
-		INSERT INTO Batch (BatchID,BatchMedName,Quantity,ExpiryDate,OrderDate)
-		VALUES (@BatchID,@BatchMedName,@Quantity,@ExpiryDate,ISNULL(@OrderDate,getdate()))
+		INSERT INTO Batch (BatchID,BatchMedBCode,Quantity,ExpiryDate,OrderDate)
+		VALUES (@BatchID,@BatchMedBCode,@Quantity,@ExpiryDate,ISNULL(@OrderDate,getdate()))
 	END
 -- (4) Update Batch --
 GO
 CREATE PROC usp_Batch_Update 
 	@BatchID INT,
-	@BatchMedName NVARCHAR(64) = NULL,
+	@BatchMedBCode NVARCHAR(64) = NULL,
 	@Quantity INT = NULL,
 	@ExpiryDate DATE = NULL,
     @OrderDate DATETIME = NULL
@@ -243,11 +249,11 @@ as
 	BEGIN
 		UPDATE Batch
 		SET BatchID = ISNULL (@BatchID,BatchID),
-		BatchMedName = ISNULL (@BatchMedName,BatchMedName),
+		BatchMedBCode = ISNULL (@BatchMedBCode,BatchMedBCode),
 		Quantity = ISNULL (@Quantity,Quantity),
 		ExpiryDate = ISNULL (@ExpiryDate,ExpiryDate),
 		OrderDate = ISNULL (@OrderDate,OrderDate),
-		BatchStatus = 'Updated'
+		BatchStatus = 2
 		WHERE BatchID = @BatchID
 	END
 -- (5) Delete Batch --
@@ -257,7 +263,7 @@ as
 	IF (@BatchID IS NOT NULL)
 	BEGIN
 		UPDATE Batch
-		SET BatchStatus = 'Deleted'
+		SET BatchStatus = 99
 		where BatchID = @BatchID
 	END
 	ELSE
@@ -287,7 +293,7 @@ as
 		RETURN -1
 -- (2.2) Select AmbulanceVehicle By Status --
 GO
-create proc usp_AmbulanceVehicle_SelectBySts  @VehicleSts varchar(32)
+create proc usp_AmbulanceVehicle_SelectBySts  @VehicleSts int
 as
 	select * from AmbulanceVehicle
 	where VehicleStatus = @VehicleSts
@@ -351,7 +357,7 @@ as
 		ChasiahNumber = ISNULL (@ChasiahNumber,ChasiahNumber),
 		Model = ISNULL (Model,Model),
 		DriverPhoneNumber = ISNULL (@DriverPhoneNumber,DriverPhoneNumber),
-		VehicleStatus = 'Updated'
+		VehicleStatus = 2
 		WHERE VIN = @VIN
 	END
 -- (5) Delete AmbulanceVehicle --
@@ -361,7 +367,7 @@ as
 	IF (@VIN IS NOT NULL)
 	BEGIN
 		UPDATE AmbulanceVehicle
-		SET VehicleStatus = 'Deleted'
+		SET VehicleStatus = 99
 		where VIN = @VIN
 	END
 	ELSE
