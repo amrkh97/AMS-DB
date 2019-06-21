@@ -414,12 +414,12 @@ CREATE PROC usp_Employee_Register
     @SuperSSN INT = NULL,
 	@JobID INT = NULL,
     @Photo VARBINARY(MAX) = NULL,
+	@return_Hex_value NVARCHAR(2)='FF' OUTPUT,
 	@responseMessage NVARCHAR(128)='' OUTPUT
 WITH ENCRYPTION
 AS
 BEGIN
 	SET NOCOUNT ON
-
 	declare @id INT = null
     BEGIN TRY
 		IF NOT EXISTS (SELECT TOP 1 EID FROM Employee WHERE Email=@Email)
@@ -428,48 +428,58 @@ BEGIN
 					City, AddressState, AddressStreet, AddressPcode, PAN, NaitonalID, LogInTStamp, LogInGPS, SuperSSN, JobID, Photo)
 					VALUES (@Fname,@Lname,@BDate,@Email,HASHBYTES('SHA1', @HashPassword),@Gender,@ContactNumber,@Country ,
 					@City ,@AddressState ,@AddressStreet ,@AddressPcode ,@PAN,@NaitonalID ,@LogInTStamp,@LogInGPS ,@SuperSSN ,@JobID ,@Photo)
-					SET @responseMessage='Success'
+					SELECT @return_Hex_value='00',@responseMessage='User Signed Up Successfully'
+					
 			END
 		ELSE
 			BEGIN
-				SET @responseMessage='Email Already Exists'
-				return 1;
+				SELECT @return_Hex_value='04',@responseMessage='Email Already Exists'
+				return 4;
 			END
 
 	END TRY
 	BEGIN CATCH
-			SET @responseMessage=ERROR_MESSAGE()
+			SELECT @return_Hex_value='FF',@responseMessage=ERROR_MESSAGE()
 			return -1;
 	END CATCH
 END
 --(2) Login --
 GO
 CREATE PROC usp_Employee_Login 
-	@Email nvarchar(128),
+	@EmailOrPAN nvarchar(128),
 	@HashPassword nvarchar(128),
-    @responseMessage NVARCHAR(128)='' OUTPUT
+	@return_Hex_value NVARCHAR(2)='FF' OUTPUT,
+	@responseMessage NVARCHAR(128)='' OUTPUT
 WITH ENCRYPTION
 AS
 BEGIN
     SET NOCOUNT ON
     DECLARE @userID INT
-    IF EXISTS (SELECT TOP 1 EID FROM Employee WHERE Email=@Email)
-    BEGIN
-       SET @userID=(SELECT EID FROM Employee WHERE Email=@Email AND HashPassword=HASHBYTES('SHA1', @HashPassword))
-       IF(@userID IS NULL)
-		 BEGIN
-		   SET @responseMessage='Incorrect password'
-		   return 2
-		 END
+	BEGIN TRY
+		IF EXISTS (SELECT TOP 1 EID FROM Employee WHERE Email=@EmailOrPAN OR PAN = @EmailOrPAN)
+			BEGIN
+			   SET @userID=(SELECT EID FROM Employee WHERE (Email=@EmailOrPAN OR PAN = @EmailOrPAN) AND HashPassword=HASHBYTES('SHA1', @HashPassword))
+			   IF(@userID IS NULL)
+				 BEGIN
+				   SET @responseMessage='Incorrect password'
+				   SELECT @return_Hex_value = '02'
+				   return 2
+				 END
+			   ELSE 
+				   SET @responseMessage='User successfully logged in'
+				   SELECT @return_Hex_value = '00'
+			END
        ELSE 
-           SET @responseMessage='User successfully logged in'
-    END
-    ELSE
-		BEGIN
-		   SET @responseMessage='Invalid email'
-		   return 1
-		END
-
+			BEGIN
+			   SET @responseMessage='Invalid email'
+			   SELECT @return_Hex_value = '01'
+			   return 1
+			END
+	END TRY
+	BEGIN CATCH
+			SELECT @return_Hex_value='FF',@responseMessage=ERROR_MESSAGE()
+			return -1;
+	END CATCH
 END
 -- END of Employee SP --
 ------------------------------------------------------------------------------------

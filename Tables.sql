@@ -119,6 +119,26 @@ CREATE TABLE Batch
 	CONSTRAINT chk_Batch_QuantityPositive CHECK(Quantity > 0 )
 );
 
+CREATE TABLE Yellopad
+(
+YelloPadID NVARCHAR(16) NOT NULL,
+YellopadNetworkcardNo NVARCHAR(64),
+YelloPadorderdate DATE,
+YelloPadorderPatch NVARCHAR(64),
+YelloPadorderby NVARCHAR(64),
+YelloPadmanufactureDate date,
+YelloPadmanufacturePatch NVARCHAR(64),
+YelloPadmanufactureBy NVARCHAR(64),
+YelloPad1stdeploymentdate date,
+YelloPadLastmaintenanceDate date,
+YelloPadMaintenanceNature NVARCHAR(128),
+YelloPadMaintenanceNote NVARCHAR(128),
+YelloPadStatus INT NOT NULL DEFAULT (1),
+
+PRIMARY KEY (YelloPadID),
+FOREIGN KEY (YelloPadStatus) REFERENCES EntityStatus(EntityStatusID)
+)
+
 CREATE TABLE AmbulanceVehicle
 (
 	VIN INT,
@@ -136,10 +156,12 @@ CREATE TABLE AmbulanceVehicle
     ChasiahNumber NVARCHAR(32),
     Model NVARCHAR(32),
     DriverPhoneNumber NVARCHAR(32),
+	AssignedYPID NVARCHAR(16) NOT NULL UNIQUE,
     VehicleStatus INT DEFAULT(1)
 
     PRIMARY KEY ([VIN]),
-	FOREIGN KEY (VehicleStatus) REFERENCES EntityStatus(EntityStatusID), 
+	FOREIGN KEY (VehicleStatus) REFERENCES EntityStatus(EntityStatusID),
+	FOREIGN KEY (AssignedYPID) REFERENCES Yellopad(YelloPadID) 
 );
 
 CREATE TABLE BatchDistributionMap
@@ -166,7 +188,6 @@ CREATE TABLE Locations
     PostalCode NVARCHAR(20),
     FloorLevel NVARCHAR(20),
 	HouseNumber NVARCHAR(12),
-	PostalZipCode NVARCHAR(32),
 	LocationStatus INT DEFAULT (1),
 
 	FOREIGN KEY (LocationStatus) REFERENCES EntityStatus(EntityStatusID),
@@ -189,7 +210,7 @@ CREATE TABLE Employee
     AddressStreet nvarchar(64),
     AddressPcode VARCHAR(20),
     SubscriptionDate DateTime DEFAULT (GETDATE()),
-    PAN nvarchar(20),
+    PAN nvarchar(20) UNIQUE,
     NaitonalID nvarchar(14),
     LogInTStamp DATETIME,
     LogInGPS nvarchar(20),
@@ -220,11 +241,13 @@ CREATE TABLE Incident
 	PRIMARY KEY(IncidentSequenceNumber)
 )
 
+
+
 CREATE TABLE Responses
 (
 	SequenceNumber nvarchar(64) NOT NULL,
 	AssociatedVehivleVIN INT NOT NULL,
-	CreationTime DATE DEFAULT (getdate()),
+	CreationTime DATETIME DEFAULT (getdate()),
 	StartLocationID INT,
 	PickLocationID INT,
 	DropLocationID INT,
