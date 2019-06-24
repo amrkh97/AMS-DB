@@ -122,6 +122,7 @@ CREATE TABLE Batch
 CREATE TABLE Yellopad
 (
 YelloPadID NVARCHAR(16) NOT NULL,
+YelloPadUniqueID NVARCHAR(16) NOT NULL UNIQUE,
 YellopadNetworkcardNo NVARCHAR(64),
 YelloPadorderdate DATE,
 YelloPadorderPatch NVARCHAR(64),
