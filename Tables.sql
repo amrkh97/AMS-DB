@@ -1,6 +1,3 @@
-
-USE KAN_AMO;
-
 GO
 CREATE TABLE EntityStatus
 (
@@ -123,6 +120,7 @@ CREATE TABLE Batch
 CREATE TABLE Yellopad
 (
 YelloPadID NVARCHAR(16) NOT NULL,
+YelloPadUniqueID NVARCHAR(16) NOT NULL UNIQUE,
 YellopadNetworkcardNo NVARCHAR(64),
 YelloPadorderdate DATE,
 YelloPadorderPatch NVARCHAR(64),
@@ -135,6 +133,7 @@ YelloPadLastmaintenanceDate date,
 YelloPadMaintenanceNature NVARCHAR(128),
 YelloPadMaintenanceNote NVARCHAR(128),
 YelloPadStatus NVARCHAR(32) NOT NULL DEFAULT (1),
+YelloPadPicture NVARCHAR(500),
 
 PRIMARY KEY (YelloPadID),
 FOREIGN KEY (YelloPadStatus) REFERENCES EntityStatus(EntityStatusID)
@@ -159,6 +158,7 @@ CREATE TABLE AmbulanceVehicle
     DriverPhoneNumber NVARCHAR(32),
 	AssignedYPID NVARCHAR(16) NOT NULL UNIQUE,
     VehicleStatus NVARCHAR(32) DEFAULT(1)
+	AmbulanceVehiclePicture NVARCHAR(500),
 
     PRIMARY KEY ([VIN]),
 	FOREIGN KEY (VehicleStatus) REFERENCES EntityStatus(EntityStatusID),
