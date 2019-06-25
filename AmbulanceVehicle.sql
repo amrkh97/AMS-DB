@@ -1,0 +1,121 @@
+GO
+Create proc usp_AmbulanceVehicle_SelectAll 
+as
+	select * from AmbulanceVehicle
+
+-- (2.1) Get Patient By ID --
+GO
+create proc usp_AmbulanceVehicle_SelectByVIN  @VIN INT
+as
+	IF (@VIN IS NOT NULL)
+	BEGIN
+		select * from AmbulanceVehicle
+		where VIN = @VIN
+	END
+	ELSE
+		RETURN -1
+		
+-- (3) Insert Patient --
+GO
+CREATE PROC usp_AmbulanceVehicle_Insert 
+	
+	@VIN INT,
+	@Implication NVARCHAR(32),
+	@Make NVARCHAR(32) ,
+	@Type NVARCHAR(32) ,
+	@ProductionYear NVARCHAR(32) ,
+	@RegYear NVARCHAR(32),
+	@LicencePlate NVARCHAR(32),
+	@OwnerName NVARCHAR(128),
+	@LicenceStateOrProvince NVARCHAR(32),
+    @ServiceStartDate NVARCHAR(32),
+    @EngineNumber NVARCHAR(32),
+    @Brand NVARCHAR(32),
+    @ChasiahNumber NVARCHAR(32),
+    @Model NVARCHAR(32),
+    @DriverPhoneNumber NVARCHAR(32),
+    @responseCode NVARCHAR(2)='FF' OUTPUT,
+	@responseMessage NVARCHAR(128)='' OUTPUT
+
+	as 
+	BEGIN TRY
+	IF (@VIN IS NOT NULL )
+		BEGIN
+			INSERT INTO AmbulanceVehicle (VIN,Implication,Make,[Type],ProductionYear,RegYear,LicencePlate,OwnerName,
+			LicenceStateOrProvince,ServiceStartDate,EngineNumber,Brand,ChasiahNumber,Model,DriverPhoneNumber,VehicleStatus)
+			values (@VIN,@Implication,@Make,@Type,@ProductionYear,@RegYear,@LicencePlate,@OwnerName,@LicenceStateOrProvince,
+			@ServiceStartDate,@EngineNumber,@Brand,@ChasiahNumber,@Model,@DriverPhoneNumber, 1 )
+		END
+	ELSE
+	BEGIN
+				return -1
+				SELECT @responseCode = 'FF'
+				SELECT @responseMessage = 'Unknown Error'
+			END
+	END TRY
+	BEGIN CATCH
+			SELECT @responseCode = 'FF',
+			@responseMessage=ERROR_MESSAGE()
+			return -1;
+	END CATCH
+		return -1
+
+-- (4) Update AmbulanceVehicle --
+GO
+CREATE PROC usp_AmbulanceVehicle_Update
+	@VIN INT,
+	@Implication NVARCHAR(32),
+	@Make NVARCHAR(32) ,
+	@Type NVARCHAR(32) ,
+	@ProductionYear NVARCHAR(32) ,
+	@RegYear NVARCHAR(32),
+	@LicencePlate NVARCHAR(32),
+	@OwnerName NVARCHAR(128),
+	@LicenceStateOrProvince NVARCHAR(32),
+    @ServiceStartDate NVARCHAR(32),
+    @EngineNumber NVARCHAR(32),
+    @Brand NVARCHAR(32),
+    @ChasiahNumber NVARCHAR(32),
+    @Model NVARCHAR(32),
+    @DriverPhoneNumber NVARCHAR(32),
+    @VehicleStatus INT ,
+	@responseCode NVARCHAR(2)='FF' OUTPUT,
+	@responseMessage NVARCHAR(128)='' OUTPUT
+
+as
+	IF (@VIN IS NOT NULL)
+		BEGIN
+			UPDATE AmbulanceVehicle
+			SET Implication = ISNULL(@Implication,Implication),
+			Make = ISNULL(@Make,Make),
+			[Type] = ISNULL(@Type,[Type]),
+			ProductionYear = ISNULL(@ProductionYear,ProductionYear),
+			RegYear = ISNULL(@RegYear,RegYear),
+			LicencePlate = ISNULL(@LicencePlate,LicencePlate),
+			OwnerName = ISNULL(@OwnerName,OwnerName),
+			LicenceStateOrProvince = ISNULL(@LicenceStateOrProvince,LicenceStateOrProvince),
+			ServiceStartDate = ISNULL(@ServiceStartDate,ServiceStartDate),
+			EngineNumber = ISNULL(@EngineNumber,EngineNumber),
+			Brand = ISNULL(@Brand,Brand),
+			ChasiahNumber = ISNULL(@ChasiahNumber,ChasiahNumber),
+			Model = ISNULL(@Model,Model),
+			DriverPhoneNumber = ISNULL(@DriverPhoneNumber,DriverPhoneNumber),
+			VehicleStatus = 2
+			WHERE VIN = @VIN
+		END
+	ELSE
+		return -1
+
+-- (5) Delete Patient By VIN --
+GO
+create proc usp_AmbulanceVehicle_Delete  @VIN INT
+as
+	IF (@VIN IS NOT NULL)
+	BEGIN
+		UPDATE AmbulanceVehicle
+		SET VehicleStatus = 99
+		where VIN = @VIN
+	END
+	ELSE 
+		RETURN -1
+

@@ -30,7 +30,7 @@ as
 		RETURN -1
 -- (2.3) Get Medicine By Status --
 GO
-create proc usp_Medicine_SelectBySts @MStatus INT
+create proc usp_Medicine_SelectBySts @MStatus NVARCHAR(32)
 as
 	select * from Medicine
 	where MedicineStatus = @MStatus
@@ -39,8 +39,8 @@ GO
 CREATE PROC usp_Medicine_Insert 
 	@BarCode NVARCHAR(64),
 	@Name NVARCHAR(64),
-    @CountInStock INT = NULL,
-    @Price MONEY = NULL,
+    @CountInStock NVARCHAR(64) = NULL,
+    @Price NVARCHAR(32) = NULL,
     @Implications NVARCHAR(MAX) = NULL,
     @MedicineUsage NVARCHAR(MAX) = NULL,
     @SideEffects NVARCHAR(MAX) = NULL,
@@ -58,8 +58,8 @@ GO
 CREATE PROC usp_Medicine_Update
 	@BarCode NVARCHAR(64),
 	@Name NVARCHAR(64) = NULL,
-    @CountInStock INT = NULL,
-    @Price MONEY = NULL,
+    @CountInStock NVARCHAR(64) = NULL,
+    @Price NVARCHAR(32)  = NULL,
     @Implications NVARCHAR(MAX) = NULL,
     @MedicineUsage NVARCHAR(MAX) = NULL,
     @SideEffects NVARCHAR(MAX) = NULL,
@@ -122,7 +122,7 @@ as
 	where CompanyID = @CompID
 -- (2.3) Get Company By Status --
 GO
-create proc usp_PharmaCompany_SelectBySts @CompStatus int
+create proc usp_PharmaCompany_SelectBySts @CompStatus NVARCHAR(64)
 as
 	select * from PharmaCompany
 	where CompanyStatus = @CompStatus
@@ -220,7 +220,7 @@ as
 		RETURN -1
 -- (2.2) Select Batch By Status --
 GO
-create proc usp_Batch_SelectBySts  @BatchSts int
+create proc usp_Batch_SelectBySts  @BatchSts  NVARCHAR(32)
 as
 	select * from Batch
 	where BatchStatus = @BatchSts
@@ -242,7 +242,7 @@ GO
 CREATE PROC usp_Batch_Update 
 	@BatchID INT,
 	@BatchMedBCode NVARCHAR(64) = NULL,
-	@Quantity INT = NULL,
+	@Quantity  NVARCHAR(64) = NULL,
 	@ExpiryDate DATE = NULL,
     @OrderDate DATETIME = NULL
 as
@@ -293,7 +293,7 @@ as
 		RETURN -1
 -- (2.2) Select AmbulanceVehicle By Status --
 GO
-create proc usp_AmbulanceVehicle_SelectBySts  @VehicleSts int
+create proc usp_AmbulanceVehicle_SelectBySts  @VehicleSts  NVARCHAR(32)
 as
 	select * from AmbulanceVehicle
 	where VehicleStatus = @VehicleSts
@@ -304,12 +304,12 @@ CREATE PROC usp_AmbulanceVehicle_Insert
 	@Implication NVARCHAR(32) = NULL,
 	@Make NVARCHAR(32) = NULL ,
 	@Type NVARCHAR(32)  = NULL,
-	@ProductionYear int  = NULL,
-	@RegYear int = NULL,
+	@ProductionYear  NVARCHAR(32)  = NULL,
+	@RegYear  NVARCHAR(32) = NULL,
 	@LicencePlate NVARCHAR(32) = NULL,
 	@OwnerName NVARCHAR(128) = NULL,
 	@LicenceStateOrProvince NVARCHAR(32) = NULL,
-    @ServiceStartDate DATE = NULL,
+    @ServiceStartDate  NVARCHAR(32) = NULL,
     @EngineNumber NVARCHAR(32) = NULL,
     @Brand NVARCHAR(32) = NULL,
     @ChasiahNumber NVARCHAR(32) = NULL,
@@ -329,12 +329,12 @@ CREATE PROC usp_AmbulanceVehicle_Update
 	@Implication NVARCHAR(32) = NULL,
 	@Make NVARCHAR(32) = NULL ,
 	@Type NVARCHAR(32)  = NULL,
-	@ProductionYear int  = NULL,
-	@RegYear int = NULL,
+	@ProductionYear  NVARCHAR(32)  = NULL,
+	@RegYear  NVARCHAR(32) = NULL,
 	@LicencePlate NVARCHAR(32) = NULL,
 	@OwnerName NVARCHAR(128) = NULL,
 	@LicenceStateOrProvince NVARCHAR(32) = NULL,
-    @ServiceStartDate DATE = NULL,
+    @ServiceStartDate  NVARCHAR(32) = NULL,
     @EngineNumber NVARCHAR(32) = NULL,
     @Brand NVARCHAR(32) = NULL,
     @ChasiahNumber NVARCHAR(32) = NULL,

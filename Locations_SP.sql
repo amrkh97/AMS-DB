@@ -6,8 +6,8 @@ GO
 CREATE PROC usp_Locations_Insert 
 	@FreeFormatAddress NVARCHAR(256),
     @City NVARCHAR(32) = NULL,
-    @Longitude DECIMAL(9,6) = NULL,
-    @Latitude DECIMAL(9,6) = NULL,
+    @Longitude  NVARCHAR(32) = NULL,
+    @Latitude  NVARCHAR(32) = NULL,
     @Street NVARCHAR(32) = NULL,
     @Apartement NVARCHAR(32) = NULL,
     @PostalCode NVARCHAR(20) = NULL,
@@ -79,8 +79,8 @@ as
 -- (2.2) GET Locations by Cooredinates --
 GO
 CREATE PROC usp_Locations_SelectByGPS 
-	@Longitude DECIMAL(9,6),
-	@Latitude DECIMAL(9,6)
+	@Longitude  NVARCHAR(32),
+	@Latitude  NVARCHAR(32)
 as
 	IF (@Longitude IS NOT NULL AND @Latitude IS NOT NULL)
 	BEGIN
@@ -201,8 +201,8 @@ GO
 CREATE PROC usp_Location_Update
 	@LocationID INT,
 	@FreeFormatAddress NVARCHAR(256) = NULL,
-    @Longitude DECIMAL(9,6) = NULL,
-    @Latitude DECIMAL(9,6) = NULL,
+    @Longitude  NVARCHAR(32) = NULL,
+    @Latitude  NVARCHAR(32) = NULL,
     @Street NVARCHAR(32) = NULL,
     @Apartement NVARCHAR(32) = NULL,
     @PostalCode NVARCHAR(20) = NULL,
