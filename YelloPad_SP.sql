@@ -28,8 +28,9 @@ Create proc usp_YelloPads_Status @UniqueID NVARCHAR(16)
 as
 	IF (@UniqueID IS NOT NULL)
 	BEGIN
-		select YelloPadStatus from YelloPad
-		where YelloPadUniqueID = @UniqueID
+		select StatusName, StatusNote from EntityState
+		INNER JOIN YelloPad  ON YelloPad.YelloPadUniqueID=EntityState.EntityStatusID 
+		and YelloPad.YelloPadUniqueID=@UniqueID;
 	END
 	ELSE
 		RETURN -1
