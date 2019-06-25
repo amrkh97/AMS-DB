@@ -4,8 +4,8 @@
 GO
 Create proc usp_YelloPads_SelectAll
 as
-	select YelloPadUniqueID, YelloPadStatus, YellopadNetworkcardNo, YelloPadPicture from YelloPad
-	INNER JOIN EntityStatus  ON YelloPad.YelloPadStatus=EntityStatus.EntityStatusID
+	select YelloPadUniqueID, EntityStatus.StatusName,EntityStatus.StatusNote, Yellopad.YellopadNetworkcardNo, Yellopad.YelloPadPicture from Yellopad
+		INNER JOIN EntityStatus  ON YelloPad.YelloPadStatus=EntityStatus.EntityStatusID
 
  ------------------------------------------
 -- (2) Search Unique ID --
