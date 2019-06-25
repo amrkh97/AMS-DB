@@ -5,6 +5,7 @@ GO
 Create proc usp_YelloPads_SelectAll
 as
 	select YelloPadUniqueID, YelloPadStatus, YellopadNetworkcardNo, YelloPadPicture from YelloPad
+	INNER JOIN EntityStatus  ON YelloPad.YelloPadStatus=EntityStatus.EntityStatusID
 
  ------------------------------------------
 -- (2) Search Unique ID --
@@ -12,10 +13,11 @@ as
 GO
 Create proc usp_YelloPads_Search @UniqueID NVARCHAR(16)
 as
-	IF (@UniqueID IS NOT NULL)
+IF (@UniqueID IS NOT NULL)
 	BEGIN
-		select YelloPadUniqueID, YelloPadStatus, YellopadNetworkcardNo, YelloPadPicture from YelloPad
-		where YelloPadUniqueID = @UniqueID
+		select YelloPadUniqueID, EntityStatus.StatusName,EntityStatus.StatusNote, Yellopad.YellopadNetworkcardNo, Yellopad.YelloPadPicture from Yellopad
+		INNER JOIN EntityStatus  ON YelloPad.YelloPadStatus=EntityStatus.EntityStatusID
+		WHERE  YelloPad.YelloPadUniqueID = @UniqueID
 	END
 	ELSE
 		RETURN -1
