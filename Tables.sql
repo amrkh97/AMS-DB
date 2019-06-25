@@ -1,23 +1,23 @@
 GO
 CREATE TABLE EntityStatus
 (
-	EntityStatusID INT,
+	EntityStatusID NVARCHAR(32),
 	StatusName NVARCHAR(32),
 	StatusNote NVARCHAR(256)
 
 	PRIMARY KEY (EntityStatusID)
-)
+);
 INSERT INTO EntityStatus (EntityStatusID,StatusName)
 VALUES (1,'Undefined'),(2,'Updated'),(3,'Verified'),(99,'Deleted')
 
 CREATE TABLE ResponseStatuses
 (
-	ResponseStatusID INT,
+	ResponseStatusID NVARCHAR(32),
 	StatusName NVARCHAR(64),
 	StatusNote NVARCHAR(256)
 
 	PRIMARY KEY (ResponseStatusID)
-)
+);
 
 CREATE TABLE IncidentTypes
 (
@@ -26,7 +26,7 @@ CREATE TABLE IncidentTypes
 	TypeNote NVARCHAR(256)
 
 	PRIMARY KEY (IncidentTypeID)
-)
+);
 
 CREATE TABLE Priorities
 (
@@ -35,7 +35,7 @@ CREATE TABLE Priorities
 	PriorityNote NVARCHAR(256)
 
 	PRIMARY KEY (PrioritYID)
-)
+);
 
 CREATE TABLE AlarmLevels
 (
@@ -44,7 +44,7 @@ CREATE TABLE AlarmLevels
 	AlarmLevelote NVARCHAR(256)
 
 	PRIMARY KEY (AlarmLevelID)
-)
+);
 
 CREATE TABLE Jobs
 (
@@ -52,9 +52,10 @@ CREATE TABLE Jobs
 	Title NVARCHAR(32),
 	Note NVARCHAR(64),
 	JobDescription NVARCHAR(256),
+	Job
 
 	PRIMARY KEY (JobID)
-)
+);
 
 CREATE TABLE PaymentMethods
 (
@@ -62,19 +63,19 @@ CREATE TABLE PaymentMethods
 	TreatmentImage VARBINARY(MAX),
 
 	PRIMARY KEY (MethodName)
-)
+);
 
 CREATE TABLE Medicine
 (
 	BarCode NVARCHAR(64),
 	MedicineName NVARCHAR(64) NOT NULL UNIQUE, 
-    CountInStock INT,
-    Price MONEY,
+    CountInStock NVARCHAR(64),
+    Price NVARCHAR(32),
     Implications NVARCHAR(MAX),
     MedicineUsage NVARCHAR(MAX),
     SideEffects NVARCHAR(MAX),
     ActiveComponent NVARCHAR(MAX),
-	MedicineStatus INT DEFAULT(1)
+	MedicineStatus NVARCHAR(32) DEFAULT(1)
 
     PRIMARY KEY(BarCode),
 	FOREIGN KEY(MedicineStatus) REFERENCES EntityStatus(EntityStatusID), 
@@ -89,7 +90,7 @@ CREATE TABLE PharmaCompany
     ContactPerson NVARCHAR(32),
     CompanyAddress NVARCHAR(128),
     CompanyPhone NVARCHAR(32),
-    CompanyStatus INT DEFAULT(1)
+    CompanyStatus NVARCHAR(32) DEFAULT(1)
 
 	PRIMARY key (CompanyID)
 	FOREIGN KEY (CompanyStatus) REFERENCES EntityStatus(EntityStatusID), 
@@ -106,10 +107,10 @@ CREATE TABLE Batch
 (
     BatchID INT,
 	BatchMedBCode NVARCHAR(64) NOT NULL,
-	Quantity INT,
+	Quantity NVARCHAR(64),
 	ExpiryDate DATE,
     OrderDate DATETIME DEFAULT getdate(),
-	BatchStatus INT DEFAULT(1)
+	BatchStatus NVARCHAR(32) DEFAULT(1)
     PRIMARY KEY(BatchID),
 	FOREIGN KEY (BatchMedBCode) REFERENCES Medicine(BarCode),
 	FOREIGN KEY (BatchStatus) REFERENCES EntityStatus(EntityStatusID), 
@@ -131,12 +132,12 @@ YelloPad1stdeploymentdate date,
 YelloPadLastmaintenanceDate date,
 YelloPadMaintenanceNature NVARCHAR(128),
 YelloPadMaintenanceNote NVARCHAR(128),
-YelloPadStatus INT NOT NULL DEFAULT (1),
+YelloPadStatus NVARCHAR(32) NOT NULL DEFAULT (1),
 YelloPadPicture NVARCHAR(500),
 
 PRIMARY KEY (YelloPadID),
 FOREIGN KEY (YelloPadStatus) REFERENCES EntityStatus(EntityStatusID)
-)
+);
 
 CREATE TABLE AmbulanceVehicle
 (
@@ -144,19 +145,19 @@ CREATE TABLE AmbulanceVehicle
 	Implication NVARCHAR(32),
 	Make NVARCHAR(32) ,
 	[Type] NVARCHAR(32) ,
-	ProductionYear int ,
-	RegYear int,
+	ProductionYear NVARCHAR(32) ,
+	RegYear NVARCHAR(32),
 	LicencePlate NVARCHAR(32),
 	OwnerName NVARCHAR(128),
 	LicenceStateOrProvince NVARCHAR(32),
-    ServiceStartDate DATE,
+    ServiceStartDate NVARCHAR(32),
     EngineNumber NVARCHAR(32),
     Brand NVARCHAR(32),
     ChasiahNumber NVARCHAR(32),
     Model NVARCHAR(32),
     DriverPhoneNumber NVARCHAR(32),
 	AssignedYPID NVARCHAR(16) NOT NULL UNIQUE,
-    VehicleStatus INT DEFAULT(1),
+    VehicleStatus NVARCHAR(32) DEFAULT(1)
 	AmbulanceVehiclePicture NVARCHAR(500),
 
     PRIMARY KEY ([VIN]),
@@ -181,14 +182,14 @@ CREATE TABLE Locations
  	LocationID INT IDENTITY,
     FreeFormatAddress NVARCHAR(256) NOT NULL UNIQUE,
     City NVARCHAR(32),
-    Longitude DECIMAL(9,6),
-    Latitude DECIMAL(9,6),
+    Longitude NVARCHAR(32),
+    Latitude NVARCHAR(32),
     Street NVARCHAR(32),
     Apartement NVARCHAR(32),
     PostalCode NVARCHAR(20),
     FloorLevel NVARCHAR(20),
 	HouseNumber NVARCHAR(12),
-	LocationStatus INT DEFAULT (1),
+	LocationStatus NVARCHAR(32) DEFAULT (1),
 
 	FOREIGN KEY (LocationStatus) REFERENCES EntityStatus(EntityStatusID),
     PRIMARY KEY (LocationID)
@@ -214,10 +215,10 @@ CREATE TABLE Employee
     NaitonalID nvarchar(14),
     LogInTStamp DATETIME,
     LogInGPS nvarchar(20),
-    EmpolyeeStatus INT DEFAULT (1),
+    EmpolyeeStatus NVARCHAR(32) DEFAULT (1),
     SuperSSN INT,
 	JobID INT,
-    Photo VARBINARY(MAX),
+    Photo NVARCHAR(MAX),
 	Age as DATEDIFF(YEAR, BDate, GETDATE()),
 	
 	FOREIGN KEY (SuperSSN) REFERENCES Employee(EID),
@@ -225,7 +226,7 @@ CREATE TABLE Employee
 	FOREIGN KEY(EmpolyeeStatus) REFERENCES EntityStatus(EntityStatusID), 
 	PRIMARY KEY (EID)
 	
-)
+);
 
 CREATE TABLE Incident
 (
@@ -239,7 +240,7 @@ CREATE TABLE Incident
 	FOREIGN KEY (IncidentPriority) REFERENCES Priorities(PrioritYID),
 	FOREIGN KEY (IncidentLocationID) REFERENCES Locations(LocationID),
 	PRIMARY KEY(IncidentSequenceNumber)
-)
+);
 
 
 
@@ -254,11 +255,11 @@ CREATE TABLE Responses
 	DestinationLocationID INT,
 	DriverSSN INT,
 	ParamedicSSN INT,
-	RespStatus INT,
+	RespStatus NVARCHAR(32),
 	IncidentSQN nvarchar(64) NOT NULL,
 	PrimaryResponseSQN nvarchar(64),
 	RespAlarmLevel INT,
-	PersonCount INT,
+	PersonCount NVARCHAR(32),
 
 	FOREIGN KEY (AssociatedVehivleVIN) REFERENCES AmbulanceVehicle(VIN),
 	FOREIGN KEY (StartLocationID) REFERENCES Locations(LocationID),
@@ -271,7 +272,7 @@ CREATE TABLE Responses
 	FOREIGN KEY (IncidentSQN) REFERENCES Incident(IncidentSequenceNumber),
 	FOREIGN KEY (RespAlarmLevel) REFERENCES AlarmLevels(AlarmLevelID),
 	PRIMARY KEY (SequenceNumber)
-)
+);
 
 
 CREATE TABLE MedicineUsedPerResponse
@@ -294,8 +295,8 @@ CREATE TABLE Receipt (
     CasheirSSN INT,
     ReceiptCreationTime DATETIME DEFAULT (GETDATE()),
     FTPFileLocation NVARCHAR(128),
-	ReceiptStatus INT DEFAULT (1),
-	Cost Money,
+	ReceiptStatus NVARCHAR(32) DEFAULT (1),
+	Cost NVARCHAR(32),
 	PaymentMethod NVARCHAR(32),
 
 	FOREIGN KEY (RespSQN) REFERENCES Responses(SequenceNumber),
@@ -310,14 +311,14 @@ CREATE TABLE Patient
     PatientFName VARCHAR(32),
     PatientLName VARCHAR(32),
     Gender NVARCHAR(1),
-    Age INT,
+    Age NVARCHAR(32),
     Phone NVARCHAR(24),
     LastBenifitedTime DATETIME DEFAULT(GETDATE()),
     FirstBenifitedTime DATETIME DEFAULT(GETDATE()),
     NextOfKenName NVARCHAR(32),
     NextOfKenPhone NVARCHAR(24),
     NextOfKenAddress NVARCHAR(256),
-	PatientStatus INT DEFAULT (1),
+	PatientStatus NVARCHAR(32) DEFAULT (1),
 
 	FOREIGN KEY(PatientStatus) REFERENCES EntityStatus(EntityStatusID), 
     PRIMARY KEY (PatientID),
@@ -338,11 +339,11 @@ CREATE TABLE MedicalRecord
     EMG NVARCHAR(MAX),
     ECG NVARCHAR(MAX),
     Hepatitis NVARCHAR(1),
-    PhysicalExaminationImage VARBINARY(MAX),
+    PhysicalExaminationImage NVARCHAR(MAX),
     MedicineApplied NVARCHAR(128),
     ProcedureDoneInCar NVARCHAR(MAX),
     RecommendedProcedure NVARCHAR(MAX),
-    MRStatus INT DEFAULT (1),
+    MRStatus NVARCHAR(32) DEFAULT (1),
 
 	FOREIGN KEY (RespSQN) REFERENCES Responses(SequenceNumber),
 	FOREIGN KEY (PatientID) REFERENCES Patient(PatientID),
@@ -371,7 +372,7 @@ CREATE TABLE Reports
     ReportIssueTime DATETIME DEFAULT(GETDATE()),
     PatientID INT,
     ReportDestination NVARCHAR(64),
-    ReportStatus INT DEFAULT (1),
+    ReportStatus NVARCHAR(32) DEFAULT (1),
 
 	FOREIGN KEY (PatientID) REFERENCES Patient(PatientID),
 	FOREIGN KEY(ReportStatus) REFERENCES EntityStatus(EntityStatusID), 
