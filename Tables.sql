@@ -135,6 +135,7 @@ YelloPadLastmaintenanceDate date,
 YelloPadMaintenanceNature NVARCHAR(128),
 YelloPadMaintenanceNote NVARCHAR(128),
 YelloPadStatus INT NOT NULL DEFAULT (1),
+YelloPadPicture NVARCHAR(500),
 
 PRIMARY KEY (YelloPadID),
 FOREIGN KEY (YelloPadStatus) REFERENCES EntityStatus(EntityStatusID)
@@ -158,7 +159,8 @@ CREATE TABLE AmbulanceVehicle
     Model NVARCHAR(32),
     DriverPhoneNumber NVARCHAR(32),
 	AssignedYPID NVARCHAR(16) NOT NULL UNIQUE,
-    VehicleStatus INT DEFAULT(1)
+    VehicleStatus INT DEFAULT(1),
+	AmbulanceVehiclePicture NVARCHAR(500),
 
     PRIMARY KEY ([VIN]),
 	FOREIGN KEY (VehicleStatus) REFERENCES EntityStatus(EntityStatusID),

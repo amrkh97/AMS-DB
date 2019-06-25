@@ -4,7 +4,7 @@
 GO
 Create proc usp_YelloPads_SelectAll
 as
-	select YelloPadUniqueID, YelloPadStatus, YellopadNetworkcardNo from YelloPad
+	select YelloPadUniqueID, YelloPadStatus, YellopadNetworkcardNo, YelloPadPicture from YelloPad
 
  ------------------------------------------
 -- (2) Search Unique ID --
@@ -14,7 +14,7 @@ Create proc usp_YelloPads_Search @UniqueID NVARCHAR(16)
 as
 	IF (@UniqueID IS NOT NULL)
 	BEGIN
-		select YelloPadUniqueID, YelloPadStatus, YellopadNetworkcardNo from YelloPad
+		select YelloPadUniqueID, YelloPadStatus, YellopadNetworkcardNo, YelloPadPicture from YelloPad
 		where YelloPadUniqueID = @UniqueID
 	END
 	ELSE
