@@ -2,6 +2,7 @@
 ------------------------------------------------------------------------
 -- Medicine Stored Procedures --
 -- (1) Get All Medicines --
+Use KAN_AMO
 GO
 Create proc usp_Medicines_SelectAll 
 as
@@ -482,6 +483,71 @@ BEGIN
 	END CATCH
 END
 -- END of Employee SP --
+------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------
+-- Reports SP --
+--(1) Get Report by ReportTitle --
+GO
+create proc usp_Reports_SelectByReportTitle  @ReportTitle NVARCHAR(64)
+as
+	IF (@ReportTitle IS NOT NULL)
+	BEGIN
+		select * from Reports
+		where ReportTitle = @ReportTitle
+	END
+	ELSE
+		RETURN -1
+
+
+--(2) Get Report by ReportStatus --
+GO
+create proc usp_Reports_SelectByReportStatus  @ReportStatus NVARCHAR(64)
+as
+	IF (@ReportStatus IS NOT NULL)
+	BEGIN
+		select * from Reports
+		where ReportStatus = @ReportStatus
+	END
+	ELSE
+		RETURN -1
+
+--(3) Get Report by ReportIssueTime --
+GO
+create proc usp_Reports_SelectByReportIssueTime  @ReportIssueTime NVARCHAR(64)
+as
+	IF (@ReportIssueTime IS NOT NULL)
+	BEGIN
+		select * from Reports
+		where ReportIssueTime = @ReportIssueTime
+	END
+	ELSE
+		RETURN -1
+
+--(4) Get Report by ReportStatus --
+GO
+create proc usp_Reports_SelectByPatientID  @PatientID NVARCHAR(64)
+as
+	IF (@PatientID IS NOT NULL)
+	BEGIN
+		select * from Reports
+		where PatientID = @PatientID
+	END
+	ELSE
+		RETURN -1
+--(5) Get Report by ReportTitleAndStatus --
+GO
+create proc usp_Reports_SelectByReportTitleAndStatus  @ReportTitle NVARCHAR(64),
+ @ReportStatus NVARCHAR(64)
+as
+	IF (@ReportTitle IS NOT NULL AND @ReportStatus IS NOT NULL)
+	BEGIN
+		select * from Reports
+		where ReportTitle = @ReportTitle AND ReportStatus = @ReportStatus
+	END
+	ELSE
+		RETURN -1
+
+-- END of Reports SP --
 ------------------------------------------------------------------------------------
 ------------------------------------------------------------------------------------
 -- Triggers --
