@@ -4,8 +4,8 @@ CREATE PROC usp_Employee_Login
 	@HashPassword NVARCHAR(128),
 	@return_Hex_value NVARCHAR(2)='FF' OUTPUT,
 	@responseMessage NVARCHAR(128)='' OUTPUT,
-	@JobID NVARCHAR(64) OUTPUT,
-	@employeeID NVARCHAR(64) OUTPUT
+	@JobID NVARCHAR(64)='' OUTPUT,
+	@employeeID NVARCHAR(64)='' OUTPUT
 WITH ENCRYPTION
 AS
 BEGIN
@@ -18,7 +18,7 @@ BEGIN
 				IF EXISTS (SELECT TOP 1 EID FROM Employee WHERE Email=@EmailOrPAN OR PAN = @EmailOrPAN OR NationalID=@EmailOrPAN)
 				-- Found the user using email or PAN or National ID
 					BEGIN
-						SET @userID = (SELECT EID FROM Employee WHERE (Email=@EmailOrPAN OR PAN = @EmailOrPAN OR NationalID=@EmailOrPAN) AND HashPassword=HASHBYTES('SHA1', @HashPassword))
+						SET @userID = (SELECT EID FROM Employee WHERE (Email=@EmailOrPAN OR PAN = @EmailOrPAN OR NationalID=@EmailOrPAN) AND HashPassword=@HashPassword)
 						IF(@userID IS NULL)
 						-- Worng Password
 							BEGIN
