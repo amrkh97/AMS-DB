@@ -456,7 +456,7 @@ CREATE PROC usp_Employee_Login
 	@return_Hex_value NVARCHAR(2)='FF' OUTPUT,
 	@responseMessage NVARCHAR(128)='' OUTPUT,
 	@JobID NVARCHAR(64) OUTPUT,
-	@UserID NVARCHAR(64) OUTPUT
+	@employeeID NVARCHAR(64) OUTPUT
 WITH ENCRYPTION
 AS
 BEGIN
@@ -487,7 +487,7 @@ BEGIN
 									SET @responseMessage='User successfully logged in'
 									SELECT @return_Hex_value = '00'
 									SET @JobID = (SELECT JobID from Employee where EID = @userID)
-									SET @UserID = @userID
+									SET @employeeID = @userID
 									UPDATE Employee SET EmployeeStatus = 1 WHERE EID = @userID
 									UPDATE Employee SET LogInTStamp = GETDATE() WHERE EID = @userID
 									return 0
