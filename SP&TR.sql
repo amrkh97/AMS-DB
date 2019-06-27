@@ -395,22 +395,22 @@ AS
 --(1) Register --
 GO
 CREATE PROC usp_Employee_Register
-	@Fname nvarchar(32) = NULL,
-	@Lname nvarchar(32) = NULL,
+	@Fname NVARCHAR(32) = NULL,
+	@Lname NVARCHAR(32) = NULL,
 	@BDate Date = NULL,
-	@Email nvarchar(128),
-	@HashPassword nvarchar(128),
-	@Gender nvarchar(1) = NULL,
-	@ContactNumber nvarchar(64) = NULL,
-	@Country nvarchar(32) = NULL,
-  @City nvarchar(32) = NULL,
-  @AddressState nvarchar(32) = NULL,
-  @AddressStreet nvarchar(64) = NULL,
+	@Email NVARCHAR(128),
+	@HashPassword NVARCHAR(128),
+	@Gender NVARCHAR(1) = NULL,
+	@ContactNumber NVARCHAR(64) = NULL,
+	@Country NVARCHAR(32) = NULL,
+  @City NVARCHAR(32) = NULL,
+  @AddressState NVARCHAR(32) = NULL,
+  @AddressStreet NVARCHAR(64) = NULL,
   @AddressPcode VARCHAR(20) = NULL,
-  @PAN nvarchar(20) = NULL,
-  @NationalID nvarchar(14) = NULL,
+  @PAN NVARCHAR(20) = NULL,
+  @NationalID NVARCHAR(14) = NULL,
   @LogInTStamp DATETIME = NULL,
-  @LogInGPS nvarchar(20) = NULL,
+  @LogInGPS NVARCHAR(20) = NULL,
   @SuperSSN INT = NULL,
 	@JobID INT = NULL,
   @Photo VARBINARY(MAX) = NULL,
@@ -446,8 +446,8 @@ END
 --(2) Login --
 GO
 CREATE PROC usp_Employee_Login 
-	@EmailOrPAN nvarchar(128),
-	@HashPassword nvarchar(128),
+	@EmailOrPAN NVARCHAR(128),
+	@HashPassword NVARCHAR(128),
 	@return_Hex_value NVARCHAR(2)='FF' OUTPUT,
 	@responseMessage NVARCHAR(128)='' OUTPUT,
 	@JobID NVARCHAR(64) OUTPUT

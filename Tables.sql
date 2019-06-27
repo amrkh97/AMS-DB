@@ -203,23 +203,23 @@ CREATE TABLE Locations
 CREATE TABLE Employee
 (
 	EID INT IDENTITY,
-	Fname nvarchar(32),
-	Lname nvarchar(32),
+	Fname NVARCHAR(32),
+	Lname NVARCHAR(32),
 	BDate Date,
-	Email nvarchar(128) NOT NULL UNIQUE,
-	HashPassword nvarchar(128) NOT NULL,
-	Gender nvarchar(1),
-	ContactNumber nvarchar(64),
-	Country nvarchar(32),
-	City nvarchar(32),
-	AddressState nvarchar(32),
-	AddressStreet nvarchar(64),
+	Email NVARCHAR(128) NOT NULL UNIQUE,
+	HashPassword NVARCHAR(128) NOT NULL,
+	Gender NVARCHAR(1),
+	ContactNumber NVARCHAR(64),
+	Country NVARCHAR(32),
+	City NVARCHAR(32),
+	AddressState NVARCHAR(32),
+	AddressStreet NVARCHAR(64),
 	AddressPcode VARCHAR(20),
 	SubscriptionDate DateTime DEFAULT (GETDATE()),
-	PAN nvarchar(20) UNIQUE,
-	NationalID nvarchar(14),
+	PAN NVARCHAR(20) UNIQUE,
+	NationalID NVARCHAR(14),
 	LogInTStamp DATETIME,
-	LogInGPS nvarchar(20),
+	LogInGPS NVARCHAR(20),
 	EmpolyeeStatus NVARCHAR(32) DEFAULT (1),
 	SuperSSN INT,
 	JobID INT,
@@ -235,7 +235,7 @@ CREATE TABLE Employee
 
 CREATE TABLE Incident
 (
-	IncidentSequenceNumber nvarchar(64),
+	IncidentSequenceNumber NVARCHAR(64),
 	CreationTime DATETIME DEFAULT (GETDATE()),
 	IncidentType INT,
 	IncidentPriority INT,
@@ -251,7 +251,7 @@ CREATE TABLE Incident
 
 CREATE TABLE Responses
 (
-	SequenceNumber nvarchar(64) NOT NULL,
+	SequenceNumber NVARCHAR(64) NOT NULL,
 	AssociatedVehivleVIN INT NOT NULL,
 	CreationTime DATETIME DEFAULT (getdate()),
 	StartLocationID INT,
@@ -261,8 +261,8 @@ CREATE TABLE Responses
 	DriverSSN INT,
 	ParamedicSSN INT,
 	RespStatus NVARCHAR(32),
-	IncidentSQN nvarchar(64) NOT NULL,
-	PrimaryResponseSQN nvarchar(64),
+	IncidentSQN NVARCHAR(64) NOT NULL,
+	PrimaryResponseSQN NVARCHAR(64),
 	RespAlarmLevel INT,
 	PersonCount NVARCHAR(32),
 
@@ -335,7 +335,7 @@ CREATE TABLE Patient
 CREATE TABLE MedicalRecord
 (
 	MedicalRecordID INT,
-	RespSQN nvarchar(64) UNIQUE,
+	RespSQN NVARCHAR(64) UNIQUE,
 	PatientID INT,
 	BloodPressure NVARCHAR(12),
 	Temperature NVARCHAR(33),
