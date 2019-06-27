@@ -421,27 +421,32 @@ AS
 BEGIN
 	SET NOCOUNT ON
 	declare @id INT = null
-    BEGIN TRY
-		IF NOT EXISTS (SELECT TOP 1 EID FROM Employee WHERE Email=@Email)
-			BEGIN
-					INSERT INTO Employee (Fname, Lname, BDate, Email, HashPassword, Gender, ContactNumber, Country, 
-					City, AddressState, AddressStreet, AddressPcode, PAN, NationalID, LogInTStamp, LogInGPS, SuperSSN, JobID, Photo)
-					VALUES (@Fname,@Lname,@BDate,@Email,HASHBYTES('SHA1', @HashPassword),@Gender,@ContactNumber,@Country ,
-					@City ,@AddressState ,@AddressStreet ,@AddressPcode ,@PAN,@NationalID ,@LogInTStamp,@LogInGPS ,@SuperSSN ,@JobID ,@Photo)
-					SELECT @return_Hex_value='00',@responseMessage='User Signed Up Successfully'
-					
-			END
-		ELSE
-			BEGIN
-				SELECT @return_Hex_value='04', @responseMessage='Email Already Exists'
-				return 4;
-			END
+	IF (@Email IS NOT NULL AND @HashPassword IS NOT NULL)
+		BEGIN
+			BEGIN TRY
+				IF NOT EXISTS (SELECT TOP 1 EID FROM Employee WHERE Email=@Email)
+					BEGIN
+							INSERT INTO Employee (Fname, Lname, BDate, Email, HashPassword, Gender, ContactNumber, Country, 
+							City, AddressState, AddressStreet, AddressPcode, PAN, NationalID, LogInTStamp, LogInGPS, SuperSSN, JobID, Photo)
+							VALUES (@Fname,@Lname,@BDate,@Email,HASHBYTES('SHA1', @HashPassword),@Gender,@ContactNumber,@Country ,
+							@City ,@AddressState ,@AddressStreet ,@AddressPcode ,@PAN,@NationalID ,@LogInTStamp,@LogInGPS ,@SuperSSN ,@JobID ,@Photo)
+							SELECT @return_Hex_value='00',@responseMessage='User Signed Up Successfully'
+							
+					END
+				ELSE
+					BEGIN
+						SELECT @return_Hex_value='04', @responseMessage='Email Already Exists'
+						return 4;
+					END
 
-	END TRY
-	BEGIN CATCH
-			SELECT @return_Hex_value='FF',@responseMessage=ERROR_MESSAGE()
-			return -1;
-	END CATCH
+			END TRY
+			BEGIN CATCH
+					SELECT @return_Hex_value='FF',@responseMessage=ERROR_MESSAGE()
+					return -1;
+			END CATCH
+		END
+	ELSE
+		return -1
 END
 --(2) Login --
 GO
@@ -450,65 +455,72 @@ CREATE PROC usp_Employee_Login
 	@HashPassword NVARCHAR(128),
 	@return_Hex_value NVARCHAR(2)='FF' OUTPUT,
 	@responseMessage NVARCHAR(128)='' OUTPUT,
-	@JobID NVARCHAR(64) OUTPUT
+	@JobID NVARCHAR(64) OUTPUT,
+	@UserID NVARCHAR(64) OUTPUT
 WITH ENCRYPTION
 AS
 BEGIN
 	SET NOCOUNT ON
 	DECLARE @userID INT
 	DECLARE @status INT
-	BEGIN TRY
-		IF EXISTS (SELECT TOP 1 EID FROM Employee WHERE Email=@EmailOrPAN OR PAN = @EmailOrPAN OR NationalID=@EmailOrPAN)
-		-- Found the user using email or PAN or National ID
-			BEGIN
-				SET @userID = (SELECT EID FROM Employee WHERE (Email=@EmailOrPAN OR PAN = @EmailOrPAN OR NationalID=@EmailOrPAN) AND HashPassword=HASHBYTES('SHA1', @HashPassword))
-				IF(@userID IS NULL)
-				-- Worng Password
+	IF (@EmailOrPAN IS NOT NULL AND @HashPassword IS NOT NULL)
+		BEGIN
+			BEGIN TRY
+				IF EXISTS (SELECT TOP 1 EID FROM Employee WHERE Email=@EmailOrPAN OR PAN = @EmailOrPAN OR NationalID=@EmailOrPAN)
+				-- Found the user using email or PAN or National ID
 					BEGIN
-						SET @responseMessage='Incorrect password'
-						SELECT @return_Hex_value = '02'
-						return 2
+						SET @userID = (SELECT EID FROM Employee WHERE (Email=@EmailOrPAN OR PAN = @EmailOrPAN OR NationalID=@EmailOrPAN) AND HashPassword=HASHBYTES('SHA1', @HashPassword))
+						IF(@userID IS NULL)
+						-- Worng Password
+							BEGIN
+								SET @responseMessage='Incorrect password'
+								SELECT @return_Hex_value = '02'
+								return 2
+							END
+						ELSE
+						-- Correct password, so check if he's already logged in
+							SET @status=(SELECT EmployeeStatus from Employee WHERE EID=@userID)
+							IF(@status = 0)
+							-- Not logged in, so login successful, send his type to backend
+							-- And set status to 1
+								BEGIN
+									SET @responseMessage='User successfully logged in'
+									SELECT @return_Hex_value = '00'
+									SET @JobID = (SELECT JobID from Employee where EID = @userID)
+									SET @UserID = @userID
+									UPDATE Employee SET EmployeeStatus = 1 WHERE EID = @userID
+									UPDATE Employee SET LogInTStamp = GETDATE() WHERE EID = @userID
+									return 0
+								END
+							ELSE IF(@status = 1)
+							-- Already logged in, so can't continue
+								BEGIN
+									SET @responseMessage='User is logged in somewhere'
+									SELECT @return_Hex_value = '03'
+									return 3
+								END
+						ELSE
+						BEGIN
+						   SET @responseMessage='Something went wrong'
+						   SELECT @return_Hex_value = 'ff'
+						END		
 					END
 				ELSE
-				-- Correct password, so check if he's already logged in
-					SET @status=(SELECT EmployeeStatus from Employee WHERE EID=@userID)
-					IF(@status = 0)
-					-- Not logged in, so login successful, send his type to backend
-					-- And set status to 1
-						BEGIN
-							SET @responseMessage='User successfully logged in'
-							SELECT @return_Hex_value = '00'
-							SET @JobID = (SELECT JobID from Employee where EID = @userID)
-							UPDATE Employee SET EmployeeStatus = 1 WHERE EID = @userID
-							UPDATE Employee SET LogInTStamp = GETDATE() WHERE EID = @userID
-							return 0
-						END
-					ELSE IF(@status = 1)
-					-- Already logged in, so can't continue
-						BEGIN
-							SET @responseMessage='User is logged in somewhere'
-							SELECT @return_Hex_value = '03'
-							return 3
-						END
-				ELSE
-				BEGIN
-				   SET @responseMessage='Something went wrong'
-				   SELECT @return_Hex_value = 'ff'
-				END		
-			END
-		ELSE
-		-- Didn't find the user using email or PAN or National ID
-	  -- Wrong Email
-			BEGIN
-				SET @responseMessage='Invalid Email / PAN / National ID'
-				SELECT @return_Hex_value = '01'
-				return 1
-			END
-	END TRY
-	BEGIN CATCH
-			SELECT @return_Hex_value='FF', @responseMessage=ERROR_MESSAGE()
-			return -1;
-	END CATCH
+				-- Didn't find the user using email or PAN or National ID
+				-- Wrong Email
+					BEGIN
+						SET @responseMessage='Invalid Email / PAN / National ID'
+						SELECT @return_Hex_value = '01'
+						return 1
+					END
+			END TRY
+			BEGIN CATCH
+					SELECT @return_Hex_value='FF', @responseMessage=ERROR_MESSAGE()
+					return -1;
+			END CATCH
+		END
+	ELSE 
+		return -1
 END
 
 --(3) Logout --
@@ -521,26 +533,31 @@ CREATE PROC usp_Employee_Logout
 WITH ENCRYPTION
 AS
 BEGIN
-	BEGIN TRY
-		IF EXISTS (SELECT TOP 1 EID FROM Employee WHERE EID=@userID)
-			BEGIN
-				UPDATE Employee SET EmployeeStatus = 0 WHERE EID = @userID
-				SET @responseMessage='Successfuly Logged Out'
-				SELECT @return_Hex_value = '00'
-				return 0
-			END
-		ELSE
-		-- Didn't find the user
-			BEGIN
-				SET @responseMessage='Invalid User ID'
-				SELECT @return_Hex_value = '01'
-				return 1
-			END
-	END TRY
-	BEGIN CATCH
-		SELECT @return_Hex_value='FF', @responseMessage=ERROR_MESSAGE()
-		return -1;
-	END CATCH
+	IF (@userID IS NOT NULL)
+		BEGIN
+			BEGIN TRY
+				IF EXISTS (SELECT TOP 1 EID FROM Employee WHERE EID=@userID)
+					BEGIN
+						UPDATE Employee SET EmployeeStatus = 0 WHERE EID = @userID
+						SET @responseMessage='Successfuly Logged Out'
+						SELECT @return_Hex_value = '00'
+						return 0
+					END
+				ELSE
+				-- Didn't find the user
+					BEGIN
+						SET @responseMessage='Invalid User ID'
+						SELECT @return_Hex_value = '01'
+						return 1
+					END
+			END TRY
+			BEGIN CATCH
+				SELECT @return_Hex_value='FF', @responseMessage=ERROR_MESSAGE()
+				return -1;
+			END CATCH
+		END
+	ELSE
+		return -1
 END
 
 -- END of Employee SP --
