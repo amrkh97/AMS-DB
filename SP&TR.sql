@@ -395,25 +395,25 @@ AS
 --(1) Register --
 GO
 CREATE PROC usp_Employee_Register
-	@Fname nvarchar(32) = NULL,
-	@Lname nvarchar(32) = NULL,
+	@Fname NVARCHAR(32) = NULL,
+	@Lname NVARCHAR(32) = NULL,
 	@BDate Date = NULL,
-	@Email nvarchar(128),
-	@HashPassword nvarchar(128),
-	@Gender nvarchar(1) = NULL,
-	@ContactNumber nvarchar(64) = NULL,
-	@Country nvarchar(32) = NULL,
-    @City nvarchar(32) = NULL,
-    @AddressState nvarchar(32) = NULL,
-    @AddressStreet nvarchar(64) = NULL,
-    @AddressPcode VARCHAR(20) = NULL,
-    @PAN nvarchar(20) = NULL,
-    @NaitonalID nvarchar(14) = NULL,
-    @LogInTStamp DATETIME = NULL,
-    @LogInGPS nvarchar(20) = NULL,
-    @SuperSSN INT = NULL,
+	@Email NVARCHAR(128),
+	@HashPassword NVARCHAR(128),
+	@Gender NVARCHAR(1) = NULL,
+	@ContactNumber NVARCHAR(64) = NULL,
+	@Country NVARCHAR(32) = NULL,
+  @City NVARCHAR(32) = NULL,
+  @AddressState NVARCHAR(32) = NULL,
+  @AddressStreet NVARCHAR(64) = NULL,
+  @AddressPcode VARCHAR(20) = NULL,
+  @PAN NVARCHAR(20) = NULL,
+  @NationalID NVARCHAR(14) = NULL,
+  @LogInTStamp DATETIME = NULL,
+  @LogInGPS NVARCHAR(20) = NULL,
+  @SuperSSN INT = NULL,
 	@JobID INT = NULL,
-    @Photo VARBINARY(MAX) = NULL,
+  @Photo VARBINARY(MAX) = NULL,
 	@return_Hex_value NVARCHAR(2)='FF' OUTPUT,
 	@responseMessage NVARCHAR(128)='' OUTPUT
 WITH ENCRYPTION
@@ -425,15 +425,15 @@ BEGIN
 		IF NOT EXISTS (SELECT TOP 1 EID FROM Employee WHERE Email=@Email)
 			BEGIN
 					INSERT INTO Employee (Fname, Lname, BDate, Email, HashPassword, Gender, ContactNumber, Country, 
-					City, AddressState, AddressStreet, AddressPcode, PAN, NaitonalID, LogInTStamp, LogInGPS, SuperSSN, JobID, Photo)
+					City, AddressState, AddressStreet, AddressPcode, PAN, NationalID, LogInTStamp, LogInGPS, SuperSSN, JobID, Photo)
 					VALUES (@Fname,@Lname,@BDate,@Email,HASHBYTES('SHA1', @HashPassword),@Gender,@ContactNumber,@Country ,
-					@City ,@AddressState ,@AddressStreet ,@AddressPcode ,@PAN,@NaitonalID ,@LogInTStamp,@LogInGPS ,@SuperSSN ,@JobID ,@Photo)
+					@City ,@AddressState ,@AddressStreet ,@AddressPcode ,@PAN,@NationalID ,@LogInTStamp,@LogInGPS ,@SuperSSN ,@JobID ,@Photo)
 					SELECT @return_Hex_value='00',@responseMessage='User Signed Up Successfully'
 					
 			END
 		ELSE
 			BEGIN
-				SELECT @return_Hex_value='04',@responseMessage='Email Already Exists'
+				SELECT @return_Hex_value='04', @responseMessage='Email Already Exists'
 				return 4;
 			END
 
@@ -446,41 +446,102 @@ END
 --(2) Login --
 GO
 CREATE PROC usp_Employee_Login 
-	@EmailOrPAN nvarchar(128),
-	@HashPassword nvarchar(128),
+	@EmailOrPAN NVARCHAR(128),
+	@HashPassword NVARCHAR(128),
 	@return_Hex_value NVARCHAR(2)='FF' OUTPUT,
-	@responseMessage NVARCHAR(128)='' OUTPUT
+	@responseMessage NVARCHAR(128)='' OUTPUT,
+	@JobID NVARCHAR(64) OUTPUT
 WITH ENCRYPTION
 AS
 BEGIN
-    SET NOCOUNT ON
-    DECLARE @userID INT
+	SET NOCOUNT ON
+	DECLARE @userID INT
+	DECLARE @status INT
 	BEGIN TRY
-		IF EXISTS (SELECT TOP 1 EID FROM Employee WHERE Email=@EmailOrPAN OR PAN = @EmailOrPAN)
+		IF EXISTS (SELECT TOP 1 EID FROM Employee WHERE Email=@EmailOrPAN OR PAN = @EmailOrPAN OR NationalID=@EmailOrPAN)
+		-- Found the user using email or PAN or National ID
 			BEGIN
-			   SET @userID=(SELECT EID FROM Employee WHERE (Email=@EmailOrPAN OR PAN = @EmailOrPAN) AND HashPassword=HASHBYTES('SHA1', @HashPassword))
-			   IF(@userID IS NULL)
-				 BEGIN
-				   SET @responseMessage='Incorrect password'
-				   SELECT @return_Hex_value = '02'
-				   return 2
-				 END
-			   ELSE 
-				   SET @responseMessage='User successfully logged in'
-				   SELECT @return_Hex_value = '00'
+				SET @userID = (SELECT EID FROM Employee WHERE (Email=@EmailOrPAN OR PAN = @EmailOrPAN OR NationalID=@EmailOrPAN) AND HashPassword=HASHBYTES('SHA1', @HashPassword))
+				IF(@userID IS NULL)
+				-- Worng Password
+					BEGIN
+						SET @responseMessage='Incorrect password'
+						SELECT @return_Hex_value = '02'
+						return 2
+					END
+				ELSE
+				-- Correct password, so check if he's already logged in
+					SET @status=(SELECT EmployeeStatus from Employee WHERE EID=@userID)
+					IF(@status = 0)
+					-- Not logged in, so login successful, send his type to backend
+					-- And set status to 1
+						BEGIN
+							SET @responseMessage='User successfully logged in'
+							SELECT @return_Hex_value = '00'
+							SET @JobID = (SELECT JobID from Employee where EID = @userID)
+							UPDATE Employee SET EmployeeStatus = 1 WHERE EID = @userID
+							return 0
+						END
+					ELSE IF(@status = 1)
+					-- Already logged in, so can't continue
+						BEGIN
+							SET @responseMessage='User is logged in somewhere'
+							SELECT @return_Hex_value = '03'
+							return 3
+						END
+				ELSE
+				BEGIN
+				   SET @responseMessage='Something went wrong'
+				   SELECT @return_Hex_value = 'ff'
+				END		
 			END
-       ELSE 
+		ELSE
+		-- Didn't find the user using email or PAN or National ID
+	  -- Wrong Email
 			BEGIN
-			   SET @responseMessage='Invalid email'
-			   SELECT @return_Hex_value = '01'
-			   return 1
+				SET @responseMessage='Invalid Email / PAN / National ID'
+				SELECT @return_Hex_value = '01'
+				return 1
 			END
 	END TRY
 	BEGIN CATCH
-			SELECT @return_Hex_value='FF',@responseMessage=ERROR_MESSAGE()
+			SELECT @return_Hex_value='FF', @responseMessage=ERROR_MESSAGE()
 			return -1;
 	END CATCH
 END
+
+--(3) Logout --
+GO
+CREATE PROC usp_Employee_Logout
+	@userID INT,
+	@return_Hex_value NVARCHAR(2)='FF' OUTPUT,
+	@responseMessage NVARCHAR(128)='' OUTPUT
+-- ASK --
+WITH ENCRYPTION
+AS
+BEGIN
+	BEGIN TRY
+		IF EXISTS (SELECT TOP 1 EID FROM Employee WHERE EID=@userID)
+			BEGIN
+				UPDATE Employee SET EmployeeStatus = 0 WHERE EID = @userID
+				SET @responseMessage='Successfuly Logged Out'
+				SELECT @return_Hex_value = '00'
+				return 0
+			END
+		ELSE
+		-- Didn't find the user
+			BEGIN
+				SET @responseMessage='Invalid User ID'
+				SELECT @return_Hex_value = '01'
+				return 1
+			END
+	END TRY
+	BEGIN CATCH
+		SELECT @return_Hex_value='FF', @responseMessage=ERROR_MESSAGE()
+		return -1;
+	END CATCH
+END
+
 -- END of Employee SP --
 ------------------------------------------------------------------------------------
 ------------------------------------------------------------------------------------

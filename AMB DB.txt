@@ -23,7 +23,7 @@ CREATE TABLE IF NOT EXISTS Employee
     DOB DATE,
     PAN VARCHAR(16),
     Name VARCHAR(16),
-    NaitonalID VARCHAR(14),
+    NationalID VARCHAR(14),
     LogInTStamp DATETIME,
     LogInGPS VARCHAR(25),
     UserStatus VARCHAR(8),
