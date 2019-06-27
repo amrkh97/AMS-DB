@@ -47,10 +47,17 @@ CREATE PROC usp_Medicine_Insert
     @ActiveComponent NVARCHAR(MAX) = NULL
 as
 	IF (@BarCode IS NOT NULL AND @Name IS NOT NULL)
-		BEGIN
+		Begin
+		if Exists (Select * from Medicine where BarCode=@BarCode )
+			begin 
+			return -1
+			end
+      else
+          begin
 			INSERT INTO Medicine (BarCode,CountInStock,MedicineName,Price,Implications,MedicineUsage,SideEffects,ActiveComponent)
 			values (@BarCode,@CountInStock,@Name,@Price,@Implications,@MedicineUsage,@SideEffects,@ActiveComponent)
-		END
+           end
+      END
 	ELSE
 		return -1
 -- (4) Update Medicine --
