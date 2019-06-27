@@ -1,3 +1,4 @@
+USE KAN_AMO;
 GO
 CREATE TABLE EntityStatus
 (
