@@ -513,19 +513,76 @@ as
 
 --(3) Get Report by ReportIssueTime --
 GO
-create proc usp_Reports_SelectByReportIssueTime  @ReportIssueTime NVARCHAR(64)
+Use KAN_AMO
+GO
+
+create proc usp_Reports_SelectByReportIssueTime  @ReportIssueTime DATETIME
 as
 	IF (@ReportIssueTime IS NOT NULL)
-	BEGIN
-		select * from Reports
-		where ReportIssueTime = @ReportIssueTime
+		BEGIN
+			IF  (NOT(DatePart(yy,@ReportIssueTime)=0)) AND 
+			(NOT(DatePart(mm,@ReportIssueTime) = 0)) AND 
+			(NOT(DatePart(dd,@ReportIssueTime)=0)) AND 
+			(NOT(DatePart(hh,@ReportIssueTime) =0)) AND 
+			(NOT(DatePart(Mi,@ReportIssueTime) =0))
+			BEGIN	
+			select * from Reports
+			where (DatePart(yy,ReportIssueTime) = DatePart(yy,@ReportIssueTime)) and
+			(DatePart(mm,ReportIssueTime) = DatePart(mm,@ReportIssueTime))
+			and (DatePart(dd,ReportIssueTime) = DatePart(dd,@ReportIssueTime)
+			and (DatePart(hh,ReportIssueTime) = DatePart(hh,@ReportIssueTime))
+			and (DatePart(mi,ReportIssueTime) = DatePart(mi,@ReportIssueTime)) )
+		END
+		ELSE IF  (NOT(DatePart(yy,@ReportIssueTime)=0)) AND 
+			(NOT(DatePart(mm,@ReportIssueTime) = 0)) AND 
+			(NOT(DatePart(dd,@ReportIssueTime)=0)) AND 
+			(NOT(DatePart(hh,@ReportIssueTime) =0)) AND
+			(DatePart(Mi,@ReportIssueTime)=0)
+			BEGIN	
+			select * from Reports
+			where (DatePart(yy,ReportIssueTime) = DatePart(yy,@ReportIssueTime)) and
+			(DatePart(mm,ReportIssueTime) = DatePart(mm,@ReportIssueTime))
+			and (DatePart(dd,ReportIssueTime) = DatePart(dd,@ReportIssueTime)
+			and (DatePart(hh,ReportIssueTime) = DatePart(hh,@ReportIssueTime))) 
+		END
+		ELSE IF  (NOT(DatePart(yy,@ReportIssueTime)=0)) AND 
+			(NOT(DatePart(mm,@ReportIssueTime) = 0)) AND 
+			(NOT(DatePart(dd,@ReportIssueTime)=0)) AND 
+			(DatePart(hh,@ReportIssueTime)=0) AND 
+			(DatePart(mi,@ReportIssueTime)=0)
+			BEGIN	
+			select * from Reports
+			where (DatePart(yy,ReportIssueTime) = DatePart(yy,@ReportIssueTime)) and
+			(DatePart(mm,ReportIssueTime) = DatePart(mm,@ReportIssueTime))
+			and (DatePart(dd,ReportIssueTime) = DatePart(dd,@ReportIssueTime) )
+		END
+		ELSE IF  (NOT(DatePart(yy,@ReportIssueTime) = 0)) AND 
+			(NOT(DatePart(mm,@ReportIssueTime) = 0)) AND 
+			(DatePart(dd,@ReportIssueTime) = 0) AND 
+			(DatePart(hh,@ReportIssueTime) = 0) AND 
+			(DatePart(Mi,@ReportIssueTime) = 0)
+			BEGIN	
+			select * from Reports
+			where (DatePart(yy,ReportIssueTime) = DatePart(yy,@ReportIssueTime)) and
+			(DatePart(mm,ReportIssueTime) = DatePart(mm,@ReportIssueTime)) 
+		END
+			ELSE IF  (NOT(DatePart(yy,@ReportIssueTime)=0)) AND 
+			(DatePart(mm,@ReportIssueTime)=0) AND 
+			(DatePart(dd,@ReportIssueTime)=0) AND 
+			(DatePart(hh,@ReportIssueTime)=0) AND 
+			(DatePart(Mi,@ReportIssueTime)=0)
+			BEGIN	
+			select * from Reports
+			where DatePart(yy,ReportIssueTime) = DatePart(yy,@ReportIssueTime)
 	END
+	end
 	ELSE
 		RETURN -1
 
+
 --(4) Get Report by ReportStatus --
 GO
-create proc usp_Reports_SelectByPatientID  @PatientID NVARCHAR(64)
+create proc usp_Reports_SelectByPatientID  @PatientID INT
 as
 	IF (@PatientID IS NOT NULL)
 	BEGIN
