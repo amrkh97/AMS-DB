@@ -16,8 +16,8 @@ GO
 Create proc usp_Patient_Locations
 @UserID INT,
 @LocationUser NVARCHAR(100),
-@Lat decimal(9, 6),
-@Long decimal(9, 6),
+@Lat NVARCHAR(32),
+@Long NVARCHAR(32),
 @HexCode NVARCHAR(2) OUTPUt
 AS
 Begin
