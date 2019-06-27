@@ -220,7 +220,7 @@ CREATE TABLE Employee
 	NationalID NVARCHAR(14),
 	LogInTStamp DATETIME,
 	LogInGPS NVARCHAR(20),
-	EmpolyeeStatus NVARCHAR(32) DEFAULT (1),
+	EmpolyeeStatus NVARCHAR(32) DEFAULT (00),
 	SuperSSN INT,
 	JobID INT,
 	Photo NVARCHAR(MAX),

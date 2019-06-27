@@ -480,6 +480,7 @@ BEGIN
 							SELECT @return_Hex_value = '00'
 							SET @JobID = (SELECT JobID from Employee where EID = @userID)
 							UPDATE Employee SET EmployeeStatus = 1 WHERE EID = @userID
+							UPDATE Employee SET LogInTStamp = GETDATE() WHERE EID = @userID
 							return 0
 						END
 					ELSE IF(@status = 1)
