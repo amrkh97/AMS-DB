@@ -1,5 +1,18 @@
 USE KAN_AMO;
 GO
+
+Create proc usp_Patient_getAllLocations
+@UserID INT
+AS
+BEGIN
+SELECT * FROM Locations
+INNER JOIN dbo.PatientLocations ON PatientLocations.LocationID = Locations.LocationID
+WHERE PatientID=@UserID
+
+END
+GO
+
+
 Create proc usp_Patient_Locations
 @UserID INT,
 @LocationUser NVARCHAR(100),
