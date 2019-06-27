@@ -408,7 +408,7 @@ CREATE PROC usp_Employee_Register
   @AddressStreet nvarchar(64) = NULL,
   @AddressPcode VARCHAR(20) = NULL,
   @PAN nvarchar(20) = NULL,
-  @NaitonalID nvarchar(14) = NULL,
+  @NationalID nvarchar(14) = NULL,
   @LogInTStamp DATETIME = NULL,
   @LogInGPS nvarchar(20) = NULL,
   @SuperSSN INT = NULL,
@@ -425,9 +425,9 @@ BEGIN
 		IF NOT EXISTS (SELECT TOP 1 EID FROM Employee WHERE Email=@Email)
 			BEGIN
 					INSERT INTO Employee (Fname, Lname, BDate, Email, HashPassword, Gender, ContactNumber, Country, 
-					City, AddressState, AddressStreet, AddressPcode, PAN, NaitonalID, LogInTStamp, LogInGPS, SuperSSN, JobID, Photo)
+					City, AddressState, AddressStreet, AddressPcode, PAN, NationalID, LogInTStamp, LogInGPS, SuperSSN, JobID, Photo)
 					VALUES (@Fname,@Lname,@BDate,@Email,HASHBYTES('SHA1', @HashPassword),@Gender,@ContactNumber,@Country ,
-					@City ,@AddressState ,@AddressStreet ,@AddressPcode ,@PAN,@NaitonalID ,@LogInTStamp,@LogInGPS ,@SuperSSN ,@JobID ,@Photo)
+					@City ,@AddressState ,@AddressStreet ,@AddressPcode ,@PAN,@NationalID ,@LogInTStamp,@LogInGPS ,@SuperSSN ,@JobID ,@Photo)
 					SELECT @return_Hex_value='00',@responseMessage='User Signed Up Successfully'
 					
 			END
@@ -458,10 +458,10 @@ BEGIN
 	DECLARE @userID INT
 	DECLARE @status INT
 	BEGIN TRY
-		IF EXISTS (SELECT TOP 1 EID FROM Employee WHERE Email=@EmailOrPAN OR PAN = @EmailOrPAN OR NaitonalID=@EmailOrPAN)
+		IF EXISTS (SELECT TOP 1 EID FROM Employee WHERE Email=@EmailOrPAN OR PAN = @EmailOrPAN OR NationalID=@EmailOrPAN)
 		-- Found the user using email or PAN or National ID
 			BEGIN
-				SET @userID = (SELECT EID FROM Employee WHERE (Email=@EmailOrPAN OR PAN = @EmailOrPAN OR NaitonalID=@EmailOrPAN) AND HashPassword=HASHBYTES('SHA1', @HashPassword))
+				SET @userID = (SELECT EID FROM Employee WHERE (Email=@EmailOrPAN OR PAN = @EmailOrPAN OR NationalID=@EmailOrPAN) AND HashPassword=HASHBYTES('SHA1', @HashPassword))
 				IF(@userID IS NULL)
 				-- Worng Password
 					BEGIN
