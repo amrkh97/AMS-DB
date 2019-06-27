@@ -207,9 +207,11 @@ begin
 		UPDATE PharmaCompany
 		SET CompanyStatus = 99
 		where CompanyID = @CompID
+		--Deleteion Succesful
 		set @HexCode = '00'
 	END
 	ELSE
+	--Deletion Failed
 	set @HexCode = '01'
 END	
 --
