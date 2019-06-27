@@ -132,15 +132,42 @@ CREATE PROC usp_PharmaCompany_Insert
 	@CompanyName NVARCHAR(64),
     @ContactPerson NVARCHAR(32) = NULL,
     @CompanyAddress NVARCHAR(128) = NULL,
-    @CompanyPhone NVARCHAR(32) = NULL
+    @CompanyPhone NVARCHAR(32) = NULL,
+	@HexCode NVARCHAR(2) OUTPUT
 as
 	IF (@CompanyName IS NOT NULL)
 		BEGIN
+			if not exists (select top 1 * from PharmaCompany where PharmaCompany.CompanyName = @CompanyName)
+			begin
 			INSERT INTO PharmaCompany (CompanyName,ContactPerson,CompanyAddress,CompanyPhone)
 			values (@CompanyName,@ContactPerson,@CompanyAddress,@CompanyPhone)
-		END
+			--Insertion Succesful.
+			set @HexCode = '00'
+			RETURN '00'
+			END
+			else
+			BEGIN
+			--Pharma Company Already Exists
+			set @HexCode = '01'
+			if((select CompanyStatus from PharmaCompany where CompanyName=@CompanyName)=99)
+			begin
+			update PharmaCompany
+			set CompanyStatus = 2,
+			CompanyName = ISNULL(@CompanyName,CompanyName), 
+			ContactPerson = ISNULL(@ContactPerson,ContactPerson),
+			CompanyAddress = ISNULL(@CompanyAddress,CompanyAddress),
+			CompanyPhone = ISNULL(@CompanyPhone,CompanyPhone)
+			where CompanyName = @CompanyName
+			RETURN '01'
+			END
+		end
+	END
 	ELSE
-		return -1
+	BEGIN
+		--Insertion Failed because Company name is Null.
+		set @HexCode = '02'
+		return '02'
+		END
 -- (4) Update Company By ID --
 GO
 CREATE PROC usp_PharmaCompany_Update 
@@ -148,7 +175,8 @@ CREATE PROC usp_PharmaCompany_Update
 	@CompanyName NVARCHAR(64) = NULL,
     @ContactPerson NVARCHAR(32) = NULL,
     @CompanyAddress NVARCHAR(128) = NULL,
-    @CompanyPhone NVARCHAR(32) = NULL
+    @CompanyPhone NVARCHAR(32) = NULL,
+	@HexCode NVARCHAR(2) OUTPUT
 as
 	IF (@CompID IS NOT NULL)
 		BEGIN
@@ -159,21 +187,31 @@ as
 			CompanyPhone = ISNULL(@CompanyPhone,CompanyPhone),
 			CompanyStatus = 2
 			WHERE CompanyID = @CompID
+			--Data Updated Succesfully
+		set @HexCode = '00'		
 		END
 	ELSE
-		return -1
+	begin
+		--Error in updating, Company ID doesn't exist
+		set @HexCode = '01'
+		
+	END
 -- (5) Delete Company By ID --
 GO
-create proc usp_PharmaCompany_Delete  @CompID INT
+create proc usp_PharmaCompany_Delete  @CompID INT,
+@HexCode NVARCHAR(2) OUTPUT
 as
+begin
 	IF (@CompID IS NOT NULL)
 	BEGIN
 		UPDATE PharmaCompany
 		SET CompanyStatus = 99
 		where CompanyID = @CompID
+		set @HexCode = '00'
 	END
 	ELSE
-		return -1
+	set @HexCode = '01'
+END	
 --
 -- Company Stored Procedure End --
 ------------------------------------------------------------------------------------
