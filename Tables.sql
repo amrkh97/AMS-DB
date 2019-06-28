@@ -272,7 +272,7 @@ CREATE TABLE Responses
 	RespAlarmLevel INT,
 	PersonCount NVARCHAR(32),
 
-	FOREIGN KEY (AssociatedVehivleVIN) REFERENCES AmbulanceVehicle(VIN),
+	FOREIGN KEY (AssociatedVehicleVIN) REFERENCES AmbulanceVehicle(VIN),
 	FOREIGN KEY (StartLocationID) REFERENCES Locations(LocationID),
 	FOREIGN KEY (PickLocationID) REFERENCES Locations(LocationID),
 	FOREIGN KEY (DropLocationID) REFERENCES Locations(LocationID),
