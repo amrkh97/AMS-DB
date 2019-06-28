@@ -1,4 +1,3 @@
-USE KAN_AMO;
 GO
 
 Create proc usp_Patient_getAllLocations
