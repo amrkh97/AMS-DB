@@ -1,10 +1,4 @@
-Use KAN_AMO;
---Comment: Entity Status was removed bacuse it caused
---errors with the Foreign key relationship on Insert or update.
---It was also too generic to be of use as each table has
---its own Status values.
-
-
+USE KAN_AMO;
 --GO
 --CREATE TABLE EntityStatus
 --(
@@ -89,7 +83,7 @@ CREATE TABLE Medicine
 	ActiveComponent NVARCHAR(MAX),
 	MedicineStatus NVARCHAR(32) DEFAULT(00)
 
-		PRIMARY KEY(BarCode),
+	PRIMARY KEY(BarCode),
 	--FOREIGN KEY(MedicineStatus) REFERENCES EntityStatus(EntityStatusID),
 	--CHECK (Price > 0)
 
@@ -335,8 +329,8 @@ CREATE TABLE Patient
 	PatientStatus NVARCHAR(32) DEFAULT (00),
 	PatientNationalID INT
 
-		--FOREIGN KEY(PatientStatus) REFERENCES EntityStatus(EntityStatusID),
-		PRIMARY KEY (PatientID),
+	--FOREIGN KEY(PatientStatus) REFERENCES EntityStatus(EntityStatusID),
+	PRIMARY KEY (PatientID),
 
 );
 
