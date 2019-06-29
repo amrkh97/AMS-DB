@@ -167,7 +167,7 @@ CREATE TABLE AmbulanceVehicle
 	VehicleStatus NVARCHAR(32) DEFAULT(00),
 	AmbulanceVehiclePicture NVARCHAR(500),
 
-	PRIMARY KEY ([VIN]),
+	PRIMARY KEY (VIN),
 	--FOREIGN KEY (VehicleStatus) REFERENCES EntityStatus (EntityStatusID),
 	FOREIGN KEY (AssignedYPID) REFERENCES Yellopad (YelloPadID)
 );
@@ -178,7 +178,7 @@ CREATE TABLE BatchDistributionMap
 	BID INT,
 	AmbVIN INT
 
-		PRIMARY KEY (BID,AmbVIN),
+		--PRIMARY KEY (BID,AmbVIN),
 	FOREIGN KEY (BID) REFERENCES Batch(BatchID),
 	FOREIGN KEY (AmbVIN) REFERENCES AmbulanceVehicle(VIN),
 	--CONSTRAINT chk_BatchDistributionMap_DistributedAmtPositive CHECK(DistributedAmt > 0 )
