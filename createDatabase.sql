@@ -1,5 +1,4 @@
 USE KAN_AMO;
-Use KAN_AMO;
 --Comment: Entity Status was removed bacuse it caused
 --errors with the Foreign key relationship on Insert or update.
 --It was also too generic to be of use as each table has
