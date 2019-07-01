@@ -14,7 +14,7 @@ CREATE OR ALTER PROC usp_Employee_Login
 WITH ENCRYPTION
 AS
 BEGIN
-	SET NOCOUNT ON
+	SET NOCOUNT on
 	DECLARE @userID INT
 	DECLARE @status INT
 	
@@ -22,7 +22,7 @@ BEGIN
 	BEGIN
 		BEGIN TRY
 			
-			IF EXISTS (SELECT TOP 1 EID FROM Employee WHERE Email=@EmailOrPAN OR PAN = @EmailOrPAN OR NationalID=@EmailOrPAN)
+			IF EXISTS (SELECT TOP 1 EID FROM Employee WHERE (Email=@EmailOrPAN OR PAN = @EmailOrPAN OR NationalID=@EmailOrPAN))
 			BEGIN
 				-- Found the user using email or PAN or National ID
 				SET @userID = (SELECT EID FROM Employee WHERE (Email=@EmailOrPAN OR PAN = @EmailOrPAN OR NationalID=@EmailOrPAN) AND (HashPassword=@HashPassword))
@@ -76,20 +76,20 @@ BEGIN
 			-- Wrong Email
 				SET @responseMessage='No user found with given Email or PAN or National ID'
 				SELECT @return_Hex_value = 'FF'
-				return -1
+			
 			END
 		END TRY
 		
 		BEGIN CATCH
 			SELECT @return_Hex_value='FC', @responseMessage='CATCH BLOCK: ' + ERROR_MESSAGE()
-			return -1
+			
 		END CATCH
 	END
 	
 	ELSE
 	BEGIN
 		SELECT @return_Hex_value='FD', @responseMessage='FAILED: Email or Password is NULL'
-		return -1
+
 	END
 END
 
@@ -104,10 +104,12 @@ AS
 BEGIN
 	SET NOCOUNT ON
 	DECLARE @status INT
-	IF (@userID IS NOT NULL)
+	-- IF (@userID IS NOT NULL)
+	IF (@dummyToken IS NOT NULL)
 	BEGIN
 		BEGIN TRY
-			IF EXISTS (SELECT TOP 1 EID FROM Employee WHERE EID=@userID)
+			-- IF EXISTS (SELECT TOP 1 EID FROM Employee WHERE EID=@userID)
+			IF EXISTS (SELECT TOP 1 Email FROM Employee WHERE (Email=@dummyToken OR PAN=@dummyToken OR NationalID=@dummyToken))
 			BEGIN
 				-- Found the user using userID
 				-- SET @status=(SELECT EmployeeStatus from Employee WHERE EID=@userID)
@@ -151,13 +153,13 @@ BEGIN
 		END TRY
 		BEGIN CATCH
 			SELECT @return_Hex_value='FC', @responseMessage='CATCH BLOCK: ' + ERROR_MESSAGE()
-			return -1;
+			
 		END CATCH
 	END
 	ELSE
 	BEGIN
 		SELECT @return_Hex_value='FD', @responseMessage='FAILED: User ID is NULL'
-		return -1
+		
 	END
 END
 
@@ -210,13 +212,39 @@ BEGIN
 		END TRY
 		BEGIN CATCH
 			SELECT @return_Hex_value='FC', @responseMessage='CATCH BLOCK: ' + ERROR_MESSAGE()
-			return -1;
+			
 		END CATCH
 	END
 	ELSE
 	BEGIN
 		-- Email or Password is NULL
 		SELECT @return_Hex_value='FD', @responseMessage='FAILED: Email or Password is NULL'
-		return -1
+		
 	END
 END
+
+GO
+DECLARE @return_Hex_value NVARCHAR(2),
+        @responseMessage NVARCHAR(128),
+        @JobID NVARCHAR(64),
+        @employeeID NVARCHAR(64);
+EXEC dbo.usp_Employee_Login @EmailOrPAN = N'124578965321457894',                            -- nvarchar(128)
+                            @HashPassword = N'1U0E50APQG2RI37ND48UF75CGMNZ895Y5Q8JXDD2184VUCSVXS2G7EPUOOXICBHGB4MRUNQ0R6S63AH3US1F6ORQ1EV8FUPQRNKQQ00922P1MIRE6',                          -- nvarchar(128)
+                            @return_Hex_value = @return_Hex_value OUTPUT, -- nvarchar(2)
+                            @responseMessage = @responseMessage OUTPUT,   -- nvarchar(128)
+                            @JobID = @JobID OUTPUT,                       -- nvarchar(64)
+                            @employeeID = @employeeID OUTPUT              -- nvarchar(64)
+							PRINT @responseMessage
+							PRINT @return_Hex_value
+							PRINT @JobID
+							PRINT @employeeID
+
+GO
+DECLARE @return_Hex_value NVARCHAR(2),
+        @responseMessage NVARCHAR(128);
+EXEC dbo.usp_Employee_Logout @dummyToken = N'124578965321457894',                            -- nvarchar(128)
+                             @return_Hex_value = @return_Hex_value OUTPUT, -- nvarchar(2)
+                             @responseMessage = @responseMessage OUTPUT    -- nvarchar(128)
+							 PRINT @responseMessage
+							PRINT @return_Hex_value
+
