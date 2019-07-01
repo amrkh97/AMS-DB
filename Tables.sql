@@ -254,7 +254,7 @@ CREATE TABLE Employee
 
 CREATE TABLE Incident
 (
-	IncidentSequenceNumber INT,
+	IncidentSequenceNumber INT IDENTITY NOT NULL,
 	CreationTime DATETIME DEFAULT (GETDATE()),
 	IncidentType INT,
 	IncidentPriority INT,
