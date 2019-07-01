@@ -67,5 +67,5 @@ CREATE OR ALTER PROC usp_Incident_Insert
 		END
 	END
 	GO
-	EXEC usp_Incident_Insert @IncidentType=1,@IncidentPriority=4,@IncidentLocationID=5
+	EXEC usp_Incident_Insert @IncidentType=3,@IncidentPriority=2,@IncidentLocationID=4
 	
