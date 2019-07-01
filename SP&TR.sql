@@ -52,7 +52,13 @@ as
 BEGIN TRY
 
 	IF (@BarCode IS NOT NULL AND @Name IS NOT NULL)
-		BEGIN
+		Begin
+		if Exists (Select * from Medicine where BarCode=@BarCode )
+			begin 
+			return -1
+			end
+      else
+          begin
 			INSERT INTO Medicine (BarCode,CountInStock,MedicineName,Price,Implications,MedicineUsage,SideEffects,ActiveComponent)
 			values (@BarCode,@CountInStock,@Name,@Price,@Implications,@MedicineUsage,@SideEffects,@ActiveComponent)
 		SELECT @responseCode = '00'
