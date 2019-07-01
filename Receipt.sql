@@ -5,7 +5,6 @@ CREATE PROC usp_Receipt_Insert
 	@RespSQN NVARCHAR(64),
 	@CasheirSSN INT,
 	@FTPFileLocation NVARCHAR(128),
-	@ReceiptStatus NVARCHAR(32) = 1,
 	@Cost NVARCHAR(32),
 	@PaymentMethod NVARCHAR(32)= '00',
     @responseCode NVARCHAR(2)='FF' OUTPUT,
