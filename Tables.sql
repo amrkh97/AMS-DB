@@ -87,9 +87,9 @@ CREATE TABLE Medicine
 	MedicineUsage NVARCHAR(MAX),
 	SideEffects NVARCHAR(MAX),
 	ActiveComponent NVARCHAR(MAX),
-	MedicineStatus NVARCHAR(32) DEFAULT(00)
+	MedicineStatus NVARCHAR(32) DEFAULT(00),
 
-		PRIMARY KEY(BarCode),
+	PRIMARY KEY(BarCode)
 	--FOREIGN KEY(MedicineStatus) REFERENCES EntityStatus(EntityStatusID),
 	--CHECK (Price > 0)
 
@@ -123,12 +123,23 @@ CREATE TABLE Batch
 	Quantity NVARCHAR(64),
 	ExpiryDate DATE,
 	OrderDate DATETIME DEFAULT getdate(),
-	BatchStatus NVARCHAR(32) DEFAULT(00)
-		PRIMARY KEY(BatchID),
-	FOREIGN KEY (BatchMedBCode) REFERENCES Medicine(BarCode),
+	BatchStatus NVARCHAR(32) DEFAULT(00),
+	PRIMARY KEY(BatchID),
+	FOREIGN KEY (BatchMedBCode) REFERENCES Medicine(BarCode)
 	--FOREIGN KEY (BatchStatus) REFERENCES EntityStatus(EntityStatusID),
 	--CONSTRAINT chk_Batch_QuantityPositive CHECK(Quantity > 0 )
 );
+
+--TODO: Check the quantity element's type.
+CREATE TABLE BatchMedicine
+(
+	EntryID INT IDENTITY,
+	BatchID INT,
+	MedicineBCode NVARCHAR(64),
+	Quantity NVARCHAR(64),
+	FOREIGN KEY(BatchID) REFERENCES Batch(BatchID),
+	FOREIGN KEY(MedicineBCode) REFERENCES Medicine(BarCode)
+	);
 
 CREATE TABLE Yellopad
 (
@@ -184,7 +195,7 @@ CREATE TABLE BatchDistributionMap
 	BID INT,
 	AmbVIN INT
 
-	--PRIMARY KEY (BID,AmbVIN),
+		PRIMARY KEY (BID,AmbVIN),
 	FOREIGN KEY (BID) REFERENCES Batch(BatchID),
 	FOREIGN KEY (AmbVIN) REFERENCES AmbulanceVehicle(VIN),
 	--CONSTRAINT chk_BatchDistributionMap_DistributedAmtPositive CHECK(DistributedAmt > 0 )
@@ -234,7 +245,7 @@ CREATE TABLE Employee
 	Photo NVARCHAR(MAX),
 	Age as DATEDIFF(YEAR, BDate, GETDATE()),
 
-	--FOREIGN KEY (SuperSSN) REFERENCES Employee(EID),
+	FOREIGN KEY (SuperSSN) REFERENCES Employee(EID),
 	FOREIGN KEY (JobID) REFERENCES Jobs(JobID),
 	--FOREIGN KEY(EmployeeStatus) REFERENCES EntityStatus(EntityStatusID),
 	PRIMARY KEY (EID)
@@ -291,7 +302,7 @@ CREATE TABLE MedicineUsedPerResponse
 	BID INT,
 	AmbVIN INT
 
-		PRIMARY KEY (RespSQN,BID),
+	PRIMARY KEY (RespSQN,BID),
 	FOREIGN KEY (BID) REFERENCES Batch(BatchID),
 	FOREIGN KEY (AmbVIN) REFERENCES AmbulanceVehicle(VIN),
 	FOREIGN KEY (RespSQN) REFERENCES Responses(SequenceNumber),

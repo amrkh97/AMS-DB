@@ -1,4 +1,10 @@
 USE KAN_AMO;
+--Comment: Entity Status was removed bacuse it caused
+--errors with the Foreign key relationship on Insert or update.
+--It was also too generic to be of use as each table has
+--its own Status values.
+
+
 --GO
 --CREATE TABLE EntityStatus
 --(
@@ -81,9 +87,9 @@ CREATE TABLE Medicine
 	MedicineUsage NVARCHAR(MAX),
 	SideEffects NVARCHAR(MAX),
 	ActiveComponent NVARCHAR(MAX),
-	MedicineStatus NVARCHAR(32) DEFAULT(00)
+	MedicineStatus NVARCHAR(32) DEFAULT(00),
 
-	PRIMARY KEY(BarCode),
+	PRIMARY KEY(BarCode)
 	--FOREIGN KEY(MedicineStatus) REFERENCES EntityStatus(EntityStatusID),
 	--CHECK (Price > 0)
 
@@ -117,12 +123,23 @@ CREATE TABLE Batch
 	Quantity NVARCHAR(64),
 	ExpiryDate DATE,
 	OrderDate DATETIME DEFAULT getdate(),
-	BatchStatus NVARCHAR(32) DEFAULT(00)
-		PRIMARY KEY(BatchID),
-	FOREIGN KEY (BatchMedBCode) REFERENCES Medicine(BarCode),
+	BatchStatus NVARCHAR(32) DEFAULT(00),
+	PRIMARY KEY(BatchID),
+	FOREIGN KEY (BatchMedBCode) REFERENCES Medicine(BarCode)
 	--FOREIGN KEY (BatchStatus) REFERENCES EntityStatus(EntityStatusID),
 	--CONSTRAINT chk_Batch_QuantityPositive CHECK(Quantity > 0 )
 );
+
+--TODO: Check the quantity element's type.
+CREATE TABLE BatchMedicine
+(
+	EntryID INT IDENTITY,
+	BatchID INT,
+	MedicineBCode NVARCHAR(64),
+	Quantity NVARCHAR(64),
+	FOREIGN KEY(BatchID) REFERENCES Batch(BatchID),
+	FOREIGN KEY(MedicineBCode) REFERENCES Medicine(BarCode)
+	);
 
 CREATE TABLE Yellopad
 (
@@ -178,7 +195,7 @@ CREATE TABLE BatchDistributionMap
 	BID INT,
 	AmbVIN INT
 
-		--PRIMARY KEY (BID,AmbVIN),
+		PRIMARY KEY (BID,AmbVIN),
 	FOREIGN KEY (BID) REFERENCES Batch(BatchID),
 	FOREIGN KEY (AmbVIN) REFERENCES AmbulanceVehicle(VIN),
 	--CONSTRAINT chk_BatchDistributionMap_DistributedAmtPositive CHECK(DistributedAmt > 0 )
@@ -254,27 +271,23 @@ CREATE TABLE Incident
 CREATE TABLE Responses
 (
 	SequenceNumber NVARCHAR(64) NOT NULL,
-	AssociatedVehivleVIN INT NOT NULL,
+	AssociatedVehicleVIN INT NOT NULL,
 	CreationTime DATETIME DEFAULT (getdate()),
 	StartLocationID INT,
 	PickLocationID INT,
 	DropLocationID INT,
 	DestinationLocationID INT,
-	DriverSSN INT,
-	ParamedicSSN INT,
 	RespStatus NVARCHAR(32),
 	IncidentSQN NVARCHAR(64) NOT NULL,
 	PrimaryResponseSQN NVARCHAR(64),
 	RespAlarmLevel INT,
 	PersonCount NVARCHAR(32),
 
-	FOREIGN KEY (AssociatedVehivleVIN) REFERENCES AmbulanceVehicle(VIN),
+	FOREIGN KEY (AssociatedVehicleVIN) REFERENCES AmbulanceVehicle(VIN),
 	FOREIGN KEY (StartLocationID) REFERENCES Locations(LocationID),
 	FOREIGN KEY (PickLocationID) REFERENCES Locations(LocationID),
 	FOREIGN KEY (DropLocationID) REFERENCES Locations(LocationID),
 	FOREIGN KEY (DestinationLocationID) REFERENCES Locations(LocationID),
-	FOREIGN KEY (DriverSSN) REFERENCES Employee(EID),
-	FOREIGN KEY (ParamedicSSN) REFERENCES Employee(EID),
 	FOREIGN KEY (RespStatus) REFERENCES ResponseStatuses(ResponseStatusID),
 	FOREIGN KEY (IncidentSQN) REFERENCES Incident(IncidentSequenceNumber),
 	FOREIGN KEY (RespAlarmLevel) REFERENCES AlarmLevels(AlarmLevelID),
@@ -289,7 +302,7 @@ CREATE TABLE MedicineUsedPerResponse
 	BID INT,
 	AmbVIN INT
 
-		PRIMARY KEY (RespSQN,BID),
+	PRIMARY KEY (RespSQN,BID),
 	FOREIGN KEY (BID) REFERENCES Batch(BatchID),
 	FOREIGN KEY (AmbVIN) REFERENCES AmbulanceVehicle(VIN),
 	FOREIGN KEY (RespSQN) REFERENCES Responses(SequenceNumber),
@@ -329,8 +342,8 @@ CREATE TABLE Patient
 	PatientStatus NVARCHAR(32) DEFAULT (00),
 	PatientNationalID INT
 
-	--FOREIGN KEY(PatientStatus) REFERENCES EntityStatus(EntityStatusID),
-	PRIMARY KEY (PatientID),
+		--FOREIGN KEY(PatientStatus) REFERENCES EntityStatus(EntityStatusID),
+		PRIMARY KEY (PatientID),
 
 );
 
