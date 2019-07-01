@@ -191,9 +191,9 @@ BEGIN
 	BEGIN
 		-- Check email is not already used
 		BEGIN TRY
-			IF EXISTS (SELECT TOP 1 Email FROM Employee WHERE Email=@email)
+			IF EXISTS (SELECT * FROM Employee WHERE Email=@email OR PAN=@pan OR NationalID=@nationalID)
 			BEGIN
-				-- Found a user using this Email
+				-- Found a user using this Email or PAN or National ID
 				-- ERROR: Already signed up
 				SET @responseMessage='User already registered. Try signing in'
 				SELECT @return_Hex_value = 'FF'
