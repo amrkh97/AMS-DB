@@ -1,8 +1,3 @@
--- Important note
--- EmployeeStatus is currently of type INT
--- Change it to NVARCHAR
--- And update code accordingly
-
 GO
 CREATE OR ALTER PROC usp_Employee_Login 
 	@EmailOrPAN NVARCHAR(128),
@@ -16,7 +11,7 @@ AS
 BEGIN
 	SET NOCOUNT on
 	DECLARE @userID INT
-	DECLARE @status INT
+	DECLARE @status NVARCHAR(32)
 	
 	IF (@EmailOrPAN IS NOT NULL AND @HashPassword IS NOT NULL)
 	BEGIN
@@ -26,7 +21,6 @@ BEGIN
 			BEGIN
 				-- Found the user using email or PAN or National ID
 				SET @userID = (SELECT EID FROM Employee WHERE (Email=@EmailOrPAN OR PAN = @EmailOrPAN OR NationalID=@EmailOrPAN) AND (HashPassword=@HashPassword))
-				
 				IF(@userID IS NULL)
 				BEGIN
 					-- Wrong Password
@@ -39,7 +33,7 @@ BEGIN
 					-- @userID IS NOT NULL
 					-- Correct password, so check if he's already logged in
 					SET @status=(SELECT EmployeeStatus from Employee WHERE EID=@userID)				
-					IF(@status = 0) -- IF(@status = '00')
+					IF(@status = '00')
 					BEGIN
 						-- Not logged in, so login successful, send his type to backend and jobID
 						-- And set status to 1
@@ -47,26 +41,30 @@ BEGIN
 						SELECT @return_Hex_value = '00'
 						SET @JobID = (SELECT JobID from Employee where EID = @userID)
 						SET @employeeID = @userID
-						UPDATE Employee SET EmployeeStatus = 1 WHERE EID = @userID
+						UPDATE Employee SET EmployeeStatus = '01' WHERE EID = @userID
 						UPDATE Employee SET LogInTStamp = GETDATE() WHERE EID = @userID
+						RETURN 0
 					END
-					ELSE IF(@status = 1) -- IF(@status = '01')
+					IF(@status = '01')
 					BEGIN
 						-- Already logged in, so can't continue
 						SET @responseMessage='User is logged in somewhere'
 						SELECT @return_Hex_value = '03'
+						RETURN 3
 					END
-					ELSE IF(@status = 2) -- IF(@status = '02')
+					IF(@status = '02')
 					BEGIN
 						-- Not verrified
 						SET @responseMessage='This user is not verified'
 						SELECT @return_Hex_value = '04'
+						RETURN 4
 					END
 					ELSE
 					BEGIN
 						-- Unknown status
 						SET @responseMessage='User status undefined'
 						SELECT @return_Hex_value = 'FE'
+						RETURN -1
 					END
 				END
 			END
@@ -76,20 +74,21 @@ BEGIN
 			-- Wrong Email
 				SET @responseMessage='No user found with given Email or PAN or National ID'
 				SELECT @return_Hex_value = 'FF'
+				RETURN -1
 			
 			END
 		END TRY
 		
 		BEGIN CATCH
 			SELECT @return_Hex_value='FC', @responseMessage='CATCH BLOCK: ' + ERROR_MESSAGE()
-			
+			RETURN -1
 		END CATCH
 	END
 	
 	ELSE
 	BEGIN
 		SELECT @return_Hex_value='FD', @responseMessage='FAILED: Email or Password is NULL'
-
+		RETURN -1
 	END
 END
 
@@ -103,7 +102,7 @@ WITH ENCRYPTION
 AS
 BEGIN
 	SET NOCOUNT ON
-	DECLARE @status INT
+	DECLARE @status NVARCHAR(32)
 	-- IF (@userID IS NOT NULL)
 	IF (@dummyToken IS NOT NULL)
 	BEGIN
@@ -114,33 +113,36 @@ BEGIN
 				-- Found the user using userID
 				-- SET @status=(SELECT EmployeeStatus from Employee WHERE EID=@userID)
 				SET @status=(SELECT EmployeeStatus from Employee WHERE Email=@dummyToken OR PAN=@dummyToken OR NationalID=@dummyToken)
-				
-				IF(@status = 1) -- IF(@status='01')
+				IF(@status='01')
 				BEGIN
 					-- Right Status
 					-- UPDATE Employee SET EmployeeStatus = 0 WHERE EID = @userID
 					-- UPDATE Employee SET EmployeeStatus = '00' WHERE (Email=@dummyToken OR PAN=@dummyToken OR NationalID=@dummyToken)
-					UPDATE Employee SET EmployeeStatus = 0 WHERE (Email=@dummyToken OR PAN=@dummyToken OR NationalID=@dummyToken)
+					UPDATE dbo.Employee SET EmployeeStatus = '00' WHERE (Email=@dummyToken OR PAN=@dummyToken OR NationalID=@dummyToken)
 					SET @responseMessage='Logged out successfully'
 					SELECT @return_Hex_value = '00'
+					RETURN 0
 				END
-				ELSE IF(@status = 0) -- ELSE IF(@status='00')
+				ELSE IF(@status='00')
 				BEGIN
 					-- User already logged out
 					SET @responseMessage='Wrong user status; User is already logged out'
 					SELECT @return_Hex_value = '01'
+					RETURN 1
 				END
-				ELSE IF(@status = 2) -- ELSE IF(@status='02')
+				ELSE IF(@status='02')
 				BEGIN
 					-- User awaiting verification
 					SET @responseMessage='Wrong user status; User is awaiting verification'
 					SELECT @return_Hex_value = '02'
+					RETURN 2
 				END
 				ELSE
 				BEGIN
 					-- Unknown status
 					SET @responseMessage='Unknown user status'
 					SELECT @return_Hex_value = 'FE'
+					RETURN -1
 				END
 			END
 			ELSE
@@ -149,17 +151,18 @@ BEGIN
 				-- SET @responseMessage='No user found with given ID'
 				SET @responseMessage='No user found with given email or pan or national id'
 				SELECT @return_Hex_value = 'FF'
+				RETURN -1
 			END
 		END TRY
 		BEGIN CATCH
 			SELECT @return_Hex_value='FC', @responseMessage='CATCH BLOCK: ' + ERROR_MESSAGE()
-			
+			RETURN -1
 		END CATCH
 	END
 	ELSE
 	BEGIN
 		SELECT @return_Hex_value='FD', @responseMessage='FAILED: User ID is NULL'
-		
+		RETURN -1
 	END
 END
 
@@ -188,7 +191,7 @@ AS
 BEGIN
 	SET NOCOUNT ON
 	DECLARE @userID INT
-	DECLARE @status INT
+	DECLARE @status NVARCHAR(32)
 	IF (@email IS NOT NULL AND @password IS NOT NULL)
 	BEGIN
 		-- Check email is not already used
@@ -199,6 +202,7 @@ BEGIN
 				-- ERROR: Already signed up
 				SET @responseMessage='User already registered. Try signing in'
 				SELECT @return_Hex_value = 'FF'
+				RETURN -1
 			END
 			ELSE
 			BEGIN
@@ -208,18 +212,19 @@ BEGIN
 				values (@firstName,@lastName,@dateOfBirth,@email,@password,@gender,@contactNumber,@country,@city,@state,@street,@postalCode,@pan,@nationalID,@job,@image)
 				SET @responseMessage='Signed Up. Check Email for Verification'
 				SELECT @return_Hex_value = '00'
+				RETURN 0
 			END
 		END TRY
 		BEGIN CATCH
 			SELECT @return_Hex_value='FC', @responseMessage='CATCH BLOCK: ' + ERROR_MESSAGE()
-			
+			RETURN -1
 		END CATCH
 	END
 	ELSE
 	BEGIN
 		-- Email or Password is NULL
 		SELECT @return_Hex_value='FD', @responseMessage='FAILED: Email or Password is NULL'
-		
+		RETURN -1
 	END
 END
 
@@ -228,8 +233,8 @@ END
 --        @responseMessage NVARCHAR(128),
 --        @JobID NVARCHAR(64),
 --        @employeeID NVARCHAR(64);
---EXEC dbo.usp_Employee_Login @EmailOrPAN = N'124578965321457894',                            -- nvarchar(128)
---                            @HashPassword = N'1U0E50APQG2RI37ND48UF75CGMNZ895Y5Q8JXDD2184VUCSVXS2G7EPUOOXICBHGB4MRUNQ0R6S63AH3US1F6ORQ1EV8FUPQRNKQQ00922P1MIRE6',                          -- nvarchar(128)
+--EXEC dbo.usp_Employee_Login @EmailOrPAN = N'07810798770078',                            -- nvarchar(128)
+--                            @HashPassword = N'Z8Y8IXV7AO8CAI77J1U380ITRONV2SY21MEJW9VFZN0U1I2I',                          -- nvarchar(128)
 --                            @return_Hex_value = @return_Hex_value OUTPUT, -- nvarchar(2)
 --                            @responseMessage = @responseMessage OUTPUT,   -- nvarchar(128)
 --                            @JobID = @JobID OUTPUT,                       -- nvarchar(64)
@@ -242,7 +247,7 @@ END
 --GO
 --DECLARE @return_Hex_value NVARCHAR(2),
 --        @responseMessage NVARCHAR(128);
---EXEC dbo.usp_Employee_Logout @dummyToken = N'124578965321457894',                            -- nvarchar(128)
+--EXEC dbo.usp_Employee_Logout @dummyToken = N'91008004917121647682',                            -- nvarchar(128)
 --                             @return_Hex_value = @return_Hex_value OUTPUT, -- nvarchar(2)
 --                             @responseMessage = @responseMessage OUTPUT    -- nvarchar(128)
 --							 PRINT @responseMessage
