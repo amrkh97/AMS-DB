@@ -43,8 +43,8 @@ CREATE OR ALTER PROC usp_Incident_Insert
 				    @IncidentPriority,         -- IncidentPriority - int
 				    @IncidentLocationID         -- IncidentLocationID - int
 				)
-				SET @ISN = (SELECT IncidentSequenceNumber FROM dbo.Incident WHERE (IncidentLocationID=@IncidentLocationID AND IncidentPriority=@IncidentPriority AND IncidentType=@IncidentType))
-				IF(@ISN IS NULL)
+				SET @IncidentSequenceNumber = (SELECT IncidentSequenceNumber FROM dbo.Incident WHERE (IncidentLocationID=@IncidentLocationID AND IncidentPriority=@IncidentPriority AND IncidentType=@IncidentType))
+				IF(@IncidentSequenceNumber IS NULL)
 				BEGIN
 					SET @responseMessage = 'FAILED TO FIND INCIDENT'
 					SELECT @return_Hex_value = 'FF'
@@ -52,9 +52,9 @@ CREATE OR ALTER PROC usp_Incident_Insert
 				END
 				ELSE
 				BEGIN
-					SET @responseMessage = 'LOCATION ADDED SUCCESFULLY'
+					SET @responseMessage = 'IINCIDENT ADDED SUCCESFULLY'
 					SELECT @return_Hex_value = '00'
-					PRINT @ISN
+					PRINT @IncidentSequenceNumber
 					RETURN 1
 				END
 			END
@@ -66,6 +66,5 @@ CREATE OR ALTER PROC usp_Incident_Insert
 			RETURN -1
 		END
 	END
-	GO
-	EXEC usp_Incident_Insert @IncidentType=3,@IncidentPriority=2,@IncidentLocationID=4
+	
 	
