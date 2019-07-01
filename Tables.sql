@@ -81,7 +81,7 @@ CREATE TABLE Medicine
 (
 	BarCode NVARCHAR(64),
 	MedicineName NVARCHAR(64) NOT NULL UNIQUE,
-	CountInStock NVARCHAR(64),
+	CountInStock Integer,
 	Price NVARCHAR(32),
 	Implications NVARCHAR(MAX),
 	MedicineUsage NVARCHAR(MAX),
