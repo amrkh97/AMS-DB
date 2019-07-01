@@ -87,9 +87,9 @@ CREATE TABLE Medicine
 	MedicineUsage NVARCHAR(MAX),
 	SideEffects NVARCHAR(MAX),
 	ActiveComponent NVARCHAR(MAX),
-	MedicineStatus NVARCHAR(32) DEFAULT(00)
+	MedicineStatus NVARCHAR(32) DEFAULT(00),
 
-		PRIMARY KEY(BarCode),
+	PRIMARY KEY(BarCode)
 	--FOREIGN KEY(MedicineStatus) REFERENCES EntityStatus(EntityStatusID),
 	--CHECK (Price > 0)
 
@@ -123,16 +123,27 @@ CREATE TABLE Batch
 	Quantity NVARCHAR(64),
 	ExpiryDate DATE,
 	OrderDate DATETIME DEFAULT getdate(),
-	BatchStatus NVARCHAR(32) DEFAULT(00)
-		PRIMARY KEY(BatchID),
-	FOREIGN KEY (BatchMedBCode) REFERENCES Medicine(BarCode),
+	BatchStatus NVARCHAR(32) DEFAULT(00),
+	PRIMARY KEY(BatchID),
+	FOREIGN KEY (BatchMedBCode) REFERENCES Medicine(BarCode)
 	--FOREIGN KEY (BatchStatus) REFERENCES EntityStatus(EntityStatusID),
 	--CONSTRAINT chk_Batch_QuantityPositive CHECK(Quantity > 0 )
 );
 
+--TODO: Check the quantity element's type.
+CREATE TABLE BatchMedicine
+(
+	EntryID INT IDENTITY,
+	BatchID INT,
+	MedicineBCode NVARCHAR(64),
+	Quantity NVARCHAR(64),
+	FOREIGN KEY(BatchID) REFERENCES Batch(BatchID),
+	FOREIGN KEY(MedicineBCode) REFERENCES Medicine(BarCode)
+	);
+
 CREATE TABLE Yellopad
 (
-	YelloPadID NVARCHAR(16) NOT NULL,
+	YelloPadID INT NOT NULL,
 	YelloPadUniqueID NVARCHAR(16) NOT NULL UNIQUE,
 	YellopadNetworkcardNo NVARCHAR(64),
 	YelloPadorderdate DATE,
@@ -169,11 +180,11 @@ CREATE TABLE AmbulanceVehicle
 	ChasiahNumber NVARCHAR(32),
 	Model NVARCHAR(32),
 	DriverPhoneNumber NVARCHAR(32),
-	AssignedYPID NVARCHAR(16) NOT NULL UNIQUE,
+	AssignedYPID INT NOT NULL UNIQUE,
 	VehicleStatus NVARCHAR(32) DEFAULT(00),
 	AmbulanceVehiclePicture NVARCHAR(500),
 
-	PRIMARY KEY ([VIN]),
+	PRIMARY KEY (VIN),
 	--FOREIGN KEY (VehicleStatus) REFERENCES EntityStatus (EntityStatusID),
 	FOREIGN KEY (AssignedYPID) REFERENCES Yellopad (YelloPadID)
 );
@@ -243,7 +254,7 @@ CREATE TABLE Employee
 
 CREATE TABLE Incident
 (
-	IncidentSequenceNumber NVARCHAR(64),
+	IncidentSequenceNumber INT IDENTITY NOT NULL,
 	CreationTime DATETIME DEFAULT (GETDATE()),
 	IncidentType INT,
 	IncidentPriority INT,
@@ -259,7 +270,7 @@ CREATE TABLE Incident
 
 CREATE TABLE Responses
 (
-	SequenceNumber NVARCHAR(64) NOT NULL,
+	SequenceNumber INT NOT NULL,
 	AssociatedVehicleVIN INT NOT NULL,
 	CreationTime DATETIME DEFAULT (getdate()),
 	StartLocationID INT,
@@ -267,7 +278,7 @@ CREATE TABLE Responses
 	DropLocationID INT,
 	DestinationLocationID INT,
 	RespStatus NVARCHAR(32),
-	IncidentSQN NVARCHAR(64) NOT NULL,
+	IncidentSQN INT NOT NULL,
 	PrimaryResponseSQN NVARCHAR(64),
 	RespAlarmLevel INT,
 	PersonCount NVARCHAR(32),
@@ -286,12 +297,12 @@ CREATE TABLE Responses
 
 CREATE TABLE MedicineUsedPerResponse
 (
-	RespSQN NVARCHAR(64) NOT NULL,
+	RespSQN INT NOT NULL,
 	UsedAmt INT,
 	BID INT,
 	AmbVIN INT
 
-		PRIMARY KEY (RespSQN,BID),
+	PRIMARY KEY (RespSQN,BID),
 	FOREIGN KEY (BID) REFERENCES Batch(BatchID),
 	FOREIGN KEY (AmbVIN) REFERENCES AmbulanceVehicle(VIN),
 	FOREIGN KEY (RespSQN) REFERENCES Responses(SequenceNumber),
@@ -301,7 +312,7 @@ CREATE TABLE MedicineUsedPerResponse
 CREATE TABLE Receipt
 (
 	ReceiptID INT,
-	RespSQN NVARCHAR(64) NOT NULL,
+	RespSQN INT NOT NULL,
 	CasheirSSN INT,
 	ReceiptCreationTime DATETIME DEFAULT (GETDATE()),
 	FTPFileLocation NVARCHAR(128),
@@ -340,7 +351,7 @@ CREATE TABLE Patient
 CREATE TABLE MedicalRecord
 (
 	MedicalRecordID INT,
-	RespSQN NVARCHAR(64) UNIQUE,
+	RespSQN INT UNIQUE,
 	PatientID INT,
 	BloodPressure NVARCHAR(12),
 	Temperature NVARCHAR(33),

@@ -451,7 +451,8 @@ CREATE PROC usp_Employee_Register
   @NationalID NVARCHAR(14) = NULL,
   @LogInTStamp DATETIME = NULL,
   @LogInGPS NVARCHAR(20) = NULL,
-  @SuperSSN INT = NULL,
+  --Will Need to be Handled to get linked to a manager.
+  @SuperSSN INT = 1,
 	@JobID INT = NULL,
   @Photo VARBINARY(MAX) = NULL,
 	@return_Hex_value NVARCHAR(2)='FF' OUTPUT,
