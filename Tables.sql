@@ -311,7 +311,7 @@ CREATE TABLE MedicineUsedPerResponse
 
 CREATE TABLE Receipt
 (
-	ReceiptID INT,
+	ReceiptID INT IDENTITY,
 	RespSQN NVARCHAR(64) NOT NULL,
 	CasheirSSN INT,
 	ReceiptCreationTime DATETIME DEFAULT (GETDATE()),
@@ -389,12 +389,12 @@ CREATE TABLE PatientLocations
 
 CREATE TABLE Reports
 (
-	ReportID INT,
+	ReportID INT IDENTITY,
 	ReportTitle VARCHAR(64) NOT NULL,
 	ReportIssueTime DATETIME DEFAULT(GETDATE()),
 	PatientID INT,
 	ReportDestination NVARCHAR(64),
-	--ReportStatus NVARCHAR(32) DEFAULT (1),
+	ReportStatus NVARCHAR(32) DEFAULT (1),
 
 	FOREIGN KEY (PatientID) REFERENCES Patient(PatientID),
 	--FOREIGN KEY(ReportStatus) REFERENCES EntityStatus(EntityStatusID),
