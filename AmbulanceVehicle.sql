@@ -116,27 +116,30 @@ CREATE PROC usp_AmbulanceVehicle_Insert
     @Model NVARCHAR(32),
     @DriverPhoneNumber NVARCHAR(32),
 	@AssignedYPID NVARCHAR(16),
-	@VehicleStatus NVARCHAR(32),
-   
+    @AmbulanceVehiclePicture NVARCHAR(500),
+
    @responseCode NVARCHAR(2)='FF' OUTPUT,
 	@responseMessage NVARCHAR(128)='' OUTPUT
 	
 		as 
 	BEGIN TRY
+	
 	IF (@VIN IS NOT NULL )
 		BEGIN
 			INSERT INTO AmbulanceVehicle (VIN,Implication,Make,[Type],ProductionYear,RegYear,LicencePlate,OwnerName,
-			LicenceStateOrProvince,ServiceStartDate,EngineNumber,Brand,ChasiahNumber,Model,DriverPhoneNumber,AssignedYPID,VehicleStatus)
+			LicenceStateOrProvince,ServiceStartDate,EngineNumber,Brand,ChasiahNumber,Model,DriverPhoneNumber,AssignedYPID,	AmbulanceVehiclePicture)
 			values (@VIN,@Implication,@Make,@Type,@ProductionYear,@RegYear,@LicencePlate,@OwnerName,@LicenceStateOrProvince,
-			@ServiceStartDate,@EngineNumber,@Brand,@ChasiahNumber,@Model,@DriverPhoneNumber,@AssignedYPID, @VehicleStatus )
+			@ServiceStartDate,@EngineNumber,@Brand,@ChasiahNumber,@Model,@DriverPhoneNumber,@AssignedYPID ,@AmbulanceVehiclePicture )
 	         SELECT @responseCode = '00'
-				SELECT @responseMessage = 'Success'
+			SELECT @responseMessage = 'Success'
 		END
+	
+	
 	ELSE
 	BEGIN
 				return -1
 				SELECT @responseCode = 'FF'
-				SELECT @responseMessage = 'Unknown Error'
+				SELECT @responseMessage = 'wrong Parameters'
 			END
 	END TRY
 	BEGIN CATCH
@@ -165,7 +168,7 @@ CREATE PROC usp_AmbulanceVehicle_Update
     @Model NVARCHAR(32),
     @DriverPhoneNumber NVARCHAR(32),
 	@AssignedYPID NVARCHAR(32),
-	@VehicleStatus NVARCHAR(32),
+    @AmbulanceVehiclePicture NVARCHAR(500),
 	@responseCode NVARCHAR(2)='FF' OUTPUT,
 	@responseMessage NVARCHAR(128)='' OUTPUT
 
@@ -190,7 +193,8 @@ as
 			Model = ISNULL(@Model,Model),
 			DriverPhoneNumber = ISNULL(@DriverPhoneNumber,DriverPhoneNumber),
 			AssignedYPID =ISNULL(@AssignedYPID,AssignedYPID),
-			VehicleStatus =ISNULL(@VehicleStatus,VehicleStatus)
+				AmbulanceVehiclePicture=ISNULL(	@AmbulanceVehiclePicture,	AmbulanceVehiclePicture)
+			VehicleStatus = 2 
 			WHERE VIN = @VIN
 			
         SELECT @responseCode = '00'

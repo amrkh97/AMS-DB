@@ -44,14 +44,32 @@ CREATE PROC usp_Medicine_Insert
     @Implications NVARCHAR(MAX) = NULL,
     @MedicineUsage NVARCHAR(MAX) = NULL,
     @SideEffects NVARCHAR(MAX) = NULL,
-    @ActiveComponent NVARCHAR(MAX) = NULL
+    @ActiveComponent NVARCHAR(MAX) = NULL,
+	 @responseCode NVARCHAR(2)='FF' OUTPUT,
+	@responseMessage NVARCHAR(128)='' OUTPUT
+
 as
+BEGIN TRY
+
 	IF (@BarCode IS NOT NULL AND @Name IS NOT NULL)
 		BEGIN
 			INSERT INTO Medicine (BarCode,CountInStock,MedicineName,Price,Implications,MedicineUsage,SideEffects,ActiveComponent)
 			values (@BarCode,@CountInStock,@Name,@Price,@Implications,@MedicineUsage,@SideEffects,@ActiveComponent)
-		END
+		SELECT @responseCode = '00'
+		SELECT @responseMessage = 'Success'
+	END
 	ELSE
+	BEGIN 
+	return -1
+				SELECT @responseCode = 'FF'
+				SELECT @responseMessage = 'nO PARAMETER'
+	END
+	END TRY
+BEGIN CATCH
+		 	SELECT @responseCode = 'FF',
+		@responseMessage=ERROR_MESSAGE()
+			return -1;
+	END CATCH
 		return -1
 -- (4) Update Medicine --
 GO
@@ -63,9 +81,13 @@ CREATE PROC usp_Medicine_Update
     @Implications NVARCHAR(MAX) = NULL,
     @MedicineUsage NVARCHAR(MAX) = NULL,
     @SideEffects NVARCHAR(MAX) = NULL,
-    @ActiveComponent NVARCHAR(MAX) = NULL
+    @ActiveComponent NVARCHAR(MAX) = NULL,
+     @responseCode NVARCHAR(2)='FF' OUTPUT,
+	@responseMessage NVARCHAR(128)='' OUTPUT
+
 as
-	IF (@BarCode IS NOT NULL)
+BEGIN TRY	 
+IF (@BarCode IS NOT NULL)
 		BEGIN
 			UPDATE Medicine
 			SET CountInStock = ISNULL(@CountInStock,CountInStock),
@@ -77,21 +99,54 @@ as
 			ActiveComponent = ISNULL(@ActiveComponent,ActiveComponent),
 			MedicineStatus = 2
 			WHERE BarCode = @BarCode
-		END
+		SELECT @responseCode = '00'
+		SELECT @responseMessage = 'Success'
+	END
 	ELSE
+	BEGIN 
+	return -1
+				SELECT @responseCode = 'FF'
+				SELECT @responseMessage = 'nO PARAMETER'
+	END
+	END TRY
+BEGIN CATCH
+		 	SELECT @responseCode = 'FF',
+		@responseMessage=ERROR_MESSAGE()
+			return -1;
+	END CATCH
 		return -1
 -- (5) Delete Medicine By Barcode --
 GO
-create proc usp_Medicine_Delete  @bCode NVARCHAR(64)
+create proc usp_Medicine_Delete  
+    @bCode NVARCHAR(64),
+    @responseCode NVARCHAR(2)='FF' OUTPUT,
+	@responseMessage NVARCHAR(128)='' OUTPUT
+
 as
+BEGIN TRY
 	IF (@bCode IS NOT NULL)
 	BEGIN
 		UPDATE Medicine
 		SET MedicineStatus = 99
 		where BarCode = @bCode
+		SELECT @responseCode = '00'
+		SELECT @responseMessage = 'Success'
 	END
-	ELSE 
-		RETURN -1
+	ELSE
+	BEGIN 
+	
+	
+return -1
+				SELECT @responseCode = 'FF'
+				SELECT @responseMessage = 'nO PARAMETER'
+	END
+	END TRY
+BEGIN CATCH
+		 	SELECT @responseCode = 'FF',
+		@responseMessage=ERROR_MESSAGE()
+			return -1;
+	END CATCH
+		return -1
 --
 -- Medicine Stored Procedure End --
 ------------------------------------------------------------------------------------
