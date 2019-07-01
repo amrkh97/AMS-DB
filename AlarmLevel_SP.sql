@@ -1,5 +1,5 @@
 GO
-Create proc usp_AlarmLevel_GetAll
+CREATE OR ALTER proc usp_AlarmLevel_GetAll
 as
 	select * from AlarmLevels
 GO
