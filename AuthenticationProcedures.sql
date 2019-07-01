@@ -95,7 +95,8 @@ END
 
 GO
 CREATE OR ALTER PROC usp_Employee_Logout
-	@userID INT,
+	-- @userID INT,
+	@dummyToken NVARCHAR(128),
 	@return_Hex_value NVARCHAR(2)='FF' OUTPUT,
 	@responseMessage NVARCHAR(128)='' OUTPUT
 WITH ENCRYPTION
@@ -109,22 +110,25 @@ BEGIN
 			IF EXISTS (SELECT TOP 1 EID FROM Employee WHERE EID=@userID)
 			BEGIN
 				-- Found the user using userID
-				SET @status=(SELECT EmployeeStatus from Employee WHERE EID=@userID)
+				-- SET @status=(SELECT EmployeeStatus from Employee WHERE EID=@userID)
+				SET @status=(SELECT EmployeeStatus from Employee WHERE Email=@dummyToken OR PAN=@dummyToken OR NationalID=@dummyToken)
 				
-				IF(@status='01')
+				IF(@status = 1) -- IF(@status='01')
 				BEGIN
 					-- Right Status
-					UPDATE Employee SET EmployeeStatus = 0 WHERE EID = @userID
+					-- UPDATE Employee SET EmployeeStatus = 0 WHERE EID = @userID
+					-- UPDATE Employee SET EmployeeStatus = '00' WHERE (Email=@dummyToken OR PAN=@dummyToken OR NationalID=@dummyToken)
+					UPDATE Employee SET EmployeeStatus = 0 WHERE (Email=@dummyToken OR PAN=@dummyToken OR NationalID=@dummyToken)
 					SET @responseMessage='Logged out successfully'
 					SELECT @return_Hex_value = '00'
 				END
-				ELSE IF(@status='00')
+				ELSE IF(@status = 0) -- ELSE IF(@status='00')
 				BEGIN
 					-- User already logged out
 					SET @responseMessage='Wrong user status; User is already logged out'
 					SELECT @return_Hex_value = '01'
 				END
-				ELSE IF(@status='02')
+				ELSE IF(@status = 2) -- ELSE IF(@status='02')
 				BEGIN
 					-- User awaiting verification
 					SET @responseMessage='Wrong user status; User is awaiting verification'
@@ -140,7 +144,8 @@ BEGIN
 			ELSE
 			BEGIN
 				-- Didn't find the user using @userID
-				SET @responseMessage='No user found with given ID'
+				-- SET @responseMessage='No user found with given ID'
+				SET @responseMessage='No user found with given email or pan or national id'
 				SELECT @return_Hex_value = 'FF'
 			END
 		END TRY
