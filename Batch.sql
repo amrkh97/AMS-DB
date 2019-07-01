@@ -30,10 +30,11 @@ CREATE proc usp_BatchMedicine_Insert
 AS
 BEGIN
 
-
+if not exists(select * from dbo.Batch  where dbo.Batch.BatchID=@BatchID)
+begin
 insert into dbo.Batch(BatchID,BatchMedBCode,Quantity)
 VALUES(@BatchID,@MedicineBarcode,@MedicineQuantity)
-
+end
 INSERT INTO dbo.BatchMedicine
 (
     BatchID,
