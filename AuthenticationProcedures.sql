@@ -223,28 +223,27 @@ BEGIN
 	END
 END
 
-GO
-DECLARE @return_Hex_value NVARCHAR(2),
-        @responseMessage NVARCHAR(128),
-        @JobID NVARCHAR(64),
-        @employeeID NVARCHAR(64);
-EXEC dbo.usp_Employee_Login @EmailOrPAN = N'124578965321457894',                            -- nvarchar(128)
-                            @HashPassword = N'1U0E50APQG2RI37ND48UF75CGMNZ895Y5Q8JXDD2184VUCSVXS2G7EPUOOXICBHGB4MRUNQ0R6S63AH3US1F6ORQ1EV8FUPQRNKQQ00922P1MIRE6',                          -- nvarchar(128)
-                            @return_Hex_value = @return_Hex_value OUTPUT, -- nvarchar(2)
-                            @responseMessage = @responseMessage OUTPUT,   -- nvarchar(128)
-                            @JobID = @JobID OUTPUT,                       -- nvarchar(64)
-                            @employeeID = @employeeID OUTPUT              -- nvarchar(64)
-							PRINT @responseMessage
-							PRINT @return_Hex_value
-							PRINT @JobID
-							PRINT @employeeID
+--GO
+--DECLARE @return_Hex_value NVARCHAR(2),
+--        @responseMessage NVARCHAR(128),
+--        @JobID NVARCHAR(64),
+--        @employeeID NVARCHAR(64);
+--EXEC dbo.usp_Employee_Login @EmailOrPAN = N'124578965321457894',                            -- nvarchar(128)
+--                            @HashPassword = N'1U0E50APQG2RI37ND48UF75CGMNZ895Y5Q8JXDD2184VUCSVXS2G7EPUOOXICBHGB4MRUNQ0R6S63AH3US1F6ORQ1EV8FUPQRNKQQ00922P1MIRE6',                          -- nvarchar(128)
+--                            @return_Hex_value = @return_Hex_value OUTPUT, -- nvarchar(2)
+--                            @responseMessage = @responseMessage OUTPUT,   -- nvarchar(128)
+--                            @JobID = @JobID OUTPUT,                       -- nvarchar(64)
+--                            @employeeID = @employeeID OUTPUT              -- nvarchar(64)
+--							PRINT @responseMessage
+--							PRINT @return_Hex_value
+--							PRINT @JobID
+--							PRINT @employeeID
 
-GO
-DECLARE @return_Hex_value NVARCHAR(2),
-        @responseMessage NVARCHAR(128);
-EXEC dbo.usp_Employee_Logout @dummyToken = N'124578965321457894',                            -- nvarchar(128)
-                             @return_Hex_value = @return_Hex_value OUTPUT, -- nvarchar(2)
-                             @responseMessage = @responseMessage OUTPUT    -- nvarchar(128)
-							 PRINT @responseMessage
-							PRINT @return_Hex_value
-
+--GO
+--DECLARE @return_Hex_value NVARCHAR(2),
+--        @responseMessage NVARCHAR(128);
+--EXEC dbo.usp_Employee_Logout @dummyToken = N'124578965321457894',                            -- nvarchar(128)
+--                             @return_Hex_value = @return_Hex_value OUTPUT, -- nvarchar(2)
+--                             @responseMessage = @responseMessage OUTPUT    -- nvarchar(128)
+--							 PRINT @responseMessage
+--							 PRINT @return_Hex_value
