@@ -14,8 +14,8 @@ CREATE PROC usp_Receipt_Insert
 	BEGIN TRY
 	IF (@RespSQN IS NOT NULL )
 		BEGIN
-			INSERT INTO Receipt(RespSQN,CasheirSSN,FTPFileLocation,ReceiptStatus,Cost,PaymentMethod)
-			values (@RespSQN,@CasheirSSN,@FTPFileLocation,@ReceiptStatus,@Cost,@PaymentMethod)
+			INSERT INTO Receipt(RespSQN,CasheirSSN,FTPFileLocation,Cost,PaymentMethod)
+			values (@RespSQN,@CasheirSSN,@FTPFileLocation,@Cost,@PaymentMethod)
 	         SELECT @responseCode = '00'
 				SELECT @responseMessage = 'Success'
 		END
@@ -45,7 +45,7 @@ BEGIN TRY
 	BEGIN
 		UPDATE Receipt
 		SET ReceiptStatus = 99
-		where ReceiptID = @ReceiptID AND  ReceiptStatus=1
+		where ReceiptID = @ReceiptID AND  ReceiptStatus=0
 	    SELECT @responseCode = '00'
 		SELECT @responseMessage = 'Success'
 		
@@ -70,7 +70,7 @@ as
 	IF (@RespSQN IS NOT NULL)
 	BEGIN
 		select * from Receipt
-		where RespSQN = @RespSQN AND ReceiptStatus=1
+		where RespSQN = @RespSQN AND ReceiptStatus=0
 	END
 	ELSE
 		RETURN -1
@@ -82,7 +82,7 @@ as
 	IF (@CasheirSSN IS NOT NULL)
 	BEGIN
 		select * from Receipt
-		where CasheirSSN = @CasheirSSN AND ReceiptStatus=1
+		where CasheirSSN = @CasheirSSN AND ReceiptStatus=0
 	END
 	ELSE
 		RETURN -1
@@ -94,7 +94,7 @@ as
 	IF (@FTPFileLocation IS NOT NULL)
 	BEGIN
 		select * from Receipt
-		where FTPFileLocation = @FTPFileLocation AND ReceiptStatus=1
+		where FTPFileLocation = @FTPFileLocation AND ReceiptStatus=0
 	END
 	ELSE
 		RETURN -1
@@ -106,7 +106,7 @@ as
 	IF (@ReceiptStatus IS NOT NULL)
 	BEGIN
 		select * from Receipt
-		where ReceiptStatus = @ReceiptStatus AND ReceiptStatus=1
+		where ReceiptStatus = @ReceiptStatus AND ReceiptStatus=0
 	END
 	ELSE
 		RETURN -1
@@ -118,7 +118,7 @@ as
 	IF (@Cost IS NOT NULL)
 	BEGIN
 		select * from Receipt
-		where Cost = @Cost AND ReceiptStatus=1
+		where Cost = @Cost AND ReceiptStatus=0
 	END
 	ELSE
 		RETURN -1
@@ -130,7 +130,7 @@ as
 	IF (@PaymentMethod IS NOT NULL)
 	BEGIN
 		select * from Receipt
-		where PaymentMethod = @PaymentMethod AND ReceiptStatus=1
+		where PaymentMethod = @PaymentMethod AND ReceiptStatus=0
 	END
 	ELSE
 		RETURN -1
