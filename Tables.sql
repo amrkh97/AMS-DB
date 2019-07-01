@@ -88,7 +88,6 @@ CREATE TABLE Medicine
 	SideEffects NVARCHAR(MAX),
 	ActiveComponent NVARCHAR(MAX),
 	MedicineStatus NVARCHAR(32) DEFAULT(00),
-	BatchNo NVARCHAR(32) DEFAULT('-1'),
 
 	PRIMARY KEY(BarCode)
 	--FOREIGN KEY(MedicineStatus) REFERENCES EntityStatus(EntityStatusID),
