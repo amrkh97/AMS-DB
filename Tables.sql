@@ -1,5 +1,5 @@
 Use KAN_AMO;
---Comment: Entity Status was removed bacuse it caused
+--Comment: Entity Status was removed because it caused
 --errors with the Foreign key relationship on Insert or update.
 --It was also too generic to be of use as each table has
 --its own Status values.
@@ -81,7 +81,7 @@ CREATE TABLE Medicine
 (
 	BarCode NVARCHAR(64),
 	MedicineName NVARCHAR(64) NOT NULL UNIQUE,
-	CountInStock NVARCHAR(64),
+	CountInStock Integer,
 	Price NVARCHAR(32),
 	Implications NVARCHAR(MAX),
 	MedicineUsage NVARCHAR(MAX),
@@ -120,7 +120,7 @@ CREATE TABLE Batch
 (
 	BatchID INT,
 	BatchMedBCode NVARCHAR(64) NOT NULL,
-	Quantity NVARCHAR(64),
+	Quantity INT,
 	ExpiryDate DATE,
 	OrderDate DATETIME DEFAULT getdate(),
 	BatchStatus NVARCHAR(32) DEFAULT(00),
@@ -136,7 +136,7 @@ CREATE TABLE BatchMedicine
 	EntryID INT IDENTITY,
 	BatchID INT,
 	MedicineBCode NVARCHAR(64),
-	Quantity NVARCHAR(64),
+	Quantity INT,
 	FOREIGN KEY(BatchID) REFERENCES Batch(BatchID),
 	FOREIGN KEY(MedicineBCode) REFERENCES Medicine(BarCode)
 	);
