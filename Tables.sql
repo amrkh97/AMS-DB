@@ -70,14 +70,14 @@ CREATE TABLE Jobs
 );
 
 INSERT INTO Jobs
-	(JobID,Title)
+	(JobID,Title,JobDescription)
 VALUES
 
-	(0, 'System Manager'),
-	(1, 'Movement Manager'),
-	(2, 'Paramedic'),
-	(3, 'Driver'),
-	(4, 'Operator')
+	(0, 'System Manager','Manager of the whole system'),
+	(1, 'Movement Manager','Responsible for managing the day to day operation'),
+	(2, 'Paramedic','Saves people''s lives'),
+	(3, 'Driver','Drives Ambulance'),
+	(4, 'Operator','Adds incident and locations')
 
 CREATE TABLE PaymentMethods
 (
