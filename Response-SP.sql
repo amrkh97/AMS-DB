@@ -119,7 +119,7 @@ BEGIN
 END
 GO
 ------------------------------------------------------------------------------------
--- FIND RESPONSE BY ID --
+-- FIND RESPONSE STATUS BY ID --
 CREATE OR ALTER PROC usp_ResponseStatus_SearchByID 
 @SequenceNumber INT, --1
 @return_Hex_value NVARCHAR(2)='FF' OUTPUT,--2
@@ -138,6 +138,43 @@ BEGIN
 	BEGIN
 		SET @responseMessage = 'FAILED TO LOCATE RESPONSE STATUS'
 		SELECT @return_Hex_value = 'FF'
-		RETURN 1
+		RETURN -1
+	END
+END
+GO
+------------------------------------------------------------------------------------
+-- UPDATE RESPONSE STATUS BY ID --
+CREATE OR ALTER PROC usp_ResponseStatus_UpdateByID 
+@SequenceNumber INT, --1
+@ResponseStatus NVARCHAR(32),--2
+@return_Hex_value NVARCHAR(2)='FF' OUTPUT,--3
+@responseMessage NVARCHAR(128)='' OUTPUT,--4
+@RespStatus NVARCHAR(32) = '' OUTPUT--5
+AS
+BEGIN
+	IF(@ResponseStatus IS NULL OR @ResponseStatus = '')
+	BEGIN
+		SET @responseMessage = 'MISSING RESPONSE STATUS VALUE TO UPDATED'
+		SELECT @return_Hex_value = 'EE'
+		RETURN -1
+	END
+	ELSE
+	BEGIN
+		IF EXISTS (SELECT TOP 1 SequenceNumber FROM dbo.Responses WHERE SequenceNumber=@SequenceNumber)
+		BEGIN
+			UPDATE dbo.Responses
+			SET RespStatus = @ResponseStatus
+			WHERE SequenceNumber = @SequenceNumber
+			SET @RespStatus = (SELECT RespStatus FROM Responses WHERE SequenceNumber=@SequenceNumber)
+			SET @responseMessage = 'RESPONSE STATUS LOCATED'
+			SELECT @return_Hex_value = '00'
+			RETURN 1
+		END
+		ELSE
+		BEGIN
+			SET @responseMessage = 'FAILED TO LOCATE RESPONSE STATUS'
+			SELECT @return_Hex_value = 'FF'
+			RETURN -1
+		END
 	END
 END
