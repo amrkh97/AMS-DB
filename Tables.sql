@@ -318,7 +318,6 @@ CREATE TABLE Responses
 	FOREIGN KEY (PickLocationID) REFERENCES Locations(LocationID),
 	FOREIGN KEY (DropLocationID) REFERENCES Locations(LocationID),
 	FOREIGN KEY (DestinationLocationID) REFERENCES Locations(LocationID),
-	FOREIGN KEY (RespStatus) REFERENCES ResponseStatuses(ResponseStatusID),
 	FOREIGN KEY (IncidentSQN) REFERENCES Incident(IncidentSequenceNumber),
 	FOREIGN KEY (RespAlarmLevel) REFERENCES AlarmLevels(AlarmLevelID),
 	PRIMARY KEY (SequenceNumber)
