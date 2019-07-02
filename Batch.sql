@@ -25,8 +25,7 @@ CREATE proc usp_BatchMedicine_Insert
 @BatchID INT,
 --@MedicineName NVARCHAR(64),
 @MedicineBarcode NVARCHAR(64),
-@MedicineQuantity NVARCHAR(64),
-@HexCode NVARCHAR(2) OUTPUT
+@MedicineQuantity NVARCHAR(64)
 AS
 BEGIN
 
@@ -48,6 +47,5 @@ VALUES
     @MedicineQuantity  -- Quantity - nvarchar(64)
     )
 
-SET @HexCode = '00'
 END
 go
