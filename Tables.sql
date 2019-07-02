@@ -157,7 +157,6 @@ CREATE TABLE Medicine
 	MedicineStatus NVARCHAR(32) DEFAULT(00),
 
 	PRIMARY KEY(BarCode)
-	--FOREIGN KEY(MedicineStatus) REFERENCES EntityStatus(EntityStatusID),
 	--CHECK (Price > 0)
 
 );
@@ -172,7 +171,6 @@ CREATE TABLE PharmaCompany
 	CompanyStatus NVARCHAR(32) DEFAULT(00)
 
 		PRIMARY key (CompanyID)
-	--	FOREIGN KEY (CompanyStatus) REFERENCES EntityStatus(EntityStatusID),
 );
 
 CREATE TABLE CompanyMedicineMap
@@ -192,12 +190,10 @@ CREATE TABLE Batch
 	OrderDate DATETIME DEFAULT getdate(),
 	BatchStatus NVARCHAR(32) DEFAULT(00),
 	PRIMARY KEY(BatchID),
-	FOREIGN KEY (BatchMedBCode) REFERENCES Medicine(BarCode)
-	--FOREIGN KEY (BatchStatus) REFERENCES EntityStatus(EntityStatusID),
-	--CONSTRAINT chk_Batch_QuantityPositive CHECK(Quantity > 0 )
+	FOREIGN KEY (BatchMedBCode) REFERENCES Medicine(BarCode),
+	CONSTRAINT chk_Batch_QuantityPositive CHECK(Quantity > 0 )
 );
 
---TODO: Check the quantity element's type.
 CREATE TABLE BatchMedicine
 (
 	EntryID INT IDENTITY,
@@ -227,8 +223,7 @@ CREATE TABLE Yellopad
 	YelloPadPicture NVARCHAR(500),
 
 	PRIMARY KEY (YelloPadID),
-	--FOREIGN KEY (YelloPadStatus) REFERENCES EntityStatus(EntityStatusID)
-);
+	);
 
 CREATE TABLE AmbulanceVehicle
 (
@@ -247,14 +242,11 @@ CREATE TABLE AmbulanceVehicle
 	ChasiahNumber NVARCHAR(32),
 	Model NVARCHAR(32),
 	DriverPhoneNumber NVARCHAR(32),
-	AssignedYPID INT NOT NULL UNIQUE,
 	VehicleStatus NVARCHAR(32) DEFAULT(00),
 	AmbulanceVehiclePicture NVARCHAR(500),
 
 	PRIMARY KEY (VIN),
-	--FOREIGN KEY (VehicleStatus) REFERENCES EntityStatus (EntityStatusID),
-	FOREIGN KEY (AssignedYPID) REFERENCES Yellopad (YelloPadID)
-);
+	);
 
 CREATE TABLE BatchDistributionMap
 (
@@ -265,7 +257,7 @@ CREATE TABLE BatchDistributionMap
 		PRIMARY KEY (BID,AmbVIN),
 	FOREIGN KEY (BID) REFERENCES Batch(BatchID),
 	FOREIGN KEY (AmbVIN) REFERENCES AmbulanceVehicle(VIN),
-	--CONSTRAINT chk_BatchDistributionMap_DistributedAmtPositive CHECK(DistributedAmt > 0 )
+	CONSTRAINT chk_BatchDistributionMap_DistributedAmtPositive CHECK(DistributedAmt > 0 )
 );
 
 CREATE TABLE Locations
@@ -282,7 +274,6 @@ CREATE TABLE Locations
 	HouseNumber NVARCHAR(12),
 	LocationStatus NVARCHAR(32) DEFAULT (00),
 
-	--FOREIGN KEY (LocationStatus) REFERENCES EntityStatus(EntityStatusID),
 	PRIMARY KEY (LocationID)
 );
 
@@ -314,7 +305,6 @@ CREATE TABLE Employee
 
 	FOREIGN KEY (SuperSSN) REFERENCES Employee(EID),
 	FOREIGN KEY (JobID) REFERENCES Jobs(JobID),
-	--FOREIGN KEY(EmployeeStatus) REFERENCES EntityStatus(EntityStatusID),
 	PRIMARY KEY (EID)
 
 );
@@ -392,7 +382,7 @@ CREATE TABLE MedicineUsedPerResponse
 	FOREIGN KEY (BID) REFERENCES Batch(BatchID),
 	FOREIGN KEY (AmbVIN) REFERENCES AmbulanceVehicle(VIN),
 	FOREIGN KEY (RespSQN) REFERENCES Responses(SequenceNumber),
-	--CONSTRAINT chk_MedicineUsedPerResponse_UsedAmtPositive CHECK(UsedAmt > 0 )
+	CONSTRAINT chk_MedicineUsedPerResponse_UsedAmtPositive CHECK(UsedAmt > 0 )
 );
 
 CREATE TABLE Receipt
@@ -409,7 +399,6 @@ CREATE TABLE Receipt
 	FOREIGN KEY (RespSQN) REFERENCES Responses(SequenceNumber),
 	FOREIGN KEY (CasheirSSN) REFERENCES Employee(EID),
 	FOREIGN KEY (PaymentMethod) REFERENCES PaymentMethods(MethodName),
-	--FOREIGN KEY (ReceiptStatus) REFERENCES EntityStatus(EntityStatusID),
 	PRIMARY KEY(ReceiptID)
 );
 CREATE TABLE Patient
@@ -428,8 +417,7 @@ CREATE TABLE Patient
 	PatientStatus NVARCHAR(32) DEFAULT (00),
 	PatientNationalID INT
 
-		--FOREIGN KEY(PatientStatus) REFERENCES EntityStatus(EntityStatusID),
-		PRIMARY KEY (PatientID),
+	PRIMARY KEY (PatientID),
 
 );
 
@@ -470,7 +458,6 @@ CREATE TABLE MedicalRecord
 
 	FOREIGN KEY (RespSQN) REFERENCES Responses(SequenceNumber),
 	FOREIGN KEY (PatientID) REFERENCES Patient(PatientID),
-	--FOREIGN KEY (MRStatus) REFERENCES EntityStatus(EntityStatusID),
 	PRIMARY KEY (MedicalRecordID),
 );
 
@@ -497,11 +484,23 @@ CREATE TABLE Reports
 	--ReportStatus NVARCHAR(32) DEFAULT (1),
 
 	FOREIGN KEY (PatientID) REFERENCES Patient(PatientID),
-	--FOREIGN KEY(ReportStatus) REFERENCES EntityStatus(EntityStatusID),
 	PRIMARY KEY (ReportID)
 );
 
 
+CREATE TABLE AmbulanceMap
+(
+	VIN INT NOT NULL,
+	ParamedicID INT NOT NULL,
+	DriverID INT NOT NULL,
+	YelloPadID INT NOT NULL,
+	StatusMap INT DEFAULT 0,
+	
+	FOREIGN KEY (VIN) REFERENCES dbo.AmbulanceVehicle(VIN),
+	FOREIGN KEY (ParamedicID) REFERENCES dbo.Employee(EID),
+	FOREIGN KEY (DriverID) REFERENCES dbo.Employee(EID),
+	FOREIGN KEY (YelloPadID) REFERENCES dbo.Yellopad(YelloPadID)
+);
 ------------------------------------------------------------------------
 -- Creating Indecies --
 -- (1) Medicine BarCode Unique Index -- 

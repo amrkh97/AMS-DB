@@ -1018,7 +1018,38 @@ VALUES
 END
 go
 
-
+--TODO: COnfirm that all checks are passed from front end.
+CREATE PROC usp_AmbulanceMap_Insert
+@VIN INT,
+@ParamedicID INT,
+@DriverID INT,
+@YelloPadID INT,
+@HexCode INT OUTPUT
+AS
+BEGIN
+if exists(select * from AmbulanceMap where VIN = @VIN and StatusMap = 0)
+BEGIN
+-- 1 -> Ambulance was already inserted but not assigned.
+Set @HexCode = 1
+END
+ELSE if exists(select * from AmbulanceMap where VIN = @VIN and StatusMap = 99)
+begin
+-- 2 -> Ambulance is assigned and already in service.
+Set @HexCode = 2
+end 
+else begin
+insert into AmbulanceVehicle(VIN,ParamedicID,DriverID,YelloPadID)
+VALUES(
+@VIN,
+@ParamedicID,
+@DriverID,
+@YelloPadID
+)
+-- 0 -> Insertion Successful
+Set @HexCode = 0
+end
+END
+GO
 
 
 
