@@ -1,28 +1,8 @@
 USE kAN_AMO;
 GO
 
-CREATE PROC usp_BatchMedicine_CheckID
-@UniqueID INT,
-@HexCode INT OUTPUT
-AS
-BEGIN
-
-IF EXISTS (SELECT  Batch.BatchID FROM dbo.Batch WHERE BatchID= @UniqueID)
-BEGIN
-SET @HexCode = 1
-END
-ELSE
-BEGIN
-
-SET @HexCode = 0
-
-END
-END
-GO
-
-
 CREATE proc usp_BatchMedicine_Insert
-@BatchID INT,
+@BatchID BIGINT,
 --@MedicineName NVARCHAR(64),
 @MedicineBarcode NVARCHAR(64),
 @MedicineQuantity NVARCHAR(64)
