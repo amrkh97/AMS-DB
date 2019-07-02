@@ -6,16 +6,16 @@ CREATE OR ALTER PROC usp_Response_Insert
 @DropLocationID INT,--4
 @DestinationLocationID INT,--5
 @IncidentSQN INT,--6
-@PrimaryResponseSQN NVARCHAR(64),--7
+@PrimaryResponseSQN INT,--7
 @RespAlarmLevel INT,--8
 @PersonCount NVARCHAR(32),--9
-@RespStatus NVARCHAR(32),--10
-@return_Hex_value NVARCHAR(2)='FF' OUTPUT,--11
-@responseMessage NVARCHAR(128)='' OUTPUT,--12
-@ResponseID INT= 0 OUTPUT--13
+@return_Hex_value NVARCHAR(2)='FF' OUTPUT,--10
+@responseMessage NVARCHAR(128)='' OUTPUT,--11
+@ResponseID INT= 0 OUTPUT--12
 AS
 BEGIN
 	SET NOCOUNT ON
+	DECLARE @ResponseStatus NVARCHAR(64)
 	IF(@AssociatedVehicleVIN IS NULL OR @AssociatedVehicleVIN=0)
 	BEGIN
 		SET @responseMessage = 'Missing VIN'
@@ -64,12 +64,6 @@ BEGIN
 		SELECT @return_Hex_value = 'FC'
 		RETURN -1
 	END
-	ELSE IF (@RespStatus IS NULL OR @RespStatus='')
-	BEGIN
-		SET @responseMessage = 'Missing Response Status'
-		SELECT @return_Hex_value = 'FD'
-		RETURN -1
-	END
 	SET @ResponseID = (SELECT SequenceNumber FROM dbo.Responses WHERE (AssociatedVehicleVIN=@AssociatedVehicleVIN AND StartLocationID=@StartLocationID AND PickLocationID=@PickLocationID 
 	AND DropLocationID=@DropLocationID AND DestinationLocationID=@DestinationLocationID AND IncidentSQN=@IncidentSQN AND RespAlarmLevel=@RespAlarmLevel))
 	IF(@ResponseID IS NOT NULL)
@@ -79,6 +73,7 @@ BEGIN
 		RETURN -1
 	END
 	ELSE 
+	SET @ResponseStatus='00'
 	BEGIN
 		INSERT INTO Responses
 		(
@@ -100,7 +95,7 @@ BEGIN
 			@PickLocationID,
 			@DropLocationID,
 			@DestinationLocationID,
-			@RespStatus,
+			@ResponseStatus,
 			@IncidentSQN,
 			@PrimaryResponseSQN,
 			@RespAlarmLevel,
