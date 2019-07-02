@@ -69,6 +69,16 @@ CREATE TABLE Jobs
 	PRIMARY KEY (JobID)
 );
 
+INSERT INTO Jobs
+	(JobID,Title,JobDescription)
+VALUES
+
+	(0, 'System Manager','Manager of the whole system'),
+	(1, 'Movement Manager','Responsible for managing the day to day operation'),
+	(2, 'Paramedic','Saves people''s lives'),
+	(3, 'Driver','Drives Ambulance'),
+	(4, 'Operator','Adds incident and locations')
+
 CREATE TABLE PaymentMethods
 (
 	MethodName NVARCHAR(32),
@@ -235,7 +245,7 @@ CREATE TABLE Employee
 	AddressStreet NVARCHAR(64),
 	AddressPcode VARCHAR(20),
 	SubscriptionDate DateTime DEFAULT (GETDATE()),
-	PAN NVARCHAR(20) UNIQUE,
+	PAN NVARCHAR(20),
 	NationalID NVARCHAR(14),
 	LogInTStamp DATETIME,
 	LogInGPS NVARCHAR(20),
@@ -251,6 +261,26 @@ CREATE TABLE Employee
 	PRIMARY KEY (EID)
 
 );
+
+INSERT INTO Employee
+	(Email,HashPassword,PAN,NationalID,SuperSSN,JobID)
+VALUES
+
+	('admin@test.com','12345678',null,'',1,0) ,
+    ('move_manager1@test.com','91234567',null,'',1,1),
+	('move_manager2@test.com','89123456','0123456789012345','',1,1),
+	('move_manager3@test.com','78912345','','01234567890123',1,1),
+	('operator1@test.com','91234567','','29704090101931',2,4),
+	('operator2@test.com','89123456',null,'',3,4),
+	('operator3@test.com','78912345',null,'',4,4),
+	('driver1@test.com','91234567','',null,2,3),
+	('driver2@test.com','89123456','1010101010101010','',3,3),
+	('driver3@test.com','78912345','','11112222333344',4,3),
+	('paramedic1@test.com','91234567',null,'',2,2),
+	('paramedic2@test.com','89123456',null,'',3,2),
+	('paramedic3@test.com','78912345','4017772008280452','',4,2),
+	('paramedic4@test.com','91234567','4918012011072830','',2,2),
+	('paramedic5@test.com','91234567',null,'',2,2)
 
 CREATE TABLE Incident
 (
@@ -270,7 +300,7 @@ CREATE TABLE Incident
 
 CREATE TABLE Responses
 (
-	SequenceNumber INT NOT NULL,
+	SequenceNumber INT IDENTITY,
 	AssociatedVehicleVIN INT NOT NULL,
 	CreationTime DATETIME DEFAULT (getdate()),
 	StartLocationID INT,
@@ -279,7 +309,7 @@ CREATE TABLE Responses
 	DestinationLocationID INT,
 	RespStatus NVARCHAR(32),
 	IncidentSQN INT NOT NULL,
-	PrimaryResponseSQN NVARCHAR(64),
+	PrimaryResponseSQN INT,
 	RespAlarmLevel INT,
 	PersonCount NVARCHAR(32),
 
