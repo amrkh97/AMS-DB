@@ -1038,7 +1038,7 @@ begin
 Set @HexCode = 2
 end 
 else begin
-insert into AmbulanceVehicle(VIN,ParamedicID,DriverID,YelloPadID)
+insert into AmbulanceMap(VIN,ParamedicID,DriverID,YelloPadID)
 VALUES(
 @VIN,
 @ParamedicID,
