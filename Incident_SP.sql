@@ -66,5 +66,29 @@ CREATE OR ALTER PROC usp_Incident_Insert
 			RETURN -1
 		END
 	END
+
+
 	
-	
+CREATE OR ALTER Procedure [dbo].[spIncidentTypes_AddRow]
+		@TypeName nvarchar(32),
+		@TypeNote nvarchar(256),
+		@IncidentTypeID int OUTPUT
+As
+Begin
+	insert into dbo.IncidentTypes (TypeName, TypeNote)
+	Values (@TypeName, @TypeNote);
+
+	SET @IncidentTypeID = (SELECT IncidentTypeID
+						   From IncidentTypes
+						   where TypeName = @TypeName)
+End	
+
+
+
+CREATE OR ALTER Procedure [dbo].[spIncidentTypes_DeleteByTypeName]
+		@TypeName nvarchar(32)
+As
+Begin
+	delete from dbo.IncidentTypes
+	where TypeName = @TypeName;
+End
