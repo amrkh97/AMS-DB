@@ -34,7 +34,7 @@ CREATE TABLE ResponseStatuses
 
 CREATE TABLE IncidentTypes
 (
-	IncidentTypeID INT,
+	IncidentTypeID INT IDENTITY,
 	TypeName NVARCHAR(32),
 	TypeNote NVARCHAR(256)
 
@@ -43,7 +43,7 @@ CREATE TABLE IncidentTypes
 
 CREATE TABLE Priorities
 (
-	PrioritYID INT,
+	PrioritYID INT IDENTITY,
 	PriorityName NVARCHAR(32),
 	PriorityNote NVARCHAR(256)
 
