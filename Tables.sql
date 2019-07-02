@@ -1,4 +1,4 @@
-Use KAN_AMO;
+﻿Use KAN_AMO;
 --Comment: Entity Status was removed because it caused
 --errors with the Foreign key relationship on Insert or update.
 --It was also too generic to be of use as each table has
@@ -40,6 +40,63 @@ CREATE TABLE IncidentTypes
 
 		PRIMARY KEY (IncidentTypeID)
 );
+
+INSERT INTO IncidentTypes
+	(TypeName, TypeNote)
+VALUES
+
+	('هبوط','هبوط'),
+	('علاج كيميائى/اشعاعى','علاج كيميائى/اشعاعى'),
+	('ولادة','ولادة'),
+	('تصادم سيارة/عدة سيارات','تصادم سيارة/عدة سيارات'),
+	('نقل محافظات مستشفيات','نقل محافظات مستشفيات'),
+	('انقلاب/سقوط مركبه','انقلاب/سقوط مركبه'),
+	('نقل اجراء عمليات','نقل اجراء عمليات'),
+	('كسر','كسر'),
+	('احتباس بولى','احتباس بولى'),
+	('شكاوى','شكاوى'),
+	('حريق','حريق'),
+	('حروق','حروق'),
+	('جلطة','جلطة'),
+	('حادث طريق','حادث طريق'),
+	('حادث غرق','حادث غرق'),
+	('حضانة أكسجين','حضانة أكسجين'),
+	('حضانة تنقس صناعى','حضانة تنفس صناعى'),
+	('خدمة طبية-خدمات طبية و رعاية','خدمة طبية-خدمات طبية و رعاية'),
+	('سقوط من مرتفع','سقوط من مرتفع'),
+	('ارتفاع درجة الحرارة','ارتفاع درجة الحرارة'),
+	('ارتفاع ضغط الدم','ارتفاع ضغط الدم'),
+	('أزمة قلبية','أزمة قلبية'),
+	('غسبل كلوي','غسبل كلوي'),
+	('غيبوبة/اغماء','غيبوبة/اغماء'),
+	('قئ دموى','قئ دموى'),
+	('قئ و اسهال','قئ و اسهال'),
+	('متابعة مستشفى','متابعة مستشفى'),
+	('مشاجرة/اعتداء','مشاجرة/اعتداء'),
+	('مخص كلوي/معوي','مخص كلوي/معوي'),
+	('نزيف','نزيف'),
+	('اشتعال سيارة','اشتعال سيارة'),
+	('ألم بالصدر','ألم بالصدر'),
+	('تقل اخر خدمات مصاحبة','تقل اخر خدمات مصاحبة'),
+	('نقل أشعة/عيادات/تحاليل','نقل أشعة/عيادات/تحاليل'),
+	('نقل للأشعة أو التحاليل','نقل للأشعة أو التحاليل'),
+	('نقل محافظات/سفريات','نقل محافظات/سفريات'),
+	('نقل من سكن الى سكن','نقل من سكن الى سكن'),
+	('نقل من سكن الى مستشفى','نقل من سكن الى مستشفى'),
+	('نقل من مستشفى للسكن','نقل من مستشفى للسكن'),
+	('نقل من مستشفى الى مستشفى','نقل من مستشفى الى مستشفى'),
+	('انهيار مبنى','انهيار مبنى'),
+	('تسمم','تسمم'),
+	('تشنجات و صرع','تشنجات و صرع'),
+	('تصادم بشخص/أشخاص','تصادم بشخص/أشخاص'),
+	('صعق كهربائى','صعق كهربائى'),
+	('ضيق تنفس','ضيق تنفس'),
+	('غرق شخص','غرق شخص'),
+	('غريق','غريق'),
+	('استفسارات عن مفقودات','استفسارات عن مفقودات'),
+	('استفسارات عن مفقودين','استفسارات عن مفقودين'),
+	('استفسارات أخرى','استفسارات أخرى'),
+	('أخرى','أخرى')
 
 CREATE TABLE Priorities
 (
@@ -379,17 +436,32 @@ CREATE TABLE Patient
 
 CREATE TABLE MedicalRecord
 (
-	MedicalRecordID INT,
-	RespSQN INT UNIQUE,
+	MedicalRecordID INT IDENTITY,
+	RespSQN NVARCHAR(64) UNIQUE,
 	PatientID INT,
-	BloodPressure NVARCHAR(12),
-	Temperature NVARCHAR(33),
 	BloodType NVARCHAR(12),
-	BloodSugar NVARCHAR(12),
-	CBC NVARCHAR(64),
-	EMG NVARCHAR(MAX),
-	ECG NVARCHAR(MAX),
-	Hepatitis NVARCHAR(1),
+	
+	BloodPressure NVARCHAR(2),
+	Diabetes NVARCHAR(2),
+	RespiratoryDiseases NVARCHAR(2),
+	Cancer NVARCHAR(2),
+	CardiovascularDiseases NVARCHAR(2),
+	COPD NVARCHAR(2),
+	Pregnancy NVARCHAR(2),
+	Other NVARCHAR(MAX),
+	Dead NVARCHAR(2),
+	Consciousness NVARCHAR(2),
+    Breathing NVARCHAR(2),
+    Capillaries NVARCHAR(2),
+	
+	Pulse NVARCHAR(12),
+	BloodPressureLevel NVARCHAR(12),
+	DiabetesLevel NVARCHAR(12),
+	BodyTemp NVARCHAR(12),
+	
+	BreathingRate NVARCHAR(12),
+	CapillariesLevel NVARCHAR(12),
+	Injury NVARCHAR(MAX),
 	PhysicalExaminationImage NVARCHAR(MAX),
 	MedicineApplied NVARCHAR(128),
 	ProcedureDoneInCar NVARCHAR(MAX),
@@ -401,7 +473,6 @@ CREATE TABLE MedicalRecord
 	--FOREIGN KEY (MRStatus) REFERENCES EntityStatus(EntityStatusID),
 	PRIMARY KEY (MedicalRecordID),
 );
-
 
 
 CREATE TABLE PatientLocations
