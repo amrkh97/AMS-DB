@@ -15,7 +15,7 @@ CREATE OR ALTER PROC usp_Response_Insert
 AS
 BEGIN
 	SET NOCOUNT ON
-	DECLARE @ResponseStatus NVARCHAR(64)
+	DECLARE @ResponseStatus NVARCHAR(32)
 	IF(@AssociatedVehicleVIN IS NULL OR @AssociatedVehicleVIN=0)
 	BEGIN
 		SET @responseMessage = 'Missing VIN'
@@ -118,3 +118,26 @@ BEGIN
 	END
 END
 GO
+------------------------------------------------------------------------------------
+-- FIND RESPONSE BY ID --
+CREATE OR ALTER PROC usp_ResponseStatus_SearchByID 
+@SequenceNumber INT, --1
+@return_Hex_value NVARCHAR(2)='FF' OUTPUT,--2
+@responseMessage NVARCHAR(128)='' OUTPUT,--3
+@RespStatus NVARCHAR(32) = '' OUTPUT--4
+AS
+BEGIN
+	IF EXISTS (SELECT TOP 1 SequenceNumber FROM dbo.Responses WHERE SequenceNumber=@SequenceNumber)
+	BEGIN
+		SET @RespStatus = (SELECT RespStatus FROM Responses WHERE SequenceNumber=@SequenceNumber)
+		SET @responseMessage = 'RESPONSE STATUS LOCATED'
+		SELECT @return_Hex_value = '00'
+		RETURN 1
+	END
+	ELSE
+	BEGIN
+		SET @responseMessage = 'FAILED TO LOCATE RESPONSE STATUS'
+		SELECT @return_Hex_value = 'FF'
+		RETURN 1
+	END
+END
