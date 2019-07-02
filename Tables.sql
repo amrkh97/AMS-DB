@@ -1,4 +1,4 @@
-Use KAN_AMO;
+﻿Use KAN_AMO;
 --Comment: Entity Status was removed because it caused
 --errors with the Foreign key relationship on Insert or update.
 --It was also too generic to be of use as each table has
@@ -40,6 +40,63 @@ CREATE TABLE IncidentTypes
 
 		PRIMARY KEY (IncidentTypeID)
 );
+
+INSERT INTO IncidentTypes
+	(TypeName, TypeNote)
+VALUES
+
+	('هبوط','هبوط'),
+	('علاج كيميائى/اشعاعى','علاج كيميائى/اشعاعى'),
+	('ولادة','ولادة'),
+	('تصادم سيارة/عدة سيارات','تصادم سيارة/عدة سيارات'),
+	('نقل محافظات مستشفيات','نقل محافظات مستشفيات'),
+	('انقلاب/سقوط مركبه','انقلاب/سقوط مركبه'),
+	('نقل اجراء عمليات','نقل اجراء عمليات'),
+	('كسر','كسر'),
+	('احتباس بولى','احتباس بولى'),
+	('شكاوى','شكاوى'),
+	('حريق','حريق'),
+	('حروق','حروق'),
+	('جلطة','جلطة'),
+	('حادث طريق','حادث طريق'),
+	('حادث غرق','حادث غرق'),
+	('حضانة أكسجين','حضانة أكسجين'),
+	('حضانة تنقس صناعى','حضانة تنفس صناعى'),
+	('خدمة طبية-خدمات طبية و رعاية','خدمة طبية-خدمات طبية و رعاية'),
+	('سقوط من مرتفع','سقوط من مرتفع'),
+	('ارتفاع درجة الحرارة','ارتفاع درجة الحرارة'),
+	('ارتفاع ضغط الدم','ارتفاع ضغط الدم'),
+	('أزمة قلبية','أزمة قلبية'),
+	('غسبل كلوي','غسبل كلوي'),
+	('غيبوبة/اغماء','غيبوبة/اغماء'),
+	('قئ دموى','قئ دموى'),
+	('قئ و اسهال','قئ و اسهال'),
+	('متابعة مستشفى','متابعة مستشفى'),
+	('مشاجرة/اعتداء','مشاجرة/اعتداء'),
+	('مخص كلوي/معوي','مخص كلوي/معوي'),
+	('نزيف','نزيف'),
+	('اشتعال سيارة','اشتعال سيارة'),
+	('ألم بالصدر','ألم بالصدر'),
+	('تقل اخر خدمات مصاحبة','تقل اخر خدمات مصاحبة'),
+	('نقل أشعة/عيادات/تحاليل','نقل أشعة/عيادات/تحاليل'),
+	('نقل للأشعة أو التحاليل','نقل للأشعة أو التحاليل'),
+	('نقل محافظات/سفريات','نقل محافظات/سفريات'),
+	('نقل من سكن الى سكن','نقل من سكن الى سكن'),
+	('نقل من سكن الى مستشفى','نقل من سكن الى مستشفى'),
+	('نقل من مستشفى للسكن','نقل من مستشفى للسكن'),
+	('نقل من مستشفى الى مستشفى','نقل من مستشفى الى مستشفى'),
+	('انهيار مبنى','انهيار مبنى'),
+	('تسمم','تسمم'),
+	('تشنجات و صرع','تشنجات و صرع'),
+	('تصادم بشخص/أشخاص','تصادم بشخص/أشخاص'),
+	('صعق كهربائى','صعق كهربائى'),
+	('ضيق تنفس','ضيق تنفس'),
+	('غرق شخص','غرق شخص'),
+	('غريق','غريق'),
+	('استفسارات عن مفقودات','استفسارات عن مفقودات'),
+	('استفسارات عن مفقودين','استفسارات عن مفقودين'),
+	('استفسارات أخرى','استفسارات أخرى'),
+	('أخرى','أخرى')
 
 CREATE TABLE Priorities
 (
@@ -100,7 +157,6 @@ CREATE TABLE Medicine
 	MedicineStatus NVARCHAR(32) DEFAULT(00),
 
 	PRIMARY KEY(BarCode)
-	--FOREIGN KEY(MedicineStatus) REFERENCES EntityStatus(EntityStatusID),
 	--CHECK (Price > 0)
 
 );
@@ -115,7 +171,6 @@ CREATE TABLE PharmaCompany
 	CompanyStatus NVARCHAR(32) DEFAULT(00)
 
 		PRIMARY key (CompanyID)
-	--	FOREIGN KEY (CompanyStatus) REFERENCES EntityStatus(EntityStatusID),
 );
 
 CREATE TABLE CompanyMedicineMap
@@ -135,12 +190,10 @@ CREATE TABLE Batch
 	OrderDate DATETIME DEFAULT getdate(),
 	BatchStatus NVARCHAR(32) DEFAULT(00),
 	PRIMARY KEY(BatchID),
-	FOREIGN KEY (BatchMedBCode) REFERENCES Medicine(BarCode)
-	--FOREIGN KEY (BatchStatus) REFERENCES EntityStatus(EntityStatusID),
-	--CONSTRAINT chk_Batch_QuantityPositive CHECK(Quantity > 0 )
+	FOREIGN KEY (BatchMedBCode) REFERENCES Medicine(BarCode),
+	CONSTRAINT chk_Batch_QuantityPositive CHECK(Quantity > 0 )
 );
 
---TODO: Check the quantity element's type.
 CREATE TABLE BatchMedicine
 (
 	EntryID INT IDENTITY,
@@ -170,8 +223,7 @@ CREATE TABLE Yellopad
 	YelloPadPicture NVARCHAR(500),
 
 	PRIMARY KEY (YelloPadID),
-	--FOREIGN KEY (YelloPadStatus) REFERENCES EntityStatus(EntityStatusID)
-);
+	);
 
 CREATE TABLE AmbulanceVehicle
 (
@@ -190,14 +242,11 @@ CREATE TABLE AmbulanceVehicle
 	ChasiahNumber NVARCHAR(32),
 	Model NVARCHAR(32),
 	DriverPhoneNumber NVARCHAR(32),
-	AssignedYPID INT NOT NULL UNIQUE,
 	VehicleStatus NVARCHAR(32) DEFAULT(00),
 	AmbulanceVehiclePicture NVARCHAR(500),
 
 	PRIMARY KEY (VIN),
-	--FOREIGN KEY (VehicleStatus) REFERENCES EntityStatus (EntityStatusID),
-	FOREIGN KEY (AssignedYPID) REFERENCES Yellopad (YelloPadID)
-);
+	);
 
 CREATE TABLE BatchDistributionMap
 (
@@ -208,7 +257,7 @@ CREATE TABLE BatchDistributionMap
 		PRIMARY KEY (BID,AmbVIN),
 	FOREIGN KEY (BID) REFERENCES Batch(BatchID),
 	FOREIGN KEY (AmbVIN) REFERENCES AmbulanceVehicle(VIN),
-	--CONSTRAINT chk_BatchDistributionMap_DistributedAmtPositive CHECK(DistributedAmt > 0 )
+	CONSTRAINT chk_BatchDistributionMap_DistributedAmtPositive CHECK(DistributedAmt > 0 )
 );
 
 CREATE TABLE Locations
@@ -225,7 +274,6 @@ CREATE TABLE Locations
 	HouseNumber NVARCHAR(12),
 	LocationStatus NVARCHAR(32) DEFAULT (00),
 
-	--FOREIGN KEY (LocationStatus) REFERENCES EntityStatus(EntityStatusID),
 	PRIMARY KEY (LocationID)
 );
 
@@ -257,7 +305,6 @@ CREATE TABLE Employee
 
 	FOREIGN KEY (SuperSSN) REFERENCES Employee(EID),
 	FOREIGN KEY (JobID) REFERENCES Jobs(JobID),
-	--FOREIGN KEY(EmployeeStatus) REFERENCES EntityStatus(EntityStatusID),
 	PRIMARY KEY (EID)
 
 );
@@ -335,7 +382,7 @@ CREATE TABLE MedicineUsedPerResponse
 	FOREIGN KEY (BID) REFERENCES Batch(BatchID),
 	FOREIGN KEY (AmbVIN) REFERENCES AmbulanceVehicle(VIN),
 	FOREIGN KEY (RespSQN) REFERENCES Responses(SequenceNumber),
-	--CONSTRAINT chk_MedicineUsedPerResponse_UsedAmtPositive CHECK(UsedAmt > 0 )
+	CONSTRAINT chk_MedicineUsedPerResponse_UsedAmtPositive CHECK(UsedAmt > 0 )
 );
 
 CREATE TABLE Receipt
@@ -352,7 +399,6 @@ CREATE TABLE Receipt
 	FOREIGN KEY (RespSQN) REFERENCES Responses(SequenceNumber),
 	FOREIGN KEY (CasheirSSN) REFERENCES Employee(EID),
 	FOREIGN KEY (PaymentMethod) REFERENCES PaymentMethods(MethodName),
-	--FOREIGN KEY (ReceiptStatus) REFERENCES EntityStatus(EntityStatusID),
 	PRIMARY KEY(ReceiptID)
 );
 CREATE TABLE Patient
@@ -371,25 +417,39 @@ CREATE TABLE Patient
 	PatientStatus NVARCHAR(32) DEFAULT (00),
 	PatientNationalID INT
 
-		--FOREIGN KEY(PatientStatus) REFERENCES EntityStatus(EntityStatusID),
-		PRIMARY KEY (PatientID),
+	PRIMARY KEY (PatientID),
 
 );
 
 
 CREATE TABLE MedicalRecord
 (
-	MedicalRecordID INT,
-	RespSQN INT UNIQUE,
+	MedicalRecordID INT IDENTITY,
+	RespSQN NVARCHAR(64) UNIQUE,
 	PatientID INT,
-	BloodPressure NVARCHAR(12),
-	Temperature NVARCHAR(33),
 	BloodType NVARCHAR(12),
-	BloodSugar NVARCHAR(12),
-	CBC NVARCHAR(64),
-	EMG NVARCHAR(MAX),
-	ECG NVARCHAR(MAX),
-	Hepatitis NVARCHAR(1),
+	
+	BloodPressure NVARCHAR(2),
+	Diabetes NVARCHAR(2),
+	RespiratoryDiseases NVARCHAR(2),
+	Cancer NVARCHAR(2),
+	CardiovascularDiseases NVARCHAR(2),
+	COPD NVARCHAR(2),
+	Pregnancy NVARCHAR(2),
+	Other NVARCHAR(MAX),
+	Dead NVARCHAR(2),
+	Consciousness NVARCHAR(2),
+    Breathing NVARCHAR(2),
+    Capillaries NVARCHAR(2),
+	
+	Pulse NVARCHAR(12),
+	BloodPressureLevel NVARCHAR(12),
+	DiabetesLevel NVARCHAR(12),
+	BodyTemp NVARCHAR(12),
+	
+	BreathingRate NVARCHAR(12),
+	CapillariesLevel NVARCHAR(12),
+	Injury NVARCHAR(MAX),
 	PhysicalExaminationImage NVARCHAR(MAX),
 	MedicineApplied NVARCHAR(128),
 	ProcedureDoneInCar NVARCHAR(MAX),
@@ -398,10 +458,8 @@ CREATE TABLE MedicalRecord
 
 	FOREIGN KEY (RespSQN) REFERENCES Responses(SequenceNumber),
 	FOREIGN KEY (PatientID) REFERENCES Patient(PatientID),
-	--FOREIGN KEY (MRStatus) REFERENCES EntityStatus(EntityStatusID),
 	PRIMARY KEY (MedicalRecordID),
 );
-
 
 
 CREATE TABLE PatientLocations
@@ -426,11 +484,23 @@ CREATE TABLE Reports
 	--ReportStatus NVARCHAR(32) DEFAULT (1),
 
 	FOREIGN KEY (PatientID) REFERENCES Patient(PatientID),
-	--FOREIGN KEY(ReportStatus) REFERENCES EntityStatus(EntityStatusID),
 	PRIMARY KEY (ReportID)
 );
 
 
+CREATE TABLE AmbulanceMap
+(
+	VIN INT NOT NULL,
+	ParamedicID INT NOT NULL,
+	DriverID INT NOT NULL,
+	YelloPadID INT NOT NULL,
+	StatusMap INT DEFAULT 0,
+	
+	FOREIGN KEY (VIN) REFERENCES dbo.AmbulanceVehicle(VIN),
+	FOREIGN KEY (ParamedicID) REFERENCES dbo.Employee(EID),
+	FOREIGN KEY (DriverID) REFERENCES dbo.Employee(EID),
+	FOREIGN KEY (YelloPadID) REFERENCES dbo.Yellopad(YelloPadID)
+);
 ------------------------------------------------------------------------
 -- Creating Indecies --
 -- (1) Medicine BarCode Unique Index -- 
