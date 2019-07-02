@@ -118,7 +118,7 @@ CREATE TABLE CompanyMedicineMap
 );
 CREATE TABLE Batch
 (
-	BatchID INT,
+	BatchID BIGINT,
 	BatchMedBCode NVARCHAR(64) NOT NULL,
 	Quantity INT,
 	ExpiryDate DATE,
@@ -134,7 +134,7 @@ CREATE TABLE Batch
 CREATE TABLE BatchMedicine
 (
 	EntryID INT IDENTITY,
-	BatchID INT,
+	BatchID BIGINT,
 	MedicineBCode NVARCHAR(64),
 	Quantity INT,
 	FOREIGN KEY(BatchID) REFERENCES Batch(BatchID),
@@ -192,7 +192,7 @@ CREATE TABLE AmbulanceVehicle
 CREATE TABLE BatchDistributionMap
 (
 	DistributedAmt INT,
-	BID INT,
+	BID BIGINT,
 	AmbVIN INT
 
 		PRIMARY KEY (BID,AmbVIN),
@@ -279,7 +279,7 @@ CREATE TABLE Responses
 	DestinationLocationID INT,
 	RespStatus NVARCHAR(32),
 	IncidentSQN INT NOT NULL,
-	PrimaryResponseSQN INT,
+	PrimaryResponseSQN NVARCHAR(64),
 	RespAlarmLevel INT,
 	PersonCount NVARCHAR(32),
 
@@ -299,7 +299,7 @@ CREATE TABLE MedicineUsedPerResponse
 (
 	RespSQN INT NOT NULL,
 	UsedAmt INT,
-	BID INT,
+	BID BIGINT,
 	AmbVIN INT
 
 	PRIMARY KEY (RespSQN,BID),

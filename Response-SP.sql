@@ -19,55 +19,55 @@ BEGIN
 	IF(@AssociatedVehicleVIN IS NULL OR @AssociatedVehicleVIN=0)
 	BEGIN
 		SET @responseMessage = 'Missing VIN'
-		SELECT @return_Hex_value = 'FF'
+		SELECT @return_Hex_value = 'AF'
 		RETURN -1	
 	END
 	ELSE IF (@StartLocationID IS NULL OR @StartLocationID=0)
 	BEGIN
 		SET @responseMessage = 'Missing Start Location'
-		SELECT @return_Hex_value = 'FF'
+		SELECT @return_Hex_value = 'BF'
 		RETURN -1
 	END
 	ELSE IF (@PickLocationID IS NULL OR @PickLocationID=0)
 	BEGIN
 		SET @responseMessage = 'Missing Pick Location'
-		SELECT @return_Hex_value = 'FF'
+		SELECT @return_Hex_value = 'CF'
 		RETURN -1
 	END
 	ELSE IF (@DropLocationID IS NULL OR @DropLocationID=0)
 	BEGIN
 		SET @responseMessage = 'Missing Drop Location'
-		SELECT @return_Hex_value = 'FF'
+		SELECT @return_Hex_value = 'DF'
 		RETURN -1
 	END
 	ELSE IF (@DestinationLocationID IS NULL OR @DestinationLocationID=0)
 	BEGIN
 		SET @responseMessage = 'Missing Destination Location'
-		SELECT @return_Hex_value = 'FF'
+		SELECT @return_Hex_value = 'EF'
 		RETURN -1
 	END
 	ELSE IF (@IncidentSQN IS NULL OR @IncidentSQN=0)
 	BEGIN
 		SET @responseMessage = 'Missing Incident SQN'
-		SELECT @return_Hex_value = 'FF'
+		SELECT @return_Hex_value = 'FA'
 		RETURN -1
 	END
 	ELSE IF (@RespAlarmLevel IS NULL OR @PrimaryResponseSQN=0)
 	BEGIN
 		SET @responseMessage = 'Missing Alarm Level'
-		SELECT @return_Hex_value = 'FF'
+		SELECT @return_Hex_value = 'FB'
 		RETURN -1
 	END
 	ELSE IF (@PersonCount IS NULL OR @PersonCount='')
 	BEGIN
 		SET @responseMessage = 'Missing Persons Count'
-		SELECT @return_Hex_value = 'FF'
+		SELECT @return_Hex_value = 'FC'
 		RETURN -1
 	END
 	ELSE IF (@RespStatus IS NULL OR @RespStatus='')
 	BEGIN
 		SET @responseMessage = 'Missing Response Status'
-		SELECT @return_Hex_value = 'FF'
+		SELECT @return_Hex_value = 'FD'
 		RETURN -1
 	END
 	SET @ResponseID = (SELECT SequenceNumber FROM dbo.Responses WHERE (AssociatedVehicleVIN=@AssociatedVehicleVIN AND StartLocationID=@StartLocationID AND PickLocationID=@PickLocationID 
@@ -75,7 +75,7 @@ BEGIN
 	IF(@ResponseID IS NOT NULL)
 	BEGIN
 		SET @responseMessage = 'Response Already Exist'
-		SELECT @return_Hex_value = 'FF'
+		SELECT @return_Hex_value = 'FE'
 		RETURN -1
 	END
 	ELSE 
