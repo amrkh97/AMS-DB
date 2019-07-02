@@ -983,6 +983,65 @@ as
 		return -1
 -----------------------------------------
 -- (4) Update Location By LocationID Test --
+
+
+---------------------------------------------
+--Batch-Medicine:
+GO
+
+CREATE PROC usp_BatchMedicine_CheckID
+@UniqueID INT,
+@HexCode INT OUTPUT
+AS
+BEGIN
+
+IF EXISTS (SELECT  Batch.BatchID FROM dbo.Batch WHERE BatchID= @UniqueID)
+BEGIN
+SET @HexCode = 1
+END
+ELSE
+BEGIN
+SET @HexCode = 0
+END
+
+
+END
+GO
+
+
+CREATE proc usp_BatchMedicine_Insert
+@BatchID INT,
+--@MedicineName NVARCHAR(64),
+@MedicineBarcode NVARCHAR(64),
+@MedicineQuantity NVARCHAR(64)
+AS
+BEGIN
+
+if not exists(select * from dbo.Batch  where dbo.Batch.BatchID=@BatchID)
+begin
+insert into dbo.Batch(BatchID,BatchMedBCode,Quantity)
+VALUES(@BatchID,@MedicineBarcode,@MedicineQuantity)
+end
+INSERT INTO dbo.BatchMedicine
+(
+    BatchID,
+    MedicineBCode,
+    Quantity
+)
+VALUES
+(   @BatchID ,
+    @MedicineBarcode, -- MedicineBCode - nvarchar(64)
+    @MedicineQuantity  -- Quantity - nvarchar(64)
+    )
+
+END
+go
+
+
+
+
+
+
 --GO
 --EXEC usp_Location_Update @LocationID = 1, @FreeFormatAddress = 'adsdasdfsa', @Longitude = 25.334,
 --@Latitude = 65.32, @Street = 'Tahrir',  @HouseNumber = '7'

@@ -1,12 +1,12 @@
 use KAN_AMO
 GO
-Create proc usp_AmbulanceVehicle_SelectAll 
+Create OR ALTER proc usp_AmbulanceVehicle_SelectAll 
 as
 	select * from AmbulanceVehicle
 
 -- (2.1) Get Patient By ID --
 GO
-create proc usp_AmbulanceVehicle_SelectByVIN
+Create OR ALTER proc usp_AmbulanceVehicle_SelectByVIN
   @VIN INT,
    @responseCode NVARCHAR(2)='FF' OUTPUT,
 	@responseMessage NVARCHAR(128)='' OUTPUT
@@ -36,7 +36,7 @@ BEGIN CATCH
 
 		
 GO
-create proc usp_AmbulanceVehicle_SelectByBrand
+Create OR ALTER proc usp_AmbulanceVehicle_SelectByBrand
   @Brand  NVARCHAR(32),
    @responseCode NVARCHAR(2)='FF' OUTPUT,
 	@responseMessage NVARCHAR(128)='' OUTPUT
@@ -68,7 +68,7 @@ BEGIN CATCH
 	
 GO
 
-create proc usp_AmbulanceVehicle_SelectBySts
+Create OR ALTER proc usp_AmbulanceVehicle_SelectBySts
   @VehicleStatus  NVARCHAR(32),
    @responseCode NVARCHAR(2)='FF' OUTPUT,
 	@responseMessage NVARCHAR(128)='' OUTPUT
@@ -98,7 +98,7 @@ BEGIN CATCH
 		 
 -- (3) Insert Patient --
 GO
-CREATE PROC usp_AmbulanceVehicle_Insert 
+Create OR ALTER PROC usp_AmbulanceVehicle_Insert 
 	
 	@VIN INT,
 	@Implication NVARCHAR(32),
@@ -151,7 +151,7 @@ CREATE PROC usp_AmbulanceVehicle_Insert
 
 -- (4) Update AmbulanceVehicle --
 GO
-CREATE PROC usp_AmbulanceVehicle_Update
+Create OR ALTER PROC usp_AmbulanceVehicle_Update
 	@VIN INT,
 	@Implication NVARCHAR(32),
 	@Make NVARCHAR(32) ,
@@ -216,7 +216,7 @@ as
 
 -- (5) Delete Patient By VIN --
 GO
-create proc usp_AmbulanceVehicle_Delete 
+Create OR ALTER proc usp_AmbulanceVehicle_Delete 
  @VIN INT,
   @responseCode NVARCHAR(2)='FF' OUTPUT,
 	@responseMessage NVARCHAR(128)='' OUTPUT

@@ -1,5 +1,5 @@
 Use KAN_AMO;
---Comment: Entity Status was removed bacuse it caused
+--Comment: Entity Status was removed because it caused
 --errors with the Foreign key relationship on Insert or update.
 --It was also too generic to be of use as each table has
 --its own Status values.
@@ -81,7 +81,7 @@ CREATE TABLE Medicine
 (
 	BarCode NVARCHAR(64),
 	MedicineName NVARCHAR(64) NOT NULL UNIQUE,
-	CountInStock NVARCHAR(64),
+	CountInStock Integer,
 	Price NVARCHAR(32),
 	Implications NVARCHAR(MAX),
 	MedicineUsage NVARCHAR(MAX),
@@ -120,7 +120,7 @@ CREATE TABLE Batch
 (
 	BatchID INT,
 	BatchMedBCode NVARCHAR(64) NOT NULL,
-	Quantity NVARCHAR(64),
+	Quantity INT,
 	ExpiryDate DATE,
 	OrderDate DATETIME DEFAULT getdate(),
 	BatchStatus NVARCHAR(32) DEFAULT(00),
@@ -136,14 +136,14 @@ CREATE TABLE BatchMedicine
 	EntryID INT IDENTITY,
 	BatchID INT,
 	MedicineBCode NVARCHAR(64),
-	Quantity NVARCHAR(64),
+	Quantity INT,
 	FOREIGN KEY(BatchID) REFERENCES Batch(BatchID),
 	FOREIGN KEY(MedicineBCode) REFERENCES Medicine(BarCode)
 	);
 
 CREATE TABLE Yellopad
 (
-	YelloPadID NVARCHAR(16) NOT NULL,
+	YelloPadID INT NOT NULL,
 	YelloPadUniqueID NVARCHAR(16) NOT NULL UNIQUE,
 	YellopadNetworkcardNo NVARCHAR(64),
 	YelloPadorderdate DATE,
@@ -180,7 +180,7 @@ CREATE TABLE AmbulanceVehicle
 	ChasiahNumber NVARCHAR(32),
 	Model NVARCHAR(32),
 	DriverPhoneNumber NVARCHAR(32),
-	AssignedYPID NVARCHAR(16) NOT NULL UNIQUE,
+	AssignedYPID INT NOT NULL UNIQUE,
 	VehicleStatus NVARCHAR(32) DEFAULT(00),
 	AmbulanceVehiclePicture NVARCHAR(500),
 
@@ -254,7 +254,7 @@ CREATE TABLE Employee
 
 CREATE TABLE Incident
 (
-	IncidentSequenceNumber NVARCHAR(64),
+	IncidentSequenceNumber INT IDENTITY NOT NULL,
 	CreationTime DATETIME DEFAULT (GETDATE()),
 	IncidentType INT,
 	IncidentPriority INT,
@@ -270,7 +270,7 @@ CREATE TABLE Incident
 
 CREATE TABLE Responses
 (
-	SequenceNumber NVARCHAR(64) NOT NULL,
+	SequenceNumber INT NOT NULL,
 	AssociatedVehicleVIN INT NOT NULL,
 	CreationTime DATETIME DEFAULT (getdate()),
 	StartLocationID INT,
@@ -278,7 +278,7 @@ CREATE TABLE Responses
 	DropLocationID INT,
 	DestinationLocationID INT,
 	RespStatus NVARCHAR(32),
-	IncidentSQN NVARCHAR(64) NOT NULL,
+	IncidentSQN INT NOT NULL,
 	PrimaryResponseSQN NVARCHAR(64),
 	RespAlarmLevel INT,
 	PersonCount NVARCHAR(32),
@@ -297,7 +297,7 @@ CREATE TABLE Responses
 
 CREATE TABLE MedicineUsedPerResponse
 (
-	RespSQN NVARCHAR(64) NOT NULL,
+	RespSQN INT NOT NULL,
 	UsedAmt INT,
 	BID INT,
 	AmbVIN INT
@@ -312,7 +312,7 @@ CREATE TABLE MedicineUsedPerResponse
 CREATE TABLE Receipt
 (
 	ReceiptID INT,
-	RespSQN NVARCHAR(64) NOT NULL,
+	RespSQN INT NOT NULL,
 	CasheirSSN INT,
 	ReceiptCreationTime DATETIME DEFAULT (GETDATE()),
 	FTPFileLocation NVARCHAR(128),
@@ -351,7 +351,7 @@ CREATE TABLE Patient
 CREATE TABLE MedicalRecord
 (
 	MedicalRecordID INT,
-	RespSQN NVARCHAR(64) UNIQUE,
+	RespSQN INT UNIQUE,
 	PatientID INT,
 	BloodPressure NVARCHAR(12),
 	Temperature NVARCHAR(33),
