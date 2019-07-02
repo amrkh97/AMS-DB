@@ -379,17 +379,32 @@ CREATE TABLE Patient
 
 CREATE TABLE MedicalRecord
 (
-	MedicalRecordID INT,
-	RespSQN INT UNIQUE,
+	MedicalRecordID INT IDENTITY,
+	RespSQN NVARCHAR(64) UNIQUE,
 	PatientID INT,
-	BloodPressure NVARCHAR(12),
-	Temperature NVARCHAR(33),
 	BloodType NVARCHAR(12),
-	BloodSugar NVARCHAR(12),
-	CBC NVARCHAR(64),
-	EMG NVARCHAR(MAX),
-	ECG NVARCHAR(MAX),
-	Hepatitis NVARCHAR(1),
+	
+	BloodPressure NVARCHAR(2),
+	Diabetes NVARCHAR(2),
+	RespiratoryDiseases NVARCHAR(2),
+	Cancer NVARCHAR(2),
+	CardiovascularDiseases NVARCHAR(2),
+	COPD NVARCHAR(2),
+	Pregnancy NVARCHAR(2),
+	Other NVARCHAR(MAX),
+	Dead NVARCHAR(2),
+	Consciousness NVARCHAR(2),
+    Breathing NVARCHAR(2),
+    Capillaries NVARCHAR(2),
+	
+	Pulse NVARCHAR(12),
+	BloodPressureLevel NVARCHAR(12),
+	DiabetesLevel NVARCHAR(12),
+	BodyTemp NVARCHAR(12),
+	
+	BreathingRate NVARCHAR(12),
+	CapillariesLevel NVARCHAR(12),
+	Injury NVARCHAR(MAX),
 	PhysicalExaminationImage NVARCHAR(MAX),
 	MedicineApplied NVARCHAR(128),
 	ProcedureDoneInCar NVARCHAR(MAX),
@@ -401,7 +416,6 @@ CREATE TABLE MedicalRecord
 	--FOREIGN KEY (MRStatus) REFERENCES EntityStatus(EntityStatusID),
 	PRIMARY KEY (MedicalRecordID),
 );
-
 
 
 CREATE TABLE PatientLocations
