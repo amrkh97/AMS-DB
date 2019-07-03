@@ -4,12 +4,12 @@ USE KAN_AMO;
 -- Medicine Stored Procedures --
 -- (1) Get All Medicines --
 GO
-Create proc usp_Medicines_SelectAll 
+CREATE OR ALTER proc usp_Medicines_SelectAll 
 as
 	select * from Medicine
 -- (2.1) Get Medicine By Name --
 GO
-Create proc usp_Medicine_SelectByName  @MedName NVARCHAR(64)
+CREATE OR ALTER proc usp_Medicine_SelectByName  @MedName NVARCHAR(64)
 as
 	IF (@MedName IS NOT NULL)
 	BEGIN
@@ -20,7 +20,7 @@ as
 		RETURN -1
 -- (2.2) Get Medicine By Bar Code --
 GO
-Create proc usp_Medicine_SelectByBCode  @bCode NVARCHAR(64)
+CREATE OR ALTER proc usp_Medicine_SelectByBCode  @bCode NVARCHAR(64)
 as
 	IF (@bCode IS NOT NULL)
 		BEGIN
@@ -31,13 +31,13 @@ as
 		RETURN -1
 -- (2.3) Get Medicine By Status --
 GO
-Create proc usp_Medicine_SelectBySts @MStatus NVARCHAR(32)
+CREATE OR ALTER proc usp_Medicine_SelectBySts @MStatus NVARCHAR(32)
 as
 	select * from Medicine
 	where MedicineStatus = @MStatus
 -- (3) Insert Medicine --
 GO
-Create PROC usp_Medicine_Insert 
+CREATE OR ALTER PROC usp_Medicine_Insert 
 	@BarCode NVARCHAR(64),
 	@Name NVARCHAR(64),
     @CountInStock NVARCHAR(64) = NULL,
@@ -56,7 +56,7 @@ as
 		return -1
 -- (4) Update Medicine --
 GO
-Create PROC usp_Medicine_Update
+CREATE OR ALTER PROC usp_Medicine_Update
 	@BarCode NVARCHAR(64),
 	@Name NVARCHAR(64) = NULL,
     @CountInStock NVARCHAR(64) = NULL,
@@ -83,7 +83,7 @@ as
 		return -1
 -- (5) Delete Medicine By Barcode --
 GO
-Create proc usp_Medicine_Delete  @bCode NVARCHAR(64)
+CREATE OR ALTER proc usp_Medicine_Delete  @bCode NVARCHAR(64)
 as
 	IF (@bCode IS NOT NULL)
 	BEGIN
@@ -100,12 +100,12 @@ as
 -- PharmaCompany Stored Procedures --
 -- (1) Get All Companies --
 GO
-Create proc usp_PharmaCompany_SelectAll
+CREATE OR ALTER proc usp_PharmaCompany_SelectAll
 as
 	select * from PharmaCompany
 -- (2.1) Get Company By Name --
 GO
-Create proc usp_PharmaCompany_Select  @compName NVARCHAR(64)
+CREATE OR ALTER proc usp_PharmaCompany_Select  @compName NVARCHAR(64)
 as
 	IF (@compName IS NOT NULL)
 	BEGIN
@@ -117,19 +117,19 @@ as
 		RETURN -1
 -- (2.2) Get Company By ID --
 GO
-Create proc usp_PharmaCompany_SelectByID @CompID INT
+CREATE OR ALTER proc usp_PharmaCompany_SelectByID @CompID INT
 as
 	select * from PharmaCompany
 	where CompanyID = @CompID
 -- (2.3) Get Company By Status --
 GO
-Create proc usp_PharmaCompany_SelectBySts @CompStatus NVARCHAR(64)
+CREATE OR ALTER proc usp_PharmaCompany_SelectBySts @CompStatus NVARCHAR(64)
 as
 	select * from PharmaCompany
 	where CompanyStatus = @CompStatus
 -- (3) Insert Company --
 GO
-Create PROC usp_PharmaCompany_Insert 
+CREATE OR ALTER PROC usp_PharmaCompany_Insert 
 	@CompanyName NVARCHAR(64),
     @ContactPerson NVARCHAR(32) = NULL,
     @CompanyAddress NVARCHAR(128) = NULL,
@@ -171,7 +171,7 @@ as
 		END
 -- (4) Update Company By ID --
 GO
-Create PROC usp_PharmaCompany_Update 
+CREATE OR ALTER PROC usp_PharmaCompany_Update 
 	@CompID INT,
 	@CompanyName NVARCHAR(64) = NULL,
     @ContactPerson NVARCHAR(32) = NULL,
@@ -186,7 +186,7 @@ as
 			ContactPerson = ISNULL(@ContactPerson,ContactPerson),
 			CompanyAddress = ISNULL(@CompanyAddress,CompanyAddress),
 			CompanyPhone = ISNULL(@CompanyPhone,CompanyPhone),
-			CompanyStatus = 2
+			CompanyStatus = '01'
 			WHERE CompanyID = @CompID
 			--Data Updated Succesfully
 		set @HexCode = '00'		
@@ -199,14 +199,14 @@ as
 	END
 -- (5) Delete Company By ID --
 GO
-Create proc usp_PharmaCompany_Delete  @CompID INT,
+CREATE OR ALTER proc usp_PharmaCompany_Delete  @CompID INT,
 @HexCode NVARCHAR(2) OUTPUT
 as
 begin
 	IF (@CompID IS NOT NULL)
 	BEGIN
 		UPDATE PharmaCompany
-		SET CompanyStatus = 99
+		SET CompanyStatus = '02'
 		where CompanyID = @CompID
 		--Deleteion Succesful
 		set @HexCode = '00'
@@ -223,7 +223,7 @@ END
 
 --(1) Insert a medicine to a company --
 GO
-Create PROC usp_CompanyMedicineMap_Insert @CompID INT, @MedBCode NVARCHAR(64)
+CREATE OR ALTER PROC usp_CompanyMedicineMap_Insert @CompID INT, @MedBCode NVARCHAR(64)
 AS
 	BEGIN
 		INSERT INTO CompanyMedicineMap (CompID,MedBCode)
@@ -231,7 +231,7 @@ AS
 	END
 --(2) Delete a medicine from a company --
 GO
-Create PROC usp_CompanyMedicineMap_DELETE @CompID INT, @MedBCode NVARCHAR(64)
+CREATE OR ALTER PROC usp_CompanyMedicineMap_DELETE @CompID INT, @MedBCode NVARCHAR(64)
 AS
 	BEGIN
 		DELETE FROM CompanyMedicineMap 
@@ -244,12 +244,12 @@ AS
 
 -- (1) Select All Batches --
 GO
-Create proc usp_Batch_SelectAll
+CREATE OR ALTER proc usp_Batch_SelectAll
 as
 	select * from Batch
 -- (2.1) Select Batch By ID --
 GO
-Create proc usp_Batch_Select  @BatchID INT
+CREATE OR ALTER proc usp_Batch_Select  @BatchID INT
 as
 	IF (@BatchID IS NOT NULL)
 	BEGIN
@@ -261,13 +261,13 @@ as
 		RETURN -1
 -- (2.2) Select Batch By Status --
 GO
-Create proc usp_Batch_SelectBySts  @BatchSts  NVARCHAR(32)
+CREATE OR ALTER proc usp_Batch_SelectBySts  @BatchSts  NVARCHAR(32)
 as
 	select * from Batch
 	where BatchStatus = @BatchSts
 -- (3) Insert Batch --
 GO
-Create PROC usp_Batch_Insert 
+CREATE OR ALTER PROC usp_Batch_Insert 
 	@BatchID INT,
 	@BatchMedBCode NVARCHAR(64),
 	@Quantity INT = NULL,
@@ -280,7 +280,7 @@ as
 	END
 -- (4) Update Batch --
 GO
-Create PROC usp_Batch_Update 
+CREATE OR ALTER PROC usp_Batch_Update 
 	@BatchID INT,
 	@BatchMedBCode NVARCHAR(64) = NULL,
 	@Quantity  NVARCHAR(64) = NULL,
@@ -299,7 +299,7 @@ as
 	END
 -- (5) Delete Batch --
 GO
-Create proc usp_Batch_Delete  @BatchID INT
+CREATE OR ALTER proc usp_Batch_Delete  @BatchID INT
 as
 	IF (@BatchID IS NOT NULL)
 	BEGIN
@@ -317,12 +317,12 @@ as
 
 -- (1) Select All Batches --
 GO
-Create proc usp_AmbulanceVehicle_SelectAll
+CREATE OR ALTER proc usp_AmbulanceVehicle_SelectAll
 as
 	select * from AmbulanceVehicle
 -- (2.1) Select AmbulanceVehicle By Identification Number --
 GO
-Create proc usp_AmbulanceVehicle_Select  @VIN INT
+CREATE OR ALTER proc usp_AmbulanceVehicle_Select  @VIN INT
 as
 	IF (@VIN IS NOT NULL)
 	BEGIN
@@ -334,13 +334,13 @@ as
 		RETURN -1
 -- (2.2) Select AmbulanceVehicle By Status --
 GO
-Create proc usp_AmbulanceVehicle_SelectBySts  @VehicleSts  NVARCHAR(32)
+CREATE OR ALTER proc usp_AmbulanceVehicle_SelectBySts  @VehicleSts  NVARCHAR(32)
 as
 	select * from AmbulanceVehicle
 	where VehicleStatus = @VehicleSts
 -- (3) Insert AmbulanceVehicle --
 GO
-Create PROC usp_AmbulanceVehicle_Insert 
+CREATE OR ALTER PROC usp_AmbulanceVehicle_Insert 
 	@VIN INT,
 	@Implication NVARCHAR(32) = NULL,
 	@Make NVARCHAR(32) = NULL ,
@@ -365,7 +365,7 @@ as
 	END
 -- (4) Update AmbulanceVehicle --
 GO
-Create PROC usp_AmbulanceVehicle_Update 
+CREATE OR ALTER PROC usp_AmbulanceVehicle_Update 
 	@VIN INT,
 	@Implication NVARCHAR(32) = NULL,
 	@Make NVARCHAR(32) = NULL ,
@@ -403,7 +403,7 @@ as
 	END
 -- (5) Delete AmbulanceVehicle --
 GO
-Create proc usp_AmbulanceVehicle_Delete  @VIN INT
+CREATE OR ALTER proc usp_AmbulanceVehicle_Delete  @VIN INT
 as
 	IF (@VIN IS NOT NULL)
 	BEGIN
@@ -421,7 +421,7 @@ as
 
 --(1) Distribute an amount of batch medicine to a Vehicle --
 GO
-Create PROC usp_BatchDistribution_Insert @DistributedAmt INT, @BID INT, @AmbVIN INT
+CREATE OR ALTER PROC usp_BatchDistribution_Insert @DistributedAmt INT, @BID INT, @AmbVIN INT
 AS
 	BEGIN
 		INSERT INTO BatchDistributionMap (DistributedAmt,BID,AmbVIN)
@@ -435,7 +435,7 @@ AS
 
 --(1) Register --
 GO
-Create PROC usp_Employee_Register
+CREATE OR ALTER PROC usp_Employee_Register
 	@Fname NVARCHAR(32) = NULL,
 	@Lname NVARCHAR(32) = NULL,
 	@BDate Date = NULL,
@@ -486,7 +486,7 @@ BEGIN
 END
 --(2) Login --
 GO
-Create PROC usp_Employee_Login 
+CREATE OR ALTER PROC usp_Employee_Login 
 	@EmailOrPAN NVARCHAR(128),
 	@HashPassword NVARCHAR(128),
 	@return_Hex_value NVARCHAR(2)='FF' OUTPUT,
@@ -553,7 +553,7 @@ END
 
 --(3) Logout --
 GO
-Create PROC usp_Employee_Logout
+CREATE OR ALTER PROC usp_Employee_Logout
 	@userID INT,
 	@return_Hex_value NVARCHAR(2)='FF' OUTPUT,
 	@responseMessage NVARCHAR(128)='' OUTPUT
@@ -589,7 +589,7 @@ END
 -- Triggers --
 -- (1) Distribute amount of batch medicine to vehicle --
 GO
-Create trigger TR_BatchDistributionMap_InsteadOfInsert
+CREATE OR ALTER trigger TR_BatchDistributionMap_InsteadOfInsert
 ON BatchDistributionMap
 instead of insert
 as
@@ -614,15 +614,16 @@ as
 -- (1) Get All YelloPads --
 ---------------------------------------- 
 GO
-Create proc usp_YelloPads_SelectAll
+CREATE OR ALTER proc usp_YelloPads_SelectAll
 as
 	select YelloPadUniqueID, YelloPadStatus, Yellopad.YellopadNetworkcardNo, Yellopad.YelloPadPicture from Yellopad
+	where YelloPadStatus <> '02'
 		
  ------------------------------------------
 -- (2) Search Unique ID --
 -----------------------------------------
 GO
-Create proc usp_YelloPads_Search @UniqueID NVARCHAR(16)
+CREATE OR ALTER proc usp_YelloPads_Search @UniqueID NVARCHAR(16)
 as
 IF (@UniqueID IS NOT NULL)
 	BEGIN
@@ -637,7 +638,7 @@ IF (@UniqueID IS NOT NULL)
 -- (3) Get YelloPad Status --
 -----------------------------------------
 GO
-Create proc usp_YelloPads_Status @UniqueID NVARCHAR(16)
+CREATE OR ALTER proc usp_YelloPads_Status @UniqueID NVARCHAR(16)
 as
 	IF (@UniqueID IS NOT NULL)
 	BEGIN
@@ -651,7 +652,7 @@ as
 -- (4) Get YelloPad Network Info --
 -----------------------------------------
 GO
-Create proc usp_YelloPads_NetworkCard @UniqueID NVARCHAR(16)
+CREATE OR ALTER proc usp_YelloPads_NetworkCard @UniqueID NVARCHAR(16)
 as
 	IF (@UniqueID IS NOT NULL)
 	BEGIN
@@ -662,13 +663,13 @@ as
 		RETURN -1
 
 GO
-Create proc usp_IncidentType_GetAll
+CREATE OR ALTER proc usp_IncidentType_GetAll
 as
 	select * from IncidentTypes
 GO
 EXEC usp_IncidentType_GetAll
 GO
-Create proc usp_IncidentPriority_GetAll
+CREATE OR ALTER proc usp_IncidentPriority_GetAll
 as
 	select * from Priorities
 GO
@@ -676,7 +677,7 @@ EXEC usp_IncidentPriority_GetAll
 
 GO
 
-Create proc usp_Patient_getAllLocations
+CREATE OR ALTER proc usp_Patient_getAllLocations
 @UserID INT
 AS
 BEGIN
@@ -688,7 +689,7 @@ END
 GO
 
 
-Create proc usp_Patient_Locations
+CREATE OR ALTER proc usp_Patient_Locations
 @UserID INT,
 @LocationUser NVARCHAR(100),
 @Lat NVARCHAR(32),
@@ -759,7 +760,7 @@ END
 -- Location Stored Procedures --
 -- (1) Insert New Location --
 GO
-Create PROC usp_Locations_Insert 
+CREATE OR ALTER PROC usp_Locations_Insert 
 	@FreeFormatAddress NVARCHAR(256),
     @City NVARCHAR(32) = NULL,
     @Longitude  NVARCHAR(32) = NULL,
@@ -808,7 +809,7 @@ Go
 -- (2) Get All Locations --
 ---------------------------------------- 
 GO
-Create proc usp_Locations_SelectAll
+CREATE OR ALTER proc usp_Locations_SelectAll
 as
 	select * from Locations
 ------------------------------------------
@@ -818,7 +819,7 @@ as
 -----------------------------------------
 -- (2.1) Get Locations by city --
 GO
-Create proc usp_Locations_SelectByCity @CityName NVARCHAR(32)
+CREATE OR ALTER proc usp_Locations_SelectByCity @CityName NVARCHAR(32)
 as
 	IF (@CityName IS NOT NULL)
 	BEGIN
@@ -834,7 +835,7 @@ as
 -----------------------------------------
 -- (2.2) GET Locations by Cooredinates --
 GO
-Create PROC usp_Locations_SelectByGPS 
+CREATE OR ALTER PROC usp_Locations_SelectByGPS 
 	@Longitude  NVARCHAR(32),
 	@Latitude  NVARCHAR(32)
 as
@@ -852,7 +853,7 @@ as
 -----------------------------------------
 -- (2.3) GET Locations by Street --
 GO
-Create PROC usp_Locations_SelectByStreet
+CREATE OR ALTER PROC usp_Locations_SelectByStreet
 	@Street NVARCHAR(32)
 as
 	IF (@Street IS NOT NULL)
@@ -869,7 +870,7 @@ as
 -----------------------------------------
 -- (2.4) GET Locations by PostalCode --
 GO
-Create PROC usp_Locations_SelectByPostalCode
+CREATE OR ALTER PROC usp_Locations_SelectByPostalCode
 	@PostalCode NVARCHAR(20)
 as
 	IF (@PostalCode IS NOT NULL)
@@ -886,7 +887,7 @@ as
 -----------------------------------------
 -- (2.5) GET Locations by PostalZipCode --
 GO
-Create PROC usp_Locations_SelectByPostalZipCode
+CREATE OR ALTER PROC usp_Locations_SelectByPostalZipCode
 	@PostalZipCode NVARCHAR(32)
 as
 	IF (@PostalZipCode IS NOT NULL)
@@ -903,7 +904,7 @@ as
 -----------------------------------------
 -- (2.6) GET Locations by LocationID --
 GO
-Create PROC usp_Locations_SelectByID
+CREATE OR ALTER PROC usp_Locations_SelectByID
 	@LocationID INT
 as
 	IF (@LocationID IS NOT NULL)
@@ -920,7 +921,7 @@ as
 -----------------------------------------
 -- (2.7) GET Locations by Location Address --
 GO
-Create PROC usp_Locations_SelectByAddress
+CREATE OR ALTER PROC usp_Locations_SelectByAddress
 	@FreeFormatAddress NVARCHAR(256)
 as
 	IF (@FreeFormatAddress IS NOT NULL)
@@ -937,7 +938,7 @@ EXEC usp_Locations_SelectByAddress @FreeFormatAddress = 'giza'
 -----------------------------------------
 -- (3) Delete Location By LocationID --
 GO
-Create proc usp_Location_Delete  @LocationID INT
+CREATE OR ALTER proc usp_Location_Delete  @LocationID INT
 as
 	IF (@LocationID IS NOT NULL)
 	BEGIN
@@ -954,7 +955,7 @@ as
 -----------------------------------------
 -- (4) Update Location By LocationID --
 GO
-Create PROC usp_Location_Update
+CREATE OR ALTER PROC usp_Location_Update
 	@LocationID INT,
 	@FreeFormatAddress NVARCHAR(256) = NULL,
     @Longitude  NVARCHAR(32) = NULL,
@@ -983,6 +984,152 @@ as
 		return -1
 -----------------------------------------
 -- (4) Update Location By LocationID Test --
+
+
+---------------------------------------------
+--Batch-Medicine:
+GO
+
+
+CREATE OR ALTER proc usp_BatchMedicine_Insert
+@BatchID BIGINT,
+@MedicineBarcode NVARCHAR(64),
+@MedicineQuantity INT
+AS
+BEGIN
+
+if not exists(select * FROM dbo.Batch  where dbo.Batch.BatchID=@BatchID)
+begin
+insert into dbo.Batch(BatchID,BatchMedBCode,Quantity)
+VALUES(@BatchID,@MedicineBarcode,@MedicineQuantity)
+end
+INSERT INTO dbo.BatchMedicine
+(
+    BatchID,
+    MedicineBCode,
+    Quantity
+)
+VALUES
+(   @BatchID ,
+    @MedicineBarcode, -- MedicineBCode - nvarchar(64)
+    @MedicineQuantity  -- Quantity - nvarchar(64)
+    )
+
+update dbo.Medicine 
+SET CountInStock = CountInStock - @MedicineQuantity
+WHERE BarCode = @MedicineBarcode
+END
+GO
+
+--TODO: COnfirm that all checks are passed from front end.
+CREATE OR ALTER PROC usp_AmbulanceMap_Insert
+@VIN INT,
+@ParamedicID INT,
+@DriverID INT,
+@YelloPadID INT,
+@HexCode INT OUTPUT
+AS
+BEGIN
+if exists(select * from dbo.AmbulanceMap where VIN = @VIN and StatusMap = '00')
+BEGIN
+-- 1 -> Ambulance was already inserted but not assigned.
+Set @HexCode = 1
+RETURN 1
+END
+ELSE if exists(select * from dbo.AmbulanceMap where VIN = @VIN and StatusMap ='01')
+begin
+-- 2 -> Ambulance is assigned and already in service.
+Set @HexCode = 2
+ RETURN 2
+end 
+else begin
+insert into dbo.AmbulanceMap(VIN,ParamedicID,DriverID,YelloPadID)
+VALUES(
+@VIN,
+@ParamedicID,
+@DriverID,
+@YelloPadID
+)
+
+UPDATE dbo.Yellopad
+SET YelloPadStatus = '01'
+WHERE YelloPadUniqueID = @YelloPadID
+
+UPDATE dbo.Employee
+SET EmployeeStatus = '00'
+WHERE EID = @ParamedicID
+
+UPDATE dbo.Employee
+SET EmployeeStatus = '00'
+WHERE EID = @DriverID
+
+UPDATE dbo.AmbulanceVehicle
+SET VehicleStatus = '00'
+WHERE VIN = @VIN
+
+-- 0 -> Insertion Successful
+Set @HexCode = 0
+RETURN 0
+end
+END
+GO
+------------------------------------------------------
+------------------------------------------------------
+------------------------------------------------------
+
+CREATE OR ALTER PROC usp_getAmbulanceCarMapByCarID
+@CarID INT
+AS
+BEGIN
+SELECT * FROM dbo.AmbulanceMap WHERE VIN = @CarID
+END
+GO
+
+CREATE OR ALTER PROC usp_getAmbulanceCarMapByDriverID
+@DriverID INT
+AS
+BEGIN
+SELECT * FROM dbo.AmbulanceMap WHERE DriverID = @DriverID
+END
+GO
+
+CREATE OR ALTER PROC usp_getAmbulanceCarMapByParamedicID
+@ParamedicID INT
+AS
+BEGIN
+SELECT * FROM dbo.AmbulanceMap WHERE ParamedicID = @ParamedicID
+END
+GO
+
+CREATE OR ALTER PROC usp_getAmbulanceCarMapByYelloPadID
+@YelloPadID INT
+AS
+BEGIN
+SELECT * FROM dbo.AmbulanceMap WHERE YelloPadID = @YelloPadID
+END
+GO
+
+
+CREATE OR ALTER  Proc usp_deleteAmbulanceMap
+@VIN INT
+AS
+BEGIN
+update dbo.AmbulanceMap
+set StatusMap = '04'
+WHERE VIN = @VIN AND StatusMap='00'
+
+update dbo.AmbulanceMap
+set StatusMap = '04'
+WHERE VIN = @VIN AND StatusMap='02'
+END
+
+UPDATE dbo.AmbulanceVehicle
+SET VehicleStatus = '00'
+WHERE VIN = @VIN
+
+GO
+
+
 --GO
 --EXEC usp_Location_Update @LocationID = 1, @FreeFormatAddress = 'adsdasdfsa', @Longitude = 25.334,
 --@Latitude = 65.32, @Street = 'Tahrir',  @HouseNumber = '7'
