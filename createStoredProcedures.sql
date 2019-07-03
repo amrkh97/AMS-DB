@@ -617,6 +617,7 @@ GO
 CREATE OR ALTER proc usp_YelloPads_SelectAll
 as
 	select YelloPadUniqueID, YelloPadStatus, Yellopad.YellopadNetworkcardNo, Yellopad.YelloPadPicture from Yellopad
+	where YelloPadStatus <> '02'
 		
  ------------------------------------------
 -- (2) Search Unique ID --
@@ -1033,11 +1034,13 @@ if exists(select * from dbo.AmbulanceMap where VIN = @VIN and StatusMap = '00')
 BEGIN
 -- 1 -> Ambulance was already inserted but not assigned.
 Set @HexCode = 1
+RETURN 1
 END
 ELSE if exists(select * from dbo.AmbulanceMap where VIN = @VIN and StatusMap ='01')
 begin
 -- 2 -> Ambulance is assigned and already in service.
 Set @HexCode = 2
+ RETURN 2
 end 
 else begin
 insert into dbo.AmbulanceMap(VIN,ParamedicID,DriverID,YelloPadID)
@@ -1047,8 +1050,26 @@ VALUES(
 @DriverID,
 @YelloPadID
 )
+
+UPDATE dbo.Yellopad
+SET YelloPadStatus = '01'
+WHERE YelloPadUniqueID = @YelloPadID
+
+UPDATE dbo.Employee
+SET EmployeeStatus = '00'
+WHERE EID = @ParamedicID
+
+UPDATE dbo.Employee
+SET EmployeeStatus = '00'
+WHERE EID = @DriverID
+
+UPDATE dbo.AmbulanceVehicle
+SET VehicleStatus = '00'
+WHERE VIN = @VIN
+
 -- 0 -> Insertion Successful
 Set @HexCode = 0
+RETURN 0
 end
 END
 GO
@@ -1101,6 +1122,11 @@ update dbo.AmbulanceMap
 set StatusMap = '04'
 WHERE VIN = @VIN AND StatusMap='02'
 END
+
+UPDATE dbo.AmbulanceVehicle
+SET VehicleStatus = '00'
+WHERE VIN = @VIN
+
 GO
 
 
