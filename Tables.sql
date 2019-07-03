@@ -1,27 +1,4 @@
 ﻿Use KAN_AMO;
---Comment: Entity Status was removed because it caused
---errors with the Foreign key relationship on Insert or update.
---It was also too generic to be of use as each table has
---its own Status values.
-
-
---GO
---CREATE TABLE EntityStatus
---(
---	EntityStatusID NVARCHAR(32),
---	StatusName NVARCHAR(32),
---	StatusNote NVARCHAR(256)
-
---		PRIMARY KEY (EntityStatusID)
---);
---INSERT INTO EntityStatus
---	(EntityStatusID,StatusName)
---VALUES
-
---	('1', 'Undefined'),
---	('2', 'Updated'),
---	('3', 'Verified'),
---	('99', 'Deleted')
 
 CREATE TABLE ResponseStatuses
 (
@@ -297,6 +274,7 @@ CREATE TABLE Employee
 	NationalID NVARCHAR(14),
 	LogInTStamp DATETIME,
 	LogInGPS NVARCHAR(20),
+	LogInStatus NVARCHAR(32) DEFAULT (00),
 	EmployeeStatus NVARCHAR(32) DEFAULT (00),
 	SuperSSN INT,
 	JobID INT,
@@ -313,12 +291,12 @@ INSERT INTO Employee
 	(Email,HashPassword,PAN,NationalID,SuperSSN,JobID)
 VALUES
 
-	('admin@test.com','12345678',null,'',1,0) ,
+	('admin@test.com','12345678',null,null,1,0) ,
     ('move_manager1@test.com','91234567',null,'',1,1),
 	('move_manager2@test.com','89123456','0123456789012345','',1,1),
 	('move_manager3@test.com','78912345','','01234567890123',1,1),
 	('operator1@test.com','91234567','','29704090101931',2,4),
-	('operator2@test.com','89123456',null,'',3,4),
+	('operator2@test.com','89123456',null,null,3,4),
 	('operator3@test.com','78912345',null,'',4,4),
 	('driver1@test.com','91234567','',null,2,3),
 	('driver2@test.com','89123456','1010101010101010','',3,3),
@@ -494,7 +472,7 @@ CREATE TABLE AmbulanceMap
 	ParamedicID INT NOT NULL,
 	DriverID INT NOT NULL,
 	YelloPadID INT NOT NULL,
-	StatusMap INT DEFAULT 0,
+	--StatusMap NVARCHAR(32) DEFAULT (00),
 	
 	FOREIGN KEY (VIN) REFERENCES dbo.AmbulanceVehicle(VIN),
 	FOREIGN KEY (ParamedicID) REFERENCES dbo.Employee(EID),
