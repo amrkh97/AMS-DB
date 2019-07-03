@@ -1,12 +1,12 @@
 use KAN_AMO
 GO
-Create proc usp_AmbulanceVehicle_SelectAll 
+Create OR ALTER proc usp_AmbulanceVehicle_SelectAll 
 as
 	select * from AmbulanceVehicle
-
+	WHERE VehicleStatus <>'FF'
 -- (2.1) Get Patient By ID --
 GO
-create proc usp_AmbulanceVehicle_SelectByVIN
+Create OR ALTER proc usp_AmbulanceVehicle_SelectByVIN
   @VIN INT,
    @responseCode NVARCHAR(2)='FF' OUTPUT,
 	@responseMessage NVARCHAR(128)='' OUTPUT
@@ -36,7 +36,7 @@ BEGIN CATCH
 
 		
 GO
-create proc usp_AmbulanceVehicle_SelectByBrand
+Create OR ALTER proc usp_AmbulanceVehicle_SelectByBrand
   @Brand  NVARCHAR(32),
    @responseCode NVARCHAR(2)='FF' OUTPUT,
 	@responseMessage NVARCHAR(128)='' OUTPUT
@@ -68,7 +68,7 @@ BEGIN CATCH
 	
 GO
 
-create proc usp_AmbulanceVehicle_SelectBySts
+Create OR ALTER proc usp_AmbulanceVehicle_SelectBySts
   @VehicleStatus  NVARCHAR(32),
    @responseCode NVARCHAR(2)='FF' OUTPUT,
 	@responseMessage NVARCHAR(128)='' OUTPUT
@@ -98,7 +98,7 @@ BEGIN CATCH
 		 
 -- (3) Insert Patient --
 GO
-CREATE PROC usp_AmbulanceVehicle_Insert 
+Create OR ALTER PROC usp_AmbulanceVehicle_Insert 
 	
 	@VIN INT,
 	@Implication NVARCHAR(32),
@@ -116,27 +116,30 @@ CREATE PROC usp_AmbulanceVehicle_Insert
     @Model NVARCHAR(32),
     @DriverPhoneNumber NVARCHAR(32),
 	@AssignedYPID NVARCHAR(16),
-	@VehicleStatus NVARCHAR(32),
-   
+    @AmbulanceVehiclePicture NVARCHAR(500),
+
    @responseCode NVARCHAR(2)='FF' OUTPUT,
 	@responseMessage NVARCHAR(128)='' OUTPUT
 	
 		as 
 	BEGIN TRY
+	
 	IF (@VIN IS NOT NULL )
 		BEGIN
 			INSERT INTO AmbulanceVehicle (VIN,Implication,Make,[Type],ProductionYear,RegYear,LicencePlate,OwnerName,
-			LicenceStateOrProvince,ServiceStartDate,EngineNumber,Brand,ChasiahNumber,Model,DriverPhoneNumber,AssignedYPID,VehicleStatus)
+			LicenceStateOrProvince,ServiceStartDate,EngineNumber,Brand,ChasiahNumber,Model,DriverPhoneNumber,AssignedYPID,	AmbulanceVehiclePicture)
 			values (@VIN,@Implication,@Make,@Type,@ProductionYear,@RegYear,@LicencePlate,@OwnerName,@LicenceStateOrProvince,
-			@ServiceStartDate,@EngineNumber,@Brand,@ChasiahNumber,@Model,@DriverPhoneNumber,@AssignedYPID, @VehicleStatus )
+			@ServiceStartDate,@EngineNumber,@Brand,@ChasiahNumber,@Model,@DriverPhoneNumber,@AssignedYPID ,@AmbulanceVehiclePicture )
 	         SELECT @responseCode = '00'
-				SELECT @responseMessage = 'Success'
+			SELECT @responseMessage = 'Success'
 		END
+	
+	
 	ELSE
 	BEGIN
 				return -1
 				SELECT @responseCode = 'FF'
-				SELECT @responseMessage = 'Unknown Error'
+				SELECT @responseMessage = 'wrong Parameters'
 			END
 	END TRY
 	BEGIN CATCH
@@ -148,7 +151,7 @@ CREATE PROC usp_AmbulanceVehicle_Insert
 
 -- (4) Update AmbulanceVehicle --
 GO
-CREATE PROC usp_AmbulanceVehicle_Update
+Create OR ALTER PROC usp_AmbulanceVehicle_Update
 	@VIN INT,
 	@Implication NVARCHAR(32),
 	@Make NVARCHAR(32) ,
@@ -165,7 +168,7 @@ CREATE PROC usp_AmbulanceVehicle_Update
     @Model NVARCHAR(32),
     @DriverPhoneNumber NVARCHAR(32),
 	@AssignedYPID NVARCHAR(32),
-	@VehicleStatus NVARCHAR(32),
+    @AmbulanceVehiclePicture NVARCHAR(500),
 	@responseCode NVARCHAR(2)='FF' OUTPUT,
 	@responseMessage NVARCHAR(128)='' OUTPUT
 
@@ -190,7 +193,8 @@ as
 			Model = ISNULL(@Model,Model),
 			DriverPhoneNumber = ISNULL(@DriverPhoneNumber,DriverPhoneNumber),
 			AssignedYPID =ISNULL(@AssignedYPID,AssignedYPID),
-			VehicleStatus =ISNULL(@VehicleStatus,VehicleStatus)
+				AmbulanceVehiclePicture=ISNULL(	@AmbulanceVehiclePicture,	AmbulanceVehiclePicture),
+			VehicleStatus = 2 
 			WHERE VIN = @VIN
 			
         SELECT @responseCode = '00'
@@ -212,17 +216,17 @@ as
 
 -- (5) Delete Patient By VIN --
 GO
-create proc usp_AmbulanceVehicle_Delete 
+Create OR ALTER proc usp_AmbulanceVehicle_Delete 
  @VIN INT,
-  @responseCode NVARCHAR(2)='FF' OUTPUT,
-	@responseMessage NVARCHAR(128)='' OUTPUT
+ @responseCode NVARCHAR(2)='FF' OUTPUT,
+@responseMessage NVARCHAR(128)='' OUTPUT
 
 as
 BEGIN TRY
 	IF (@VIN IS NOT NULL)
 	BEGIN
 		UPDATE AmbulanceVehicle
-		SET VehicleStatus = 99
+		SET VehicleStatus = 'FF'
 		where VIN = @VIN
 	    SELECT @responseCode = '00'
 		SELECT @responseMessage = 'Success'
@@ -242,3 +246,39 @@ BEGIN TRY
 	END CATCH
 		return -1	
 
+		
+ 	
+GO
+CREATE  OR alter proc usp_AmbulanceVehicle_UpdateStatus
+@AmbulanceVehicleStatus NVARCHAR(2),
+@Vin INT,
+@responseCode NVARCHAR(2)='FF' OUTPUT,
+@responseMessage NVARCHAR(128)='' OUTPUT
+
+AS
+BEGIN TRY
+if (@Vin IS NOT NULL AND @AmbulanceVehicleStatus  IS NOT NULL )
+	BEGIN
+	UPDATE AmbulanceVehicle
+	SET VehicleStatus = ISNULL (@AmbulanceVehicleStatus,VehicleStatus)
+	where Vin=@Vin
+	SELECT @responseCode = '00'
+	SELECT @responseMessage = 'Success'
+	
+	END
+	ELSE
+	BEGIN 
+
+				SELECT @responseCode = 'FF'
+				SELECT @responseMessage = 'nO PARAMETER'
+				 RETURN -1
+	END
+	END TRY
+BEGIN CATCH
+			SELECT @responseCode = 'FF',
+	           	@responseMessage=ERROR_MESSAGE()
+			return -1;
+	END CATCH
+		
+	return -1
+		
