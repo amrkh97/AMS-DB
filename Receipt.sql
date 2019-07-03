@@ -240,7 +240,7 @@ BEGIN CATCH
 
 		
 GO
-Alter proc usp_Receipt_SelectByReceiptCreationTime  @ReceiptCreationTime DATETIME
+create proc usp_Receipt_SelectByReceiptCreationTime  @ReceiptCreationTime DATETIME
 as
 	IF (@ReceiptCreationTime IS NOT NULL)
 		BEGIN
@@ -250,7 +250,7 @@ as
 			(NOT(DatePart(hh,@ReceiptCreationTime) =0)) AND 
 			(NOT(DatePart(Mi,@ReceiptCreationTime) =0))
 			BEGIN	
-			select * from Reports
+			select * from Receipt
 			where ReceiptStatus='0' AND (DatePart(yy,ReceiptCreationTime) = DatePart(yy,@ReceiptCreationTime)) and
 			(DatePart(mm,ReceiptCreationTime) = DatePart(mm,@ReceiptCreationTime))
 			and (DatePart(dd,ReceiptCreationTime) = DatePart(dd,@ReceiptCreationTime)
@@ -263,7 +263,7 @@ as
 			(NOT(DatePart(hh,@ReceiptCreationTime) =0)) AND
 			(DatePart(Mi,@ReceiptCreationTime)=0)
 			BEGIN	
-			select * from Reports
+			select * from Receipt
 			where  ReceiptStatus='0' AND  (DatePart(yy,ReceiptCreationTime) = DatePart(yy,@ReceiptCreationTime)) and
 			(DatePart(mm,ReceiptCreationTime) = DatePart(mm,@ReceiptCreationTime))
 			and (DatePart(dd,ReceiptCreationTime) = DatePart(dd,@ReceiptCreationTime)
@@ -275,7 +275,7 @@ as
 			(DatePart(hh,@ReceiptCreationTime)=0) AND 
 			(DatePart(mi,@ReceiptCreationTime)=0)
 			BEGIN	
-			select * from Reports
+			select * from Receipt
 			where  ReceiptStatus='0' AND  (DatePart(yy,ReceiptCreationTime) = DatePart(yy,@ReceiptCreationTime)) and
 			(DatePart(mm,ReceiptCreationTime) = DatePart(mm,@ReceiptCreationTime))
 			and (DatePart(dd,ReceiptCreationTime) = DatePart(dd,@ReceiptCreationTime) )
@@ -286,7 +286,7 @@ as
 			(DatePart(hh,@ReceiptCreationTime) = 0) AND 
 			(DatePart(Mi,@ReceiptCreationTime) = 0)
 			BEGIN	
-			select * from Reports
+			select * from Receipt
 			where  ReceiptStatus='0' AND (DatePart(yy,ReceiptCreationTime) = DatePart(yy,@ReceiptCreationTime)) and
 			(DatePart(mm,ReceiptCreationTime) = DatePart(mm,@ReceiptCreationTime)) 
 		END
@@ -296,7 +296,7 @@ as
 			(DatePart(hh,@ReceiptCreationTime)=0) AND 
 			(DatePart(Mi,@ReceiptCreationTime)=0)
 			BEGIN	
-			select * from Reports
+			select * from Receipt
 			where  ReceiptStatus='0' AND DatePart(yy,ReceiptCreationTime) = DatePart(yy,@ReceiptCreationTime)
 	END
 	end
