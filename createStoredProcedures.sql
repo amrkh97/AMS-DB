@@ -1068,7 +1068,7 @@ CREATE OR ALTER PROC usp_getAmbulanceCarMapByDriverID
 @DriverID INT
 AS
 BEGIN
-SELECT * FROM dbo.AmbulanceMap WHERE VIN = @DriverID
+SELECT * FROM dbo.AmbulanceMap WHERE DriverID = @DriverID
 END
 GO
 
@@ -1076,7 +1076,7 @@ CREATE OR ALTER PROC usp_getAmbulanceCarMapByParamedicID
 @ParamedicID INT
 AS
 BEGIN
-SELECT * FROM dbo.AmbulanceMap WHERE VIN = @ParamedicID
+SELECT * FROM dbo.AmbulanceMap WHERE ParamedicID = @ParamedicID
 END
 GO
 
@@ -1084,7 +1084,7 @@ CREATE OR ALTER PROC usp_getAmbulanceCarMapByYelloPadID
 @YelloPadID INT
 AS
 BEGIN
-SELECT * FROM dbo.AmbulanceMap WHERE VIN = @YelloPadID
+SELECT * FROM dbo.AmbulanceMap WHERE YelloPadID = @YelloPadID
 END
 GO
 

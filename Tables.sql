@@ -131,7 +131,7 @@ CREATE TABLE Medicine
 	MedicineUsage NVARCHAR(MAX),
 	SideEffects NVARCHAR(MAX),
 	ActiveComponent NVARCHAR(MAX),
-	MedicineStatus NVARCHAR(32) DEFAULT(00),
+	MedicineStatus NVARCHAR(32) DEFAULT '00',
 
 	PRIMARY KEY(BarCode)
 	--CHECK (Price > 0)
@@ -145,7 +145,7 @@ CREATE TABLE PharmaCompany
 	ContactPerson NVARCHAR(32),
 	CompanyAddress NVARCHAR(128),
 	CompanyPhone NVARCHAR(32),
-	CompanyStatus NVARCHAR(32) DEFAULT(00)
+	CompanyStatus NVARCHAR(32) DEFAULT '00'
 
 		PRIMARY key (CompanyID)
 );
@@ -165,7 +165,7 @@ CREATE TABLE Batch
 	Quantity INT,
 	ExpiryDate DATE,
 	OrderDate DATETIME DEFAULT getdate(),
-	BatchStatus NVARCHAR(32) DEFAULT(00),
+	BatchStatus NVARCHAR(32) DEFAULT '00',
 	PRIMARY KEY(BatchID),
 	FOREIGN KEY (BatchMedBCode) REFERENCES Medicine(BarCode),
 	CONSTRAINT chk_Batch_QuantityPositive CHECK(Quantity > 0 )
@@ -196,7 +196,7 @@ CREATE TABLE Yellopad
 	YelloPadLastmaintenanceDate date,
 	YelloPadMaintenanceNature NVARCHAR(128),
 	YelloPadMaintenanceNote NVARCHAR(128),
-	YelloPadStatus NVARCHAR(32) NOT NULL DEFAULT (00),
+	YelloPadStatus NVARCHAR(32) NOT NULL DEFAULT '00',
 	YelloPadPicture NVARCHAR(500),
 
 	PRIMARY KEY (YelloPadID),
@@ -219,7 +219,7 @@ CREATE TABLE AmbulanceVehicle
 	ChasiahNumber NVARCHAR(32),
 	Model NVARCHAR(32),
 	DriverPhoneNumber NVARCHAR(32),
-	VehicleStatus NVARCHAR(32) DEFAULT(00),
+	VehicleStatus NVARCHAR(32) DEFAULT '00',
 	AmbulanceVehiclePicture NVARCHAR(500),
 
 	PRIMARY KEY (VIN),
@@ -249,7 +249,7 @@ CREATE TABLE Locations
 	PostalCode NVARCHAR(20),
 	FloorLevel NVARCHAR(20),
 	HouseNumber NVARCHAR(12),
-	LocationStatus NVARCHAR(32) DEFAULT (00),
+	LocationStatus NVARCHAR(32) DEFAULT '00',
 
 	PRIMARY KEY (LocationID)
 );
@@ -274,8 +274,8 @@ CREATE TABLE Employee
 	NationalID NVARCHAR(14),
 	LogInTStamp DATETIME,
 	LogInGPS NVARCHAR(20),
-	LogInStatus NVARCHAR(32) DEFAULT (00),
-	EmployeeStatus NVARCHAR(32) DEFAULT (00),
+	LogInStatus NVARCHAR(32) DEFAULT '00',
+	EmployeeStatus NVARCHAR(32) DEFAULT '00',
 	SuperSSN INT,
 	JobID INT,
 	Photo NVARCHAR(MAX),
@@ -370,7 +370,7 @@ CREATE TABLE Receipt
 	CasheirSSN INT,
 	ReceiptCreationTime DATETIME DEFAULT (GETDATE()),
 	FTPFileLocation NVARCHAR(128),
-	ReceiptStatus NVARCHAR(32) DEFAULT (00),
+	ReceiptStatus NVARCHAR(32) DEFAULT '00',
 	Cost NVARCHAR(32),
 	PaymentMethod NVARCHAR(32),
 
@@ -392,7 +392,7 @@ CREATE TABLE Patient
 	NextOfKenName NVARCHAR(32),
 	NextOfKenPhone NVARCHAR(24),
 	NextOfKenAddress NVARCHAR(256),
-	PatientStatus NVARCHAR(32) DEFAULT (00),
+	PatientStatus NVARCHAR(32) DEFAULT '00',
 	PatientNationalID INT
 
 	PRIMARY KEY (PatientID),
@@ -432,7 +432,7 @@ CREATE TABLE MedicalRecord
 	MedicineApplied NVARCHAR(128),
 	ProcedureDoneInCar NVARCHAR(MAX),
 	RecommendedProcedure NVARCHAR(MAX),
-	MRStatus NVARCHAR(32) DEFAULT (00),
+	MRStatus NVARCHAR(32) DEFAULT '00',
 
 	FOREIGN KEY (RespSQN) REFERENCES Responses(SequenceNumber),
 	FOREIGN KEY (PatientID) REFERENCES Patient(PatientID),
@@ -472,7 +472,7 @@ CREATE TABLE AmbulanceMap
 	ParamedicID INT NOT NULL,
 	DriverID INT NOT NULL,
 	YelloPadID INT NOT NULL,
-	StatusMap NVARCHAR(32) DEFAULT (00),
+	StatusMap NVARCHAR(32) DEFAULT '00',
 	
 	FOREIGN KEY (VIN) REFERENCES dbo.AmbulanceVehicle(VIN),
 	FOREIGN KEY (ParamedicID) REFERENCES dbo.Employee(EID),
