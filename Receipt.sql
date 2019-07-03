@@ -240,3 +240,65 @@ BEGIN CATCH
 
 		
 GO
+Alter proc usp_Receipt_SelectByReceiptCreationTime  @ReceiptCreationTime DATETIME
+as
+	IF (@ReceiptCreationTime IS NOT NULL)
+		BEGIN
+			IF  (NOT(DatePart(yy,@ReceiptCreationTime)=0)) AND 
+			(NOT(DatePart(mm,@ReceiptCreationTime) = 0)) AND 
+			(NOT(DatePart(dd,@ReceiptCreationTime)=0)) AND 
+			(NOT(DatePart(hh,@ReceiptCreationTime) =0)) AND 
+			(NOT(DatePart(Mi,@ReceiptCreationTime) =0))
+			BEGIN	
+			select * from Reports
+			where ReceiptStatus='0' AND (DatePart(yy,ReceiptCreationTime) = DatePart(yy,@ReceiptCreationTime)) and
+			(DatePart(mm,ReceiptCreationTime) = DatePart(mm,@ReceiptCreationTime))
+			and (DatePart(dd,ReceiptCreationTime) = DatePart(dd,@ReceiptCreationTime)
+			and (DatePart(hh,ReceiptCreationTime) = DatePart(hh,@ReceiptCreationTime))
+			and (DatePart(mi,ReceiptCreationTime) = DatePart(mi,@ReceiptCreationTime)) )
+		END
+		ELSE IF  (NOT(DatePart(yy,@ReceiptCreationTime)=0)) AND 
+			(NOT(DatePart(mm,@ReceiptCreationTime) = 0)) AND 
+			(NOT(DatePart(dd,@ReceiptCreationTime)=0)) AND 
+			(NOT(DatePart(hh,@ReceiptCreationTime) =0)) AND
+			(DatePart(Mi,@ReceiptCreationTime)=0)
+			BEGIN	
+			select * from Reports
+			where  ReceiptStatus='0' AND  (DatePart(yy,ReceiptCreationTime) = DatePart(yy,@ReceiptCreationTime)) and
+			(DatePart(mm,ReceiptCreationTime) = DatePart(mm,@ReceiptCreationTime))
+			and (DatePart(dd,ReceiptCreationTime) = DatePart(dd,@ReceiptCreationTime)
+			and (DatePart(hh,ReceiptCreationTime) = DatePart(hh,@ReceiptCreationTime))) 
+		END
+		ELSE IF  (NOT(DatePart(yy,@ReceiptCreationTime)=0)) AND 
+			(NOT(DatePart(mm,@ReceiptCreationTime) = 0)) AND 
+			(NOT(DatePart(dd,@ReceiptCreationTime)=0)) AND 
+			(DatePart(hh,@ReceiptCreationTime)=0) AND 
+			(DatePart(mi,@ReceiptCreationTime)=0)
+			BEGIN	
+			select * from Reports
+			where  ReceiptStatus='0' AND  (DatePart(yy,ReceiptCreationTime) = DatePart(yy,@ReceiptCreationTime)) and
+			(DatePart(mm,ReceiptCreationTime) = DatePart(mm,@ReceiptCreationTime))
+			and (DatePart(dd,ReceiptCreationTime) = DatePart(dd,@ReceiptCreationTime) )
+		END
+		ELSE IF  (NOT(DatePart(yy,@ReceiptCreationTime) = 0)) AND 
+			(NOT(DatePart(mm,@ReceiptCreationTime) = 0)) AND 
+			(DatePart(dd,@ReceiptCreationTime) = 0) AND 
+			(DatePart(hh,@ReceiptCreationTime) = 0) AND 
+			(DatePart(Mi,@ReceiptCreationTime) = 0)
+			BEGIN	
+			select * from Reports
+			where  ReceiptStatus='0' AND (DatePart(yy,ReceiptCreationTime) = DatePart(yy,@ReceiptCreationTime)) and
+			(DatePart(mm,ReceiptCreationTime) = DatePart(mm,@ReceiptCreationTime)) 
+		END
+			ELSE IF  (NOT(DatePart(yy,@ReceiptCreationTime)=0)) AND 
+			(DatePart(mm,@ReceiptCreationTime)=0) AND 
+			(DatePart(dd,@ReceiptCreationTime)=0) AND 
+			(DatePart(hh,@ReceiptCreationTime)=0) AND 
+			(DatePart(Mi,@ReceiptCreationTime)=0)
+			BEGIN	
+			select * from Reports
+			where  ReceiptStatus='0' AND DatePart(yy,ReceiptCreationTime) = DatePart(yy,@ReceiptCreationTime)
+	END
+	end
+	ELSE
+		RETURN -1
