@@ -316,7 +316,7 @@ CREATE TABLE Receipt
 	CasheirSSN INT,
 	ReceiptCreationTime DATETIME DEFAULT (GETDATE()),
 	FTPFileLocation NVARCHAR(128),
-	ReceiptStatus NVARCHAR(32) DEFAULT (01),
+	ReceiptStatus NVARCHAR(32) DEFAULT (00),
 	Cost NVARCHAR(32),
 	PaymentMethod NVARCHAR(32),
 
