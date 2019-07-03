@@ -186,7 +186,7 @@ as
 			ContactPerson = ISNULL(@ContactPerson,ContactPerson),
 			CompanyAddress = ISNULL(@CompanyAddress,CompanyAddress),
 			CompanyPhone = ISNULL(@CompanyPhone,CompanyPhone),
-			CompanyStatus = 2
+			CompanyStatus = '01'
 			WHERE CompanyID = @CompID
 			--Data Updated Succesfully
 		set @HexCode = '00'		
@@ -206,7 +206,7 @@ begin
 	IF (@CompID IS NOT NULL)
 	BEGIN
 		UPDATE PharmaCompany
-		SET CompanyStatus = 99
+		SET CompanyStatus = '02'
 		where CompanyID = @CompID
 		--Deleteion Succesful
 		set @HexCode = '00'
