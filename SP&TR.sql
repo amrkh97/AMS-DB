@@ -1,14 +1,15 @@
-------------------------- Stored Procedures ----------------------------
+------------------------- Stored  OR ALTER PROCedures ----------------------------
 ------------------------------------------------------------------------
--- Medicine Stored Procedures --
+-- Medicine Stored  OR ALTER PROCedures --
 -- (1) Get All Medicines --
 GO
-Create proc usp_Medicines_SelectAll 
+Create  OR ALTER PROC usp_Medicines_SelectAll 
 as
 	select * from Medicine
+	WHERE  MedicineStatus <>'FF'
 -- (2.1) Get Medicine By Name --
 GO
-create proc usp_Medicine_SelectByName  @MedName NVARCHAR(64)
+create  OR ALTER PROC usp_Medicine_SelectByName  @MedName NVARCHAR(64)
 as
 	IF (@MedName IS NOT NULL)
 	BEGIN
@@ -19,7 +20,7 @@ as
 		RETURN -1
 -- (2.2) Get Medicine By Bar Code --
 GO
-create proc usp_Medicine_SelectByBCode  @bCode NVARCHAR(64)
+create  OR ALTER PROC usp_Medicine_SelectByBCode  @bCode NVARCHAR(64)
 as
 	IF (@bCode IS NOT NULL)
 		BEGIN
@@ -30,13 +31,13 @@ as
 		RETURN -1
 -- (2.3) Get Medicine By Status --
 GO
-create proc usp_Medicine_SelectBySts @MStatus NVARCHAR(32)
+create  OR ALTER PROC usp_Medicine_SelectBySts @MStatus NVARCHAR(32)
 as
 	select * from Medicine
 	where MedicineStatus = @MStatus
 -- (3) Insert Medicine --
 GO
-CREATE PROC usp_Medicine_Insert 
+CREATE  OR ALTER PROC usp_Medicine_Insert 
 	@BarCode NVARCHAR(64),
 	@Name NVARCHAR(64),
     @CountInStock NVARCHAR(64) = NULL,
@@ -52,34 +53,39 @@ as
 BEGIN TRY
 
 	IF (@BarCode IS NOT NULL AND @Name IS NOT NULL)
-		Begin
-		if Exists (Select * from Medicine where BarCode=@BarCode )
-			begin 
-			return -1
-			end
-      else
-          begin
-			INSERT INTO Medicine (BarCode,CountInStock,MedicineName,Price,Implications,MedicineUsage,SideEffects,ActiveComponent)
-			values (@BarCode,@CountInStock,@Name,@Price,@Implications,@MedicineUsage,@SideEffects,@ActiveComponent)
-		SELECT @responseCode = '00'
-		SELECT @responseMessage = 'Success'
+ BEGIN
+	 IF Exists (Select * from Medicine where BarCode=@BarCode ) 
+	       BEGIN      
+				SELECT @responseCode = '01';
+				SELECT @responseMessage = 'Allready exists';
+				RETURN -1;
+           END
+     ELSE
+          BEGIN
+		        INSERT INTO Medicine (BarCode,CountInStock,MedicineName,Price,Implications,MedicineUsage,SideEffects,ActiveComponent)
+			    VALUES (@BarCode,@CountInStock,@Name,@Price,@Implications,@MedicineUsage,@SideEffects,@ActiveComponent)
+		        SELECT @responseCode = '00'
+		        SELECT @responseMessage = 'Success'
+	      END
+	
 	END
-	ELSE
-	BEGIN 
-	return -1
+ELSE
+       BEGIN      
 				SELECT @responseCode = 'FF'
-				SELECT @responseMessage = 'nO PARAMETER'
-	END
+				SELECT @responseMessage = 'BarCode IS  NULL or Name IS NULL'
+				RETURN -1
+           END
+
 	END TRY
 BEGIN CATCH
 		 	SELECT @responseCode = 'FF',
-		@responseMessage=ERROR_MESSAGE()
-			return -1;
+		    @responseMessage=ERROR_MESSAGE()
+			 RETURN -1;
 	END CATCH
-		return -1
+			 return -1;
 -- (4) Update Medicine --
 GO
-CREATE PROC usp_Medicine_Update
+CREATE  OR ALTER PROC usp_Medicine_Update
 	@BarCode NVARCHAR(64),
 	@Name NVARCHAR(64) = NULL,
     @CountInStock NVARCHAR(64) = NULL,
@@ -123,49 +129,48 @@ BEGIN CATCH
 		return -1
 -- (5) Delete Medicine By Barcode --
 GO
-create proc usp_Medicine_Delete  
-    @bCode NVARCHAR(64),
+create  OR ALTER PROC usp_Medicine_Delete  
+	@BarCode NVARCHAR(64),
     @responseCode NVARCHAR(2)='FF' OUTPUT,
 	@responseMessage NVARCHAR(128)='' OUTPUT
 
-as
-BEGIN TRY
-	IF (@bCode IS NOT NULL)
-	BEGIN
-		UPDATE Medicine
-		SET MedicineStatus = 99
-		where BarCode = @bCode
+AS
+BEGIN TRY	 
+IF (@BarCode IS NOT NULL)
+		BEGIN
+			UPDATE Medicine
+			SET  MedicineStatus = 'FF'
+			WHERE BarCode = @BarCode
 		SELECT @responseCode = '00'
 		SELECT @responseMessage = 'Success'
 	END
 	ELSE
 	BEGIN 
-	
-	
-return -1
 				SELECT @responseCode = 'FF'
 				SELECT @responseMessage = 'nO PARAMETER'
+     	        RETURN -1
+
 	END
 	END TRY
 BEGIN CATCH
 		 	SELECT @responseCode = 'FF',
-		@responseMessage=ERROR_MESSAGE()
-			return -1;
+		     @responseMessage=ERROR_MESSAGE()
+			 RETURN -1;
 	END CATCH
-		return -1
---
+		 RETURN -1
+  
 -- Medicine Stored Procedure End --
 ------------------------------------------------------------------------------------
 ------------------------------------------------------------------------------------
 -- PharmaCompany Stored Procedures --
 -- (1) Get All Companies --
 GO
-Create proc usp_PharmaCompany_SelectAll
+Create  OR ALTER PROC usp_PharmaCompany_SelectAll
 as
 	select * from PharmaCompany
 -- (2.1) Get Company By Name --
 GO
-create proc usp_PharmaCompany_Select  @compName NVARCHAR(64)
+CREATE  OR ALTER proc usp_PharmaCompany_Select  @compName NVARCHAR(64)
 as
 	IF (@compName IS NOT NULL)
 	BEGIN
@@ -177,19 +182,19 @@ as
 		RETURN -1
 -- (2.2) Get Company By ID --
 GO
-create proc usp_PharmaCompany_SelectByID @CompID INT
+create  OR ALTER PROC usp_PharmaCompany_SelectByID @CompID INT
 as
 	select * from PharmaCompany
 	where CompanyID = @CompID
 -- (2.3) Get Company By Status --
 GO
-create proc usp_PharmaCompany_SelectBySts @CompStatus NVARCHAR(64)
+create  OR ALTER proc usp_PharmaCompany_SelectBySts @CompStatus NVARCHAR(64)
 as
 	select * from PharmaCompany
 	where CompanyStatus = @CompStatus
 -- (3) Insert Company --
 GO
-CREATE PROC usp_PharmaCompany_Insert 
+CREATE  OR ALTER PROC usp_PharmaCompany_Insert 
 	@CompanyName NVARCHAR(64),
     @ContactPerson NVARCHAR(32) = NULL,
     @CompanyAddress NVARCHAR(128) = NULL,
@@ -231,7 +236,7 @@ as
 		END
 -- (4) Update Company By ID --
 GO
-CREATE PROC usp_PharmaCompany_Update 
+CREATE  OR ALTER PROC usp_PharmaCompany_Update 
 	@CompID INT,
 	@CompanyName NVARCHAR(64) = NULL,
     @ContactPerson NVARCHAR(32) = NULL,
@@ -259,7 +264,7 @@ as
 	END
 -- (5) Delete Company By ID --
 GO
-create proc usp_PharmaCompany_Delete  @CompID INT,
+create  OR ALTER PROC usp_PharmaCompany_Delete  @CompID INT,
 @HexCode NVARCHAR(2) OUTPUT
 as
 begin
@@ -283,20 +288,131 @@ END
 
 --(1) Insert a medicine to a company --
 GO
-CREATE PROC usp_CompanyMedicineMap_Insert @CompID INT, @MedBCode NVARCHAR(64)
+CREATE  OR ALTER PROC usp_CompanyMedicineMap_Insert 
+@CompID INT, 
+ @MedBCode NVARCHAR(64),
+ @responseCode NVARCHAR(2)='FF' OUTPUT,
+@responseMessage NVARCHAR(128)='' OUTPUT
+
 AS
-	BEGIN
-		INSERT INTO CompanyMedicineMap (CompID,MedBCode)
-		VALUES (@CompID,@MedBCode)
+
+	BEGIN TRY
+    IF (@CompID IS NOT NULL AND @MedBCode IS NOT NULL)
+ 	 BEGIN
+		INSERT INTO CompanyMedicineMap (CompID,MedBCode,MapStatus)
+		VALUES (@CompID,@MedBCode,'00')
+		
+		 SELECT @responseCode = '00'
+	     SELECT @responseMessage = 'Success'
+	
 	END
+
+	ELSE
+     	BEGIN 
+
+				SELECT @responseCode = 'FF'
+				SELECT @responseMessage = 'nO PARAMETER'
+				 RETURN -1
+	    END
+	END TRY
+BEGIN CATCH
+			SELECT @responseCode = 'FF',
+	           	@responseMessage=ERROR_MESSAGE()
+			return -1;
+	END CATCH
+		
+	return -1
 --(2) Delete a medicine from a company --
 GO
-CREATE PROC usp_CompanyMedicineMap_DELETE @CompID INT, @MedBCode NVARCHAR(64)
+CREATE  OR ALTER PROC usp_CompanyMedicineMap_DELETE
+@CompID INT,
+@MedBCode NVARCHAR(64),
+@responseCode NVARCHAR(2)='FF' OUTPUT,
+@responseMessage NVARCHAR(128)='' OUTPUT
+
 AS
-	BEGIN
-		DELETE FROM CompanyMedicineMap 
+
+	BEGIN TRY
+    IF (@CompID IS NOT NULL AND @MedBCode IS NOT NULL)
+ 	 BEGIN
+		UPDATE  CompanyMedicineMap 
+		SET MapStatus ='FF'
 		WHERE CompID = @CompID  AND MedBCode = @MedBCode
+		
+		 SELECT @responseCode = '00'
+	     SELECT @responseMessage = 'Success'
+	
 	END
+
+	ELSE
+     	BEGIN 
+
+				SELECT @responseCode = 'FF'
+				SELECT @responseMessage = 'nO PARAMETER'
+				 RETURN -1
+	    END
+	END TRY
+BEGIN CATCH
+			SELECT @responseCode = 'FF',
+	           	@responseMessage=ERROR_MESSAGE()
+			return -1;
+	END CATCH
+		
+	return -1
+
+
+	------------------------- get specific  relation----------------------
+		GO
+create  OR ALTER PROC usp_CompanyMedicineMap_Select  
+@CompID INT,
+@MedBCode  NVARCHAR(64)
+as
+	 IF (@CompID IS NOT NULL AND @MedBCode IS NOT NULL)
+ 	 BEGIN
+	
+		select * from dbo.CompanyMedicineMap
+		where CompID= @CompID
+		AND  MedBCode=@MedBCode
+		return 0
+	END
+	ELSE 
+		RETURN -1
+
+		GO
+CREATE  OR alter proc usp_CompanyMedicineMap_UpdateStatus
+@CompID INT,
+@MedBCode  NVARCHAR(64),
+@MapStatus NVARCHAR(2),
+@responseCode NVARCHAR(2)='FF' OUTPUT,
+@responseMessage NVARCHAR(128)='' OUTPUT
+
+AS
+BEGIN TRY
+if (@CompID IS NOT NULL AND @MedBCode  IS NOT NULL )
+	BEGIN
+	UPDATE dbo.CompanyMedicineMap
+	SET MapStatus = ISNULL (@MapStatus,MapStatus)
+	where MedBCode  = @MedBCode AND  CompID = @CompID
+	SELECT @responseCode = '00'
+		SELECT @responseMessage = 'Success'
+	END
+	ELSE
+	BEGIN 
+
+				SELECT @responseCode = 'FF'
+				SELECT @responseMessage = 'nO PARAMETER'
+				 RETURN -1
+	END
+	END TRY
+BEGIN CATCH
+			SELECT @responseCode = 'FF',
+	           	@responseMessage=ERROR_MESSAGE()
+			return -1;
+	END CATCH
+		
+	return -1
+		
+
 -- END of Company - Medicine Relation SP --
 ------------------------------------------------------------------------------------
 ------------------------------------------------------------------------------------
@@ -304,12 +420,12 @@ AS
 
 -- (1) Select All Batches --
 GO
-Create proc usp_Batch_SelectAll
+Create  OR ALTER PROC usp_Batch_SelectAll
 as
 	select * from Batch
 -- (2.1) Select Batch By ID --
 GO
-create proc usp_Batch_Select  @BatchID INT
+create  OR ALTER PROC usp_Batch_Select  @BatchID INT
 as
 	IF (@BatchID IS NOT NULL)
 	BEGIN
@@ -321,13 +437,13 @@ as
 		RETURN -1
 -- (2.2) Select Batch By Status --
 GO
-create proc usp_Batch_SelectBySts  @BatchSts  NVARCHAR(32)
+create  OR ALTER PROC usp_Batch_SelectBySts  @BatchSts  NVARCHAR(32)
 as
 	select * from Batch
 	where BatchStatus = @BatchSts
 -- (3) Insert Batch --
 GO
-CREATE PROC usp_Batch_Insert 
+CREATE  OR ALTER PROC usp_Batch_Insert 
 	@BatchID INT,
 	@BatchMedBCode NVARCHAR(64),
 	@Quantity INT = NULL,
@@ -340,7 +456,7 @@ as
 	END
 -- (4) Update Batch --
 GO
-CREATE PROC usp_Batch_Update 
+CREATE  OR ALTER PROC usp_Batch_Update 
 	@BatchID INT,
 	@BatchMedBCode NVARCHAR(64) = NULL,
 	@Quantity  NVARCHAR(64) = NULL,
@@ -359,7 +475,7 @@ as
 	END
 -- (5) Delete Batch --
 GO
-create proc usp_Batch_Delete  @BatchID INT
+create  OR ALTER PROC usp_Batch_Delete  @BatchID INT
 as
 	IF (@BatchID IS NOT NULL)
 	BEGIN
@@ -377,12 +493,12 @@ as
 
 -- (1) Select All Batches --
 GO
-Create proc usp_AmbulanceVehicle_SelectAll
+Create  OR ALTER PROC usp_AmbulanceVehicle_SelectAll
 as
 	select * from AmbulanceVehicle
 -- (2.1) Select AmbulanceVehicle By Identification Number --
 GO
-create proc usp_AmbulanceVehicle_Select  @VIN INT
+create  OR ALTER PROC usp_AmbulanceVehicle_Select  @VIN INT
 as
 	IF (@VIN IS NOT NULL)
 	BEGIN
@@ -394,13 +510,13 @@ as
 		RETURN -1
 -- (2.2) Select AmbulanceVehicle By Status --
 GO
-create proc usp_AmbulanceVehicle_SelectBySts  @VehicleSts  NVARCHAR(32)
+create  OR ALTER PROC usp_AmbulanceVehicle_SelectBySts  @VehicleSts  NVARCHAR(32)
 as
 	select * from AmbulanceVehicle
 	where VehicleStatus = @VehicleSts
 -- (3) Insert AmbulanceVehicle --
 GO
-CREATE PROC usp_AmbulanceVehicle_Insert 
+CREATE  OR ALTER PROC usp_AmbulanceVehicle_Insert 
 	@VIN INT,
 	@Implication NVARCHAR(32) = NULL,
 	@Make NVARCHAR(32) = NULL ,
@@ -425,7 +541,7 @@ as
 	END
 -- (4) Update AmbulanceVehicle --
 GO
-CREATE PROC usp_AmbulanceVehicle_Update 
+CREATE  OR ALTER PROC usp_AmbulanceVehicle_Update 
 	@VIN INT,
 	@Implication NVARCHAR(32) = NULL,
 	@Make NVARCHAR(32) = NULL ,
@@ -463,7 +579,7 @@ as
 	END
 -- (5) Delete AmbulanceVehicle --
 GO
-create proc usp_AmbulanceVehicle_Delete  @VIN INT
+create  OR ALTER PROC usp_AmbulanceVehicle_Delete  @VIN INT
 as
 	IF (@VIN IS NOT NULL)
 	BEGIN
@@ -481,7 +597,7 @@ as
 
 --(1) Distribute an amount of batch medicine to a Vehicle --
 GO
-CREATE PROC usp_BatchDistribution_Insert @DistributedAmt INT, @BID INT, @AmbVIN INT
+CREATE  OR ALTER PROC usp_BatchDistribution_Insert @DistributedAmt INT, @BID INT, @AmbVIN INT
 AS
 	BEGIN
 		INSERT INTO BatchDistributionMap (DistributedAmt,BID,AmbVIN)
@@ -495,7 +611,7 @@ AS
 
 --(1) Register --
 GO
-CREATE PROC usp_Employee_Register
+CREATE  OR ALTER PROC usp_Employee_Register
 	@Fname NVARCHAR(32) = NULL,
 	@Lname NVARCHAR(32) = NULL,
 	@BDate Date = NULL,
@@ -547,7 +663,7 @@ BEGIN
 END
 --(2) Login --
 GO
-CREATE PROC usp_Employee_Login 
+CREATE  OR ALTER PROC usp_Employee_Login 
 	@EmailOrPAN NVARCHAR(128),
 	@HashPassword NVARCHAR(128),
 	@return_Hex_value NVARCHAR(2)='FF' OUTPUT,
@@ -614,7 +730,7 @@ END
 
 --(3) Logout --
 GO
-CREATE PROC usp_Employee_Logout
+CREATE  OR ALTER PROC usp_Employee_Logout
 	@userID INT,
 	@return_Hex_value NVARCHAR(2)='FF' OUTPUT,
 	@responseMessage NVARCHAR(128)='' OUTPUT
@@ -650,7 +766,7 @@ END
 -- Triggers --
 -- (1) Distribute amount of batch medicine to vehicle --
 GO
-Create trigger TR_BatchDistributionMap_InsteadOfInsert
+Create  trigger TR_BatchDistributionMap_InsteadOfInsert
 ON BatchDistributionMap
 instead of insert
 as
