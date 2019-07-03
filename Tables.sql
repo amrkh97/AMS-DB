@@ -472,7 +472,7 @@ CREATE TABLE AmbulanceMap
 	ParamedicID INT NOT NULL,
 	DriverID INT NOT NULL,
 	YelloPadID INT NOT NULL,
-	--StatusMap NVARCHAR(32) DEFAULT (00),
+	StatusMap NVARCHAR(32) DEFAULT (00),
 	
 	FOREIGN KEY (VIN) REFERENCES dbo.AmbulanceVehicle(VIN),
 	FOREIGN KEY (ParamedicID) REFERENCES dbo.Employee(EID),

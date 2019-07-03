@@ -1052,8 +1052,41 @@ Set @HexCode = 0
 end
 END
 GO
+------------------------------------------------------
+------------------------------------------------------
+------------------------------------------------------
 
+CREATE OR ALTER PROC usp_getAmbulanceCarMapByCarID
+@CarID INT
+AS
+BEGIN
+SELECT * FROM dbo.AmbulanceMap WHERE VIN = @CarID
+END
+GO
 
+CREATE OR ALTER PROC usp_getAmbulanceCarMapByDriverID
+@DriverID INT
+AS
+BEGIN
+SELECT * FROM dbo.AmbulanceMap WHERE VIN = @DriverID
+END
+GO
+
+CREATE OR ALTER PROC usp_getAmbulanceCarMapByParamedicID
+@ParamedicID INT
+AS
+BEGIN
+SELECT * FROM dbo.AmbulanceMap WHERE VIN = @ParamedicID
+END
+GO
+
+CREATE OR ALTER PROC usp_getAmbulanceCarMapByYelloPadID
+@YelloPadID INT
+AS
+BEGIN
+SELECT * FROM dbo.AmbulanceMap WHERE VIN = @YelloPadID
+END
+GO
 
 
 --GO
