@@ -2,12 +2,12 @@
 USE KAN_AMO
 
 GO
-Create proc usp_MedicalRecord_SelectAll 
+CREATE OR ALTER proc usp_MedicalRecord_SelectAll 
 as
 	select * from MedicalRecord
 	
 GO
-create proc usp_MedicalRecord_SelectByID  @MedicalRecordID INT
+CREATE OR ALTER proc usp_MedicalRecord_SelectByID  @MedicalRecordID INT
 as
 	IF (@MedicalRecordID IS NOT NULL)
 	BEGIN
@@ -18,7 +18,7 @@ as
 		RETURN -1
 		
 GO
-create proc usp_MedicalRecord_SelectByPatient  @PatientID INT
+CREATE OR ALTER proc usp_MedicalRecord_SelectByPatient  @PatientID INT
 as
 	IF (@PatientID IS NOT NULL)
 	BEGIN
@@ -29,7 +29,7 @@ as
 		RETURN -1
 
 GO
-create proc usp_MedicalRecord_SelectByStatus  @MRStatus INT
+CREATE OR ALTER proc usp_MedicalRecord_SelectByStatus  @MRStatus INT
 as
 	IF (@MRStatus IS NOT NULL)
 	BEGIN
@@ -39,8 +39,7 @@ as
 	ELSE
 		RETURN -1
 		GO
-CREATE PROC usp_MedicalRecord_Insert 
- @MedicalRecordID INT,
+CREATE OR ALTER PROC usp_MedicalRecord_Insert 
 	@RespSQN NVARCHAR(64),
 	@PatientID INT,
 	@BloodType NVARCHAR(12),
@@ -74,20 +73,12 @@ CREATE PROC usp_MedicalRecord_Insert
 	
 	as 
 	BEGIN TRY
-	IF (@MedicalRecordID IS NOT NULL )
 		BEGIN
 			INSERT INTO MedicalRecord (RespSQN,PatientID,BloodType,BloodPressure,Diabetes,RespiratoryDiseases,Cancer,CardiovascularDiseases,COPD,Pregnancy,Other,Dead,Consciousness,Breathing,Capillaries,Pulse,BloodPressureLevel,DiabetesLevel,BodyTemp,BreathingRate,CapillariesLevel,Injury,PhysicalExaminationImage,MedicineApplied,ProcedureDoneInCar,RecommendedProcedure,MRStatus)
 			values(@RespSQN,@PatientID,@BloodType,@BloodPressure,@Diabetes,@RespiratoryDiseases,@Cancer,@CardiovascularDiseases,@COPD,@Pregnancy,@Other,@Dead,@Consciousness,@Breathing,@Capillaries,@Pulse,@BloodPressureLevel,@DiabetesLevel,@BodyTemp,@BreathingRate,@CapillariesLevel,@Injury,@PhysicalExaminationImage,@MedicineApplied,@ProcedureDoneInCar,@RecommendedProcedure,@MRStatus)
 		    SELECT @responseCode = '00'
 		    SELECT @responseMessage = 'Success'
-			END
-			
-	ELSE
-	BEGIN
-				return -1
-				SELECT @responseCode = 'FF'
-				SELECT @responseMessage = 'Unknown Error'
-			END
+		END
 	END TRY
 	BEGIN CATCH
 			SELECT @responseCode = 'FF',
@@ -100,7 +91,7 @@ CREATE PROC usp_MedicalRecord_Insert
 		-- (4) Update MedicalRecord --
 
 GO
-CREATE PROC usp_MedicalRecord_Update
+CREATE OR ALTER PROC usp_MedicalRecord_Update
 
     @MedicalRecordID INT,
 	@RespSQN NVARCHAR(64),
@@ -190,7 +181,7 @@ Begin TRY
 
 		-- (5) Delete MedicalRecord By ID --
 GO
-create proc usp_MedicalRecord_Delete  @MedicalRecordID  INT
+CREATE OR ALTER proc usp_MedicalRecord_Delete  @MedicalRecordID  INT
 as
 	IF (@MedicalRecordID IS NOT NULL)
 	BEGIN
