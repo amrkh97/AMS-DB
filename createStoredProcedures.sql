@@ -1029,12 +1029,12 @@ CREATE OR ALTER PROC usp_AmbulanceMap_Insert
 @HexCode INT OUTPUT
 AS
 BEGIN
-if exists(select * from dbo.AmbulanceMap where VIN = @VIN and StatusMap = 0)
+if exists(select * from dbo.AmbulanceMap where VIN = @VIN and StatusMap = '00')
 BEGIN
 -- 1 -> Ambulance was already inserted but not assigned.
 Set @HexCode = 1
 END
-ELSE if exists(select * from dbo.AmbulanceMap where VIN = @VIN and StatusMap <> 99)
+ELSE if exists(select * from dbo.AmbulanceMap where VIN = @VIN and StatusMap ='01')
 begin
 -- 2 -> Ambulance is assigned and already in service.
 Set @HexCode = 2
@@ -1085,6 +1085,21 @@ CREATE OR ALTER PROC usp_getAmbulanceCarMapByYelloPadID
 AS
 BEGIN
 SELECT * FROM dbo.AmbulanceMap WHERE VIN = @YelloPadID
+END
+GO
+
+
+CREATE OR ALTER  Proc usp_deleteAmbulanceMap
+@VIN INT
+AS
+BEGIN
+update dbo.AmbulanceMap
+set StatusMap = '04'
+WHERE VIN = @VIN AND StatusMap='00'
+
+update dbo.AmbulanceMap
+set StatusMap = '04'
+WHERE VIN = @VIN AND StatusMap='02'
 END
 GO
 
