@@ -45,7 +45,7 @@ BEGIN TRY
 	BEGIN
 		UPDATE Receipt
 		SET ReceiptStatus = 99
-		where ReceiptID = @ReceiptID AND  ReceiptStatus='0'
+		where ReceiptID = @ReceiptID AND  ReceiptStatus='00'
 	    SELECT @responseCode = '00'
 		SELECT @responseMessage = 'Success'
 		
@@ -74,7 +74,7 @@ BEGIN TRY
 	IF (@RespSQN IS NOT NULL)
 	BEGIN
 		select * from Receipt
-		where ((RespSQN = @RespSQN) AND (ReceiptStatus='0'))
+		where ((RespSQN = @RespSQN) AND (ReceiptStatus='00'))
  SELECT @responseCode = '00'
 		SELECT @responseMessage = 'Success'
 	END
@@ -103,7 +103,7 @@ BEGIN TRY
 	IF (@CasheirSSN IS NOT NULL)
 	BEGIN
 		select * from Receipt
-		where ((CasheirSSN = @CasheirSSN) AND (ReceiptStatus='0'))
+		where ((CasheirSSN = @CasheirSSN) AND (ReceiptStatus='00'))
  SELECT @responseCode = '00'
 		SELECT @responseMessage = 'Success'
 	END
@@ -133,7 +133,7 @@ BEGIN TRY
 	IF (@FTPFileLocation IS NOT NULL)
 	BEGIN
 		select * from Receipt
-		where ((FTPFileLocation = @FTPFileLocation) AND (ReceiptStatus='0'))
+		where ((FTPFileLocation = @FTPFileLocation) AND (ReceiptStatus='00'))
  SELECT @responseCode = '00'
 		SELECT @responseMessage = 'Success'
 	END
@@ -191,7 +191,7 @@ BEGIN TRY
 	IF (@Cost IS NOT NULL)
 	BEGIN
 		select * from Receipt
-		where ((Cost = @Cost) AND (ReceiptStatus='0'))
+		where ((Cost = @Cost) AND (ReceiptStatus='00'))
  SELECT @responseCode = '00'
 		SELECT @responseMessage = 'Success'
 	END
@@ -220,7 +220,7 @@ BEGIN TRY
 	IF (@PaymentMethod IS NOT NULL)
 	BEGIN
 		select * from Receipt
-		where ((PaymentMethod = @PaymentMethod) AND (ReceiptStatus='0'))
+		where ((PaymentMethod = @PaymentMethod) AND (ReceiptStatus='00'))
  SELECT @responseCode = '00'
 		SELECT @responseMessage = 'Success'
 	END
@@ -251,7 +251,7 @@ as
 			(NOT(DatePart(Mi,@ReceiptCreationTime) =0))
 			BEGIN	
 			select * from Receipt
-			where ReceiptStatus='0' AND (DatePart(yy,ReceiptCreationTime) = DatePart(yy,@ReceiptCreationTime)) and
+			where ReceiptStatus='00' AND (DatePart(yy,ReceiptCreationTime) = DatePart(yy,@ReceiptCreationTime)) and
 			(DatePart(mm,ReceiptCreationTime) = DatePart(mm,@ReceiptCreationTime))
 			and (DatePart(dd,ReceiptCreationTime) = DatePart(dd,@ReceiptCreationTime)
 			and (DatePart(hh,ReceiptCreationTime) = DatePart(hh,@ReceiptCreationTime))
@@ -264,7 +264,7 @@ as
 			(DatePart(Mi,@ReceiptCreationTime)=0)
 			BEGIN	
 			select * from Receipt
-			where  ReceiptStatus='0' AND  (DatePart(yy,ReceiptCreationTime) = DatePart(yy,@ReceiptCreationTime)) and
+			where  ReceiptStatus='00' AND  (DatePart(yy,ReceiptCreationTime) = DatePart(yy,@ReceiptCreationTime)) and
 			(DatePart(mm,ReceiptCreationTime) = DatePart(mm,@ReceiptCreationTime))
 			and (DatePart(dd,ReceiptCreationTime) = DatePart(dd,@ReceiptCreationTime)
 			and (DatePart(hh,ReceiptCreationTime) = DatePart(hh,@ReceiptCreationTime))) 
@@ -276,7 +276,7 @@ as
 			(DatePart(mi,@ReceiptCreationTime)=0)
 			BEGIN	
 			select * from Receipt
-			where  ReceiptStatus='0' AND  (DatePart(yy,ReceiptCreationTime) = DatePart(yy,@ReceiptCreationTime)) and
+			where  ReceiptStatus='00' AND  (DatePart(yy,ReceiptCreationTime) = DatePart(yy,@ReceiptCreationTime)) and
 			(DatePart(mm,ReceiptCreationTime) = DatePart(mm,@ReceiptCreationTime))
 			and (DatePart(dd,ReceiptCreationTime) = DatePart(dd,@ReceiptCreationTime) )
 		END
@@ -287,7 +287,7 @@ as
 			(DatePart(Mi,@ReceiptCreationTime) = 0)
 			BEGIN	
 			select * from Receipt
-			where  ReceiptStatus='0' AND (DatePart(yy,ReceiptCreationTime) = DatePart(yy,@ReceiptCreationTime)) and
+			where  ReceiptStatus='00' AND (DatePart(yy,ReceiptCreationTime) = DatePart(yy,@ReceiptCreationTime)) and
 			(DatePart(mm,ReceiptCreationTime) = DatePart(mm,@ReceiptCreationTime)) 
 		END
 			ELSE IF  (NOT(DatePart(yy,@ReceiptCreationTime)=0)) AND 
@@ -297,7 +297,7 @@ as
 			(DatePart(Mi,@ReceiptCreationTime)=0)
 			BEGIN	
 			select * from Receipt
-			where  ReceiptStatus='0' AND DatePart(yy,ReceiptCreationTime) = DatePart(yy,@ReceiptCreationTime)
+			where  ReceiptStatus='00' AND DatePart(yy,ReceiptCreationTime) = DatePart(yy,@ReceiptCreationTime)
 	END
 	end
 	ELSE

@@ -1367,7 +1367,7 @@ BEGIN TRY
 	BEGIN
 		UPDATE Receipt
 		SET ReceiptStatus = 99
-		where ReceiptID = @ReceiptID AND  ReceiptStatus='0'
+		where ReceiptID = @ReceiptID AND  ReceiptStatus='00'
 	    SELECT @responseCode = '00'
 		SELECT @responseMessage = 'Success'
 		
@@ -1396,7 +1396,7 @@ BEGIN TRY
 	IF (@RespSQN IS NOT NULL)
 	BEGIN
 		select * from Receipt
-		where ((RespSQN = @RespSQN) AND (ReceiptStatus='0'))
+		where ((RespSQN = @RespSQN) AND (ReceiptStatus='00'))
  SELECT @responseCode = '00'
 		SELECT @responseMessage = 'Success'
 	END
@@ -1425,7 +1425,7 @@ BEGIN TRY
 	IF (@CasheirSSN IS NOT NULL)
 	BEGIN
 		select * from Receipt
-		where ((CasheirSSN = @CasheirSSN) AND (ReceiptStatus='0'))
+		where ((CasheirSSN = @CasheirSSN) AND (ReceiptStatus='00'))
  SELECT @responseCode = '00'
 		SELECT @responseMessage = 'Success'
 	END
@@ -1455,7 +1455,7 @@ BEGIN TRY
 	IF (@FTPFileLocation IS NOT NULL)
 	BEGIN
 		select * from Receipt
-		where ((FTPFileLocation = @FTPFileLocation) AND (ReceiptStatus='0'))
+		where ((FTPFileLocation = @FTPFileLocation) AND (ReceiptStatus='00'))
  SELECT @responseCode = '00'
 		SELECT @responseMessage = 'Success'
 	END
@@ -1513,7 +1513,7 @@ BEGIN TRY
 	IF (@Cost IS NOT NULL)
 	BEGIN
 		select * from Receipt
-		where ((Cost = @Cost) AND (ReceiptStatus='0'))
+		where ((Cost = @Cost) AND (ReceiptStatus='00'))
  SELECT @responseCode = '00'
 		SELECT @responseMessage = 'Success'
 	END
@@ -1542,7 +1542,7 @@ BEGIN TRY
 	IF (@PaymentMethod IS NOT NULL)
 	BEGIN
 		select * from Receipt
-		where ((PaymentMethod = @PaymentMethod) AND (ReceiptStatus='0'))
+		where ((PaymentMethod = @PaymentMethod) AND (ReceiptStatus='00'))
  SELECT @responseCode = '00'
 		SELECT @responseMessage = 'Success'
 	END
@@ -1573,7 +1573,7 @@ as
 			(NOT(DatePart(Mi,@ReceiptCreationTime) =0))
 			BEGIN	
 			select * from Receipt
-			where ReceiptStatus='0' AND (DatePart(yy,ReceiptCreationTime) = DatePart(yy,@ReceiptCreationTime)) and
+			where ReceiptStatus='00' AND (DatePart(yy,ReceiptCreationTime) = DatePart(yy,@ReceiptCreationTime)) and
 			(DatePart(mm,ReceiptCreationTime) = DatePart(mm,@ReceiptCreationTime))
 			and (DatePart(dd,ReceiptCreationTime) = DatePart(dd,@ReceiptCreationTime)
 			and (DatePart(hh,ReceiptCreationTime) = DatePart(hh,@ReceiptCreationTime))
@@ -1586,7 +1586,7 @@ as
 			(DatePart(Mi,@ReceiptCreationTime)=0)
 			BEGIN	
 			select * from Receipt
-			where  ReceiptStatus='0' AND  (DatePart(yy,ReceiptCreationTime) = DatePart(yy,@ReceiptCreationTime)) and
+			where  ReceiptStatus='00' AND  (DatePart(yy,ReceiptCreationTime) = DatePart(yy,@ReceiptCreationTime)) and
 			(DatePart(mm,ReceiptCreationTime) = DatePart(mm,@ReceiptCreationTime))
 			and (DatePart(dd,ReceiptCreationTime) = DatePart(dd,@ReceiptCreationTime)
 			and (DatePart(hh,ReceiptCreationTime) = DatePart(hh,@ReceiptCreationTime))) 
@@ -1598,7 +1598,7 @@ as
 			(DatePart(mi,@ReceiptCreationTime)=0)
 			BEGIN	
 			select * from Receipt
-			where  ReceiptStatus='0' AND  (DatePart(yy,ReceiptCreationTime) = DatePart(yy,@ReceiptCreationTime)) and
+			where  ReceiptStatus='00' AND  (DatePart(yy,ReceiptCreationTime) = DatePart(yy,@ReceiptCreationTime)) and
 			(DatePart(mm,ReceiptCreationTime) = DatePart(mm,@ReceiptCreationTime))
 			and (DatePart(dd,ReceiptCreationTime) = DatePart(dd,@ReceiptCreationTime) )
 		END
@@ -1609,7 +1609,7 @@ as
 			(DatePart(Mi,@ReceiptCreationTime) = 0)
 			BEGIN	
 			select * from Receipt
-			where  ReceiptStatus='0' AND (DatePart(yy,ReceiptCreationTime) = DatePart(yy,@ReceiptCreationTime)) and
+			where  ReceiptStatus='00' AND (DatePart(yy,ReceiptCreationTime) = DatePart(yy,@ReceiptCreationTime)) and
 			(DatePart(mm,ReceiptCreationTime) = DatePart(mm,@ReceiptCreationTime)) 
 		END
 			ELSE IF  (NOT(DatePart(yy,@ReceiptCreationTime)=0)) AND 
@@ -1619,7 +1619,7 @@ as
 			(DatePart(Mi,@ReceiptCreationTime)=0)
 			BEGIN	
 			select * from Receipt
-			where  ReceiptStatus='0' AND DatePart(yy,ReceiptCreationTime) = DatePart(yy,@ReceiptCreationTime)
+			where  ReceiptStatus='00' AND DatePart(yy,ReceiptCreationTime) = DatePart(yy,@ReceiptCreationTime)
 	END
 	end
 	ELSE
@@ -1631,7 +1631,7 @@ as
 	IF (@ReceiptCreationTime IS NOT NULL)
 		BEGIN	
 			select * from Receipt
-			where ReceiptStatus='0' AND	(ReceiptCreationTime=@ReceiptCreationTime)
+			where ReceiptStatus='00' AND	(ReceiptCreationTime=@ReceiptCreationTime)
 end
 	ELSE
 		RETURN -1
@@ -1642,7 +1642,7 @@ as
 	IF (@ReceiptCreationYear IS NOT NULL)
 		BEGIN	
 			select * from Receipt
-			where ReceiptStatus='0' AND (DatePart(yy,ReceiptCreationTime) = @ReceiptCreationYear)
+			where ReceiptStatus='00' AND (DatePart(yy,ReceiptCreationTime) = @ReceiptCreationYear)
 	end
 ELSE
 	RETURN -1
@@ -1653,7 +1653,7 @@ as
 	IF ((@ReceiptCreationYear IS NOT NULL) and (@ReceiptCreationMonth is not null))
 		BEGIN	
 			select * from Receipt
-			where ReceiptStatus='0' AND (DatePart(yy,ReceiptCreationTime) = @ReceiptCreationYear)
+			where ReceiptStatus='00' AND (DatePart(yy,ReceiptCreationTime) = @ReceiptCreationYear)
 			and(DatePart(mm,ReceiptCreationTime) = @ReceiptCreationMonth)
 end
 	ELSE
@@ -1665,7 +1665,7 @@ as
 	IF ((@ReceiptCreationYear IS NOT NULL) and (@ReceiptCreationMonth IS NOT NULL) and (@ReceiptCreationDay IS NOT NULL))
 		BEGIN	
 			select * from Receipt
-			where ReceiptStatus='0' AND (DatePart(yy,ReceiptCreationTime) = @ReceiptCreationYear) and
+			where ReceiptStatus='00' AND (DatePart(yy,ReceiptCreationTime) = @ReceiptCreationYear) and
 			(DatePart(mm,ReceiptCreationTime) = @ReceiptCreationMonth)
 			and (DatePart(dd,ReceiptCreationTime) = @ReceiptCreationDay)
 end
@@ -1678,7 +1678,7 @@ as
 	IF ((@ReceiptCreationYear IS NOT NULL) and (@ReceiptCreationMonth IS NOT NULL) and (@ReceiptCreationDay IS NOT NULL) and (@ReceiptCreationHour is not null) )
 		BEGIN	
 			select * from Receipt
-			where ReceiptStatus='0' AND (DatePart(yy,ReceiptCreationTime) = @ReceiptCreationYear) and
+			where ReceiptStatus='00' AND (DatePart(yy,ReceiptCreationTime) = @ReceiptCreationYear) and
 			(DatePart(mm,ReceiptCreationTime) = @ReceiptCreationMonth)
 			and (DatePart(dd,ReceiptCreationTime) = @ReceiptCreationDay
 			and (DatePart(hh,ReceiptCreationTime) = @ReceiptCreationHour))
@@ -1726,7 +1726,7 @@ as
 	IF (@ReportTitle IS NOT NULL)
 	BEGIN
 		select * from Reports
-		where ReportTitle = @ReportTitle AND ReportStatus=0
+		where ReportTitle = @ReportTitle AND ReportStatus= '00'
 	END
 	ELSE
 		RETURN -1
@@ -1739,7 +1739,7 @@ as
 	IF (@ReportStatus IS NOT NULL)
 	BEGIN
 		select * from Reports
-		where ReportStatus = @ReportStatus AND ReportStatus=0
+		where ReportStatus = @ReportStatus AND ReportStatus= '00'
 	END
 	ELSE
 		RETURN -1
@@ -1760,7 +1760,7 @@ as
 			(NOT(DatePart(Mi,@ReportIssueTime) =0))
 			BEGIN	
 			select * from Reports
-			where ReportStatus=0 AND (DatePart(yy,ReportIssueTime) = DatePart(yy,@ReportIssueTime)) and
+			where ReportStatus='00' AND (DatePart(yy,ReportIssueTime) = DatePart(yy,@ReportIssueTime)) and
 			(DatePart(mm,ReportIssueTime) = DatePart(mm,@ReportIssueTime))
 			and (DatePart(dd,ReportIssueTime) = DatePart(dd,@ReportIssueTime)
 			and (DatePart(hh,ReportIssueTime) = DatePart(hh,@ReportIssueTime))
@@ -1773,7 +1773,7 @@ as
 			(DatePart(Mi,@ReportIssueTime)=0)
 			BEGIN	
 			select * from Reports
-			where  ReportStatus=0 AND  (DatePart(yy,ReportIssueTime) = DatePart(yy,@ReportIssueTime)) and
+			where  ReportStatus='00' AND  (DatePart(yy,ReportIssueTime) = DatePart(yy,@ReportIssueTime)) and
 			(DatePart(mm,ReportIssueTime) = DatePart(mm,@ReportIssueTime))
 			and (DatePart(dd,ReportIssueTime) = DatePart(dd,@ReportIssueTime)
 			and (DatePart(hh,ReportIssueTime) = DatePart(hh,@ReportIssueTime))) 
@@ -1785,7 +1785,7 @@ as
 			(DatePart(mi,@ReportIssueTime)=0)
 			BEGIN	
 			select * from Reports
-			where  ReportStatus=0 AND  (DatePart(yy,ReportIssueTime) = DatePart(yy,@ReportIssueTime)) and
+			where  ReportStatus='00' AND  (DatePart(yy,ReportIssueTime) = DatePart(yy,@ReportIssueTime)) and
 			(DatePart(mm,ReportIssueTime) = DatePart(mm,@ReportIssueTime))
 			and (DatePart(dd,ReportIssueTime) = DatePart(dd,@ReportIssueTime) )
 		END
@@ -1796,7 +1796,7 @@ as
 			(DatePart(Mi,@ReportIssueTime) = 0)
 			BEGIN	
 			select * from Reports
-			where  ReportStatus=0 AND (DatePart(yy,ReportIssueTime) = DatePart(yy,@ReportIssueTime)) and
+			where  ReportStatus='00' AND (DatePart(yy,ReportIssueTime) = DatePart(yy,@ReportIssueTime)) and
 			(DatePart(mm,ReportIssueTime) = DatePart(mm,@ReportIssueTime)) 
 		END
 			ELSE IF  (NOT(DatePart(yy,@ReportIssueTime)=0)) AND 
@@ -1806,7 +1806,7 @@ as
 			(DatePart(Mi,@ReportIssueTime)=0)
 			BEGIN	
 			select * from Reports
-			where  ReportStatus=0 AND DatePart(yy,ReportIssueTime) = DatePart(yy,@ReportIssueTime)
+			where  ReportStatus='00' AND DatePart(yy,ReportIssueTime) = DatePart(yy,@ReportIssueTime)
 	END
 	end
 	ELSE
@@ -1820,7 +1820,7 @@ as
 	IF (@PatientID IS NOT NULL)
 	BEGIN
 		select * from Reports
-		where  ReportStatus=0 AND  PatientID = @PatientID
+		where  ReportStatus='00' AND  PatientID = @PatientID
 	END
 	ELSE
 		RETURN -1
@@ -1848,7 +1848,7 @@ BEGIN TRY
 	BEGIN
 		UPDATE Reports
 		SET ReportStatus = 99
-		where ReportID = @ReportID AND  ReportStatus=0
+		where ReportID = @ReportID AND  ReportStatus='00'
 	    SELECT @responseCode = '00'
 		SELECT @responseMessage = 'Success'
 		
@@ -1876,7 +1876,7 @@ as
 	IF (@ReportIssueTime IS NOT NULL)
 		BEGIN	
 			select * from Reports
-			where ReportStatus='0' AND	(ReportIssueTime=@ReportIssueTime)
+			where ReportStatus='00' AND	(ReportIssueTime=@ReportIssueTime)
 end
 	ELSE
 		RETURN -1
@@ -1887,7 +1887,7 @@ as
 	IF (@ReportCreationYear IS NOT NULL)
 		BEGIN	
 			select * from Reports
-			where ReportStatus='0' AND (DatePart(yy,ReportIssueTime) = @ReportCreationYear)
+			where ReportStatus='00' AND (DatePart(yy,ReportIssueTime) = @ReportCreationYear)
 	end
 ELSE
 	RETURN -1
@@ -1898,7 +1898,7 @@ as
 	IF ((@ReportCreationYear IS NOT NULL) and (@ReportCreationMonth is not null))
 		BEGIN	
 			select * from Reports
-			where ReportStatus='0' AND (DatePart(yy,ReportIssueTime) = @ReportCreationYear)
+			where ReportStatus='00' AND (DatePart(yy,ReportIssueTime) = @ReportCreationYear)
 			and(DatePart(mm,ReportIssueTime) = @ReportCreationMonth)
 end
 	ELSE
@@ -1910,7 +1910,7 @@ as
 	IF ((@ReportCreationYear IS NOT NULL) and (@ReportCreationMonth IS NOT NULL) and (@ReportCreationDay IS NOT NULL))
 		BEGIN	
 			select * from Reports
-			where ReportStatus='0' AND (DatePart(yy,ReportIssueTime) = @ReportCreationYear) and
+			where ReportStatus='00' AND (DatePart(yy,ReportIssueTime) = @ReportCreationYear) and
 			(DatePart(mm,ReportIssueTime) = @ReportCreationMonth)
 			and (DatePart(dd,ReportIssueTime) = @ReportCreationDay)
 end
@@ -1923,7 +1923,7 @@ as
 	IF ((@ReportCreationYear IS NOT NULL) and (@ReportCreationMonth IS NOT NULL) and (@ReportCreationDay IS NOT NULL) and (@ReportCreationHour is not null) )
 		BEGIN	
 			select * from Reports
-			where ReportStatus='0' AND (DatePart(yy,ReportIssueTime) = @ReportCreationYear) and
+			where ReportStatus='00' AND (DatePart(yy,ReportIssueTime) = @ReportCreationYear) and
 			(DatePart(mm,ReportIssueTime) = @ReportCreationMonth)
 			and (DatePart(dd,ReportIssueTime) = @ReportCreationDay
 			and (DatePart(hh,ReportIssueTime) = @ReportCreationHour))

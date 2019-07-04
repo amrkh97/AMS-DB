@@ -6,7 +6,7 @@ as
 	IF (@ReceiptCreationTime IS NOT NULL)
 		BEGIN	
 			select * from Receipt
-			where ReceiptStatus='0' AND	(ReceiptCreationTime=@ReceiptCreationTime)
+			where ReceiptStatus='00' AND	(ReceiptCreationTime=@ReceiptCreationTime)
 end
 	ELSE
 		RETURN -1
@@ -17,7 +17,7 @@ as
 	IF (@ReceiptCreationYear IS NOT NULL)
 		BEGIN	
 			select * from Receipt
-			where ReceiptStatus='0' AND (DatePart(yy,ReceiptCreationTime) = @ReceiptCreationYear)
+			where ReceiptStatus='00' AND (DatePart(yy,ReceiptCreationTime) = @ReceiptCreationYear)
 	end
 ELSE
 	RETURN -1
@@ -28,7 +28,7 @@ as
 	IF ((@ReceiptCreationYear IS NOT NULL) and (@ReceiptCreationMonth is not null))
 		BEGIN	
 			select * from Receipt
-			where ReceiptStatus='0' AND (DatePart(yy,ReceiptCreationTime) = @ReceiptCreationYear)
+			where ReceiptStatus='00' AND (DatePart(yy,ReceiptCreationTime) = @ReceiptCreationYear)
 			and(DatePart(mm,ReceiptCreationTime) = @ReceiptCreationMonth)
 end
 	ELSE
@@ -40,7 +40,7 @@ as
 	IF ((@ReceiptCreationYear IS NOT NULL) and (@ReceiptCreationMonth IS NOT NULL) and (@ReceiptCreationDay IS NOT NULL))
 		BEGIN	
 			select * from Receipt
-			where ReceiptStatus='0' AND (DatePart(yy,ReceiptCreationTime) = @ReceiptCreationYear) and
+			where ReceiptStatus='00' AND (DatePart(yy,ReceiptCreationTime) = @ReceiptCreationYear) and
 			(DatePart(mm,ReceiptCreationTime) = @ReceiptCreationMonth)
 			and (DatePart(dd,ReceiptCreationTime) = @ReceiptCreationDay)
 end

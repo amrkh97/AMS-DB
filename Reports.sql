@@ -2,7 +2,7 @@
 --(0) Insert Report --
 use KAN_AMO;
 GO
-CREATE PROC usp_Report_Insert 
+create PROC usp_Report_Insert 
 	
 	@ReportTitle VARCHAR(64),
 	@PatientID INT,
@@ -40,7 +40,7 @@ as
 	IF (@ReportTitle IS NOT NULL)
 	BEGIN
 		select * from Reports
-		where ReportTitle = @ReportTitle AND ReportStatus=0
+		where ReportTitle = @ReportTitle AND ReportStatus='00'
 	END
 	ELSE
 		RETURN -1
@@ -53,7 +53,7 @@ as
 	IF (@ReportStatus IS NOT NULL)
 	BEGIN
 		select * from Reports
-		where ReportStatus = @ReportStatus AND ReportStatus=0
+		where ReportStatus = @ReportStatus AND ReportStatus='00'
 	END
 	ELSE
 		RETURN -1
@@ -74,7 +74,7 @@ as
 			(NOT(DatePart(Mi,@ReportIssueTime) =0))
 			BEGIN	
 			select * from Reports
-			where ReportStatus=0 AND (DatePart(yy,ReportIssueTime) = DatePart(yy,@ReportIssueTime)) and
+			where ReportStatus='00' AND (DatePart(yy,ReportIssueTime) = DatePart(yy,@ReportIssueTime)) and
 			(DatePart(mm,ReportIssueTime) = DatePart(mm,@ReportIssueTime))
 			and (DatePart(dd,ReportIssueTime) = DatePart(dd,@ReportIssueTime)
 			and (DatePart(hh,ReportIssueTime) = DatePart(hh,@ReportIssueTime))
@@ -87,7 +87,7 @@ as
 			(DatePart(Mi,@ReportIssueTime)=0)
 			BEGIN	
 			select * from Reports
-			where  ReportStatus=0 AND  (DatePart(yy,ReportIssueTime) = DatePart(yy,@ReportIssueTime)) and
+			where  ReportStatus='00' AND  (DatePart(yy,ReportIssueTime) = DatePart(yy,@ReportIssueTime)) and
 			(DatePart(mm,ReportIssueTime) = DatePart(mm,@ReportIssueTime))
 			and (DatePart(dd,ReportIssueTime) = DatePart(dd,@ReportIssueTime)
 			and (DatePart(hh,ReportIssueTime) = DatePart(hh,@ReportIssueTime))) 
@@ -99,7 +99,7 @@ as
 			(DatePart(mi,@ReportIssueTime)=0)
 			BEGIN	
 			select * from Reports
-			where  ReportStatus=0 AND  (DatePart(yy,ReportIssueTime) = DatePart(yy,@ReportIssueTime)) and
+			where  ReportStatus='00' AND  (DatePart(yy,ReportIssueTime) = DatePart(yy,@ReportIssueTime)) and
 			(DatePart(mm,ReportIssueTime) = DatePart(mm,@ReportIssueTime))
 			and (DatePart(dd,ReportIssueTime) = DatePart(dd,@ReportIssueTime) )
 		END
@@ -110,7 +110,7 @@ as
 			(DatePart(Mi,@ReportIssueTime) = 0)
 			BEGIN	
 			select * from Reports
-			where  ReportStatus=0 AND (DatePart(yy,ReportIssueTime) = DatePart(yy,@ReportIssueTime)) and
+			where  ReportStatus='00' AND (DatePart(yy,ReportIssueTime) = DatePart(yy,@ReportIssueTime)) and
 			(DatePart(mm,ReportIssueTime) = DatePart(mm,@ReportIssueTime)) 
 		END
 			ELSE IF  (NOT(DatePart(yy,@ReportIssueTime)=0)) AND 
@@ -120,7 +120,7 @@ as
 			(DatePart(Mi,@ReportIssueTime)=0)
 			BEGIN	
 			select * from Reports
-			where  ReportStatus=0 AND DatePart(yy,ReportIssueTime) = DatePart(yy,@ReportIssueTime)
+			where  ReportStatus='00' AND DatePart(yy,ReportIssueTime) = DatePart(yy,@ReportIssueTime)
 	END
 	end
 	ELSE
@@ -134,7 +134,7 @@ as
 	IF (@PatientID IS NOT NULL)
 	BEGIN
 		select * from Reports
-		where  ReportStatus=0 AND  PatientID = @PatientID
+		where  ReportStatus='00' AND  PatientID = @PatientID
 	END
 	ELSE
 		RETURN -1
@@ -162,7 +162,7 @@ BEGIN TRY
 	BEGIN
 		UPDATE Reports
 		SET ReportStatus = 99
-		where ReportID = @ReportID AND  ReportStatus=0
+		where ReportID = @ReportID AND  ReportStatus='00'
 	    SELECT @responseCode = '00'
 		SELECT @responseMessage = 'Success'
 		

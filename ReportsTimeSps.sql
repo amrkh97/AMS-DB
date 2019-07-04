@@ -6,7 +6,7 @@ as
 	IF (@ReportIssueTime IS NOT NULL)
 		BEGIN	
 			select * from Reports
-			where ReportStatus='0' AND	(ReportIssueTime=@ReportIssueTime)
+			where ReportStatus='00' AND	(ReportIssueTime=@ReportIssueTime)
 end
 	ELSE
 		RETURN -1
@@ -17,7 +17,7 @@ as
 	IF (@ReportCreationYear IS NOT NULL)
 		BEGIN	
 			select * from Reports
-			where ReportStatus='0' AND (DatePart(yy,ReportIssueTime) = @ReportCreationYear)
+			where ReportStatus='00' AND (DatePart(yy,ReportIssueTime) = @ReportCreationYear)
 	end
 ELSE
 	RETURN -1
@@ -28,7 +28,7 @@ as
 	IF ((@ReportCreationYear IS NOT NULL) and (@ReportCreationMonth is not null))
 		BEGIN	
 			select * from Reports
-			where ReportStatus='0' AND (DatePart(yy,ReportIssueTime) = @ReportCreationYear)
+			where ReportStatus='00' AND (DatePart(yy,ReportIssueTime) = @ReportCreationYear)
 			and(DatePart(mm,ReportIssueTime) = @ReportCreationMonth)
 end
 	ELSE
@@ -40,7 +40,7 @@ as
 	IF ((@ReportCreationYear IS NOT NULL) and (@ReportCreationMonth IS NOT NULL) and (@ReportCreationDay IS NOT NULL))
 		BEGIN	
 			select * from Reports
-			where ReportStatus='0' AND (DatePart(yy,ReportIssueTime) = @ReportCreationYear) and
+			where ReportStatus='00' AND (DatePart(yy,ReportIssueTime) = @ReportCreationYear) and
 			(DatePart(mm,ReportIssueTime) = @ReportCreationMonth)
 			and (DatePart(dd,ReportIssueTime) = @ReportCreationDay)
 end
@@ -48,12 +48,12 @@ end
 		RETURN -1
 ------------------------------------------------
 GO
-create proc usp_Report_By_Year_Month_Day_Hour   @ReportCreationYear int, @ReportCreationMonth int,@ReportCreationDay int,@ReportCreationHour int
+Create proc usp_Report_By_Year_Month_Day_Hour   @ReportCreationYear int, @ReportCreationMonth int,@ReportCreationDay int,@ReportCreationHour int
 as
 	IF ((@ReportCreationYear IS NOT NULL) and (@ReportCreationMonth IS NOT NULL) and (@ReportCreationDay IS NOT NULL) and (@ReportCreationHour is not null) )
 		BEGIN	
 			select * from Reports
-			where ReportStatus='0' AND (DatePart(yy,ReportIssueTime) = @ReportCreationYear) and
+			where ReportStatus='00' AND (DatePart(yy,ReportIssueTime) = @ReportCreationYear) and
 			(DatePart(mm,ReportIssueTime) = @ReportCreationMonth)
 			and (DatePart(dd,ReportIssueTime) = @ReportCreationDay
 			and (DatePart(hh,ReportIssueTime) = @ReportCreationHour))
