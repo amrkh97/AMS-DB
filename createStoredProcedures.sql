@@ -1128,8 +1128,617 @@ SET VehicleStatus = '00'
 WHERE VIN = @VIN
 
 GO
+//-------------------------------------------------------------------
+O
+create PROC usp_Receipt_Insert 
+	
+	@RespSQN NVARCHAR(64),
+	@CasheirSSN INT,
+	@FTPFileLocation NVARCHAR(128),
+	@Cost NVARCHAR(32),
+	@PaymentMethod NVARCHAR(32)= '00',
+    @responseCode NVARCHAR(2)='FF' OUTPUT,
+	@responseMessage NVARCHAR(128)='' OUTPUT
+	
+		as 
+	BEGIN TRY
+	IF (@RespSQN IS NOT NULL )
+		BEGIN
+			INSERT INTO Receipt(RespSQN,CasheirSSN,FTPFileLocation,Cost,PaymentMethod)
+			values (@RespSQN,@CasheirSSN,@FTPFileLocation,@Cost,@PaymentMethod)
+	         SELECT @responseCode = '00'
+				SELECT @responseMessage = 'Success'
+		END
+	ELSE
+	BEGIN
+				return -1
+				SELECT @responseCode = 'FF'
+				SELECT @responseMessage = 'Unknown Error'
+			END
+	END TRY
+	BEGIN CATCH
+			SELECT @responseCode = 'FF',
+			@responseMessage=ERROR_MESSAGE()
+			return -1;
+	END CATCH
+		return -1
+------------------------------------------------------------------------
+GO
+create proc usp_Receipt_Delete 
+ @ReceiptID INT,
+  @responseCode NVARCHAR(2)='FF' OUTPUT,
+	@responseMessage NVARCHAR(128)='' OUTPUT
+
+as
+BEGIN TRY
+	IF (@ReceiptID IS NOT NULL)
+	BEGIN
+		UPDATE Receipt
+		SET ReceiptStatus = 99
+		where ReceiptID = @ReceiptID AND  ReceiptStatus='0'
+	    SELECT @responseCode = '00'
+		SELECT @responseMessage = 'Success'
+		
+	END
+		ELSE
+	BEGIN
+				return -1
+				SELECT @responseCode = 'FF'
+				SELECT @responseMessage = 'Unknown Error'
+			END
+	END TRY
+	BEGIN CATCH
+			SELECT @responseCode = 'FF',
+			       @responseMessage=ERROR_MESSAGE()
+			return -1;
+	END CATCH
+		return -1	
+---------------------------------------------------------------------------
+GO
+create proc usp_Receipt_SelectByRespSQN  @RespSQN NVARCHAR(64),
+    @responseCode NVARCHAR(2)='FF' OUTPUT,
+	@responseMessage NVARCHAR(128)='' OUTPUT
+
+as
+BEGIN TRY
+	IF (@RespSQN IS NOT NULL)
+	BEGIN
+		select * from Receipt
+		where ((RespSQN = @RespSQN) AND (ReceiptStatus='0'))
+ SELECT @responseCode = '00'
+		SELECT @responseMessage = 'Success'
+	END
+	ELSE
+	BEGIN 
+	return -1
+				SELECT @responseCode = 'FF'
+				SELECT @responseMessage = 'nO PARAMETER'
+	END
+	END TRY
+BEGIN CATCH
+			SELECT @responseCode = 'FF',
+		@responseMessage=ERROR_MESSAGE()
+			return -1;
+	END CATCH
+		return -1
+
+		
+GO
+create proc usp_Receipt_SelectByCasheirSSN  @CasheirSSN INT,
+   @responseCode NVARCHAR(2)='FF' OUTPUT,
+	@responseMessage NVARCHAR(128)='' OUTPUT
+
+as
+BEGIN TRY
+	IF (@CasheirSSN IS NOT NULL)
+	BEGIN
+		select * from Receipt
+		where ((CasheirSSN = @CasheirSSN) AND (ReceiptStatus='0'))
+ SELECT @responseCode = '00'
+		SELECT @responseMessage = 'Success'
+	END
+	ELSE
+	BEGIN 
+	return -1
+				SELECT @responseCode = 'FF'
+				SELECT @responseMessage = 'nO PARAMETER'
+	END
+	END TRY
+BEGIN CATCH
+			SELECT @responseCode = 'FF',
+		@responseMessage=ERROR_MESSAGE()
+			return -1;
+	END CATCH
+		return -1
 
 
+		
+GO
+create proc usp_Receipt_SelectByFTPFileLocation  @FTPFileLocation NVARCHAR(128),
+ @responseCode NVARCHAR(2)='FF' OUTPUT,
+	@responseMessage NVARCHAR(128)='' OUTPUT
+
+as
+BEGIN TRY
+	IF (@FTPFileLocation IS NOT NULL)
+	BEGIN
+		select * from Receipt
+		where ((FTPFileLocation = @FTPFileLocation) AND (ReceiptStatus='0'))
+ SELECT @responseCode = '00'
+		SELECT @responseMessage = 'Success'
+	END
+	ELSE
+	BEGIN 
+	return -1
+				SELECT @responseCode = 'FF'
+				SELECT @responseMessage = 'nO PARAMETER'
+	END
+	END TRY
+BEGIN CATCH
+			SELECT @responseCode = 'FF',
+		@responseMessage=ERROR_MESSAGE()
+			return -1;
+	END CATCH
+		return -1
+
+		
+GO
+create proc usp_Receipt_SelectByReceiptStatus  @ReceiptStatus NVARCHAR(64),
+ @responseCode NVARCHAR(2)='FF' OUTPUT,
+	@responseMessage NVARCHAR(128)='' OUTPUT
+
+as
+BEGIN TRY
+	IF (@ReceiptStatus IS NOT NULL)
+	BEGIN
+		select * from Receipt
+		where ((ReceiptStatus = @ReceiptStatus))
+ SELECT @responseCode = '00'
+		SELECT @responseMessage = 'Success'
+	END
+	ELSE
+	BEGIN 
+	return -1
+				SELECT @responseCode = 'FF'
+				SELECT @responseMessage = 'nO PARAMETER'
+	END
+	END TRY
+BEGIN CATCH
+			SELECT @responseCode = 'FF',
+		@responseMessage=ERROR_MESSAGE()
+			return -1;
+	END CATCH
+		return -1
+
+		
+GO
+create proc usp_Receipt_SelectByCost  @Cost NVARCHAR(64),
+ @responseCode NVARCHAR(2)='FF' OUTPUT,
+	@responseMessage NVARCHAR(128)='' OUTPUT
+
+as
+BEGIN TRY
+	IF (@Cost IS NOT NULL)
+	BEGIN
+		select * from Receipt
+		where ((Cost = @Cost) AND (ReceiptStatus='0'))
+ SELECT @responseCode = '00'
+		SELECT @responseMessage = 'Success'
+	END
+	ELSE
+	BEGIN 
+	return -1
+				SELECT @responseCode = 'FF'
+				SELECT @responseMessage = 'nO PARAMETER'
+	END
+	END TRY
+BEGIN CATCH
+			SELECT @responseCode = 'FF',
+		@responseMessage=ERROR_MESSAGE()
+			return -1;
+	END CATCH
+		return -1
+
+		
+GO
+create proc usp_Receipt_SelectByPaymentMethod  @PaymentMethod NVARCHAR(64),
+ @responseCode NVARCHAR(2)='FF' OUTPUT,
+	@responseMessage NVARCHAR(128)='' OUTPUT
+
+as
+BEGIN TRY
+	IF (@PaymentMethod IS NOT NULL)
+	BEGIN
+		select * from Receipt
+		where ((PaymentMethod = @PaymentMethod) AND (ReceiptStatus='0'))
+ SELECT @responseCode = '00'
+		SELECT @responseMessage = 'Success'
+	END
+	ELSE
+	BEGIN 
+	return -1
+				SELECT @responseCode = 'FF'
+				SELECT @responseMessage = 'nO PARAMETER'
+	END
+	END TRY
+BEGIN CATCH
+			SELECT @responseCode = 'FF',
+		@responseMessage=ERROR_MESSAGE()
+			return -1;
+	END CATCH
+		return -1
+
+		
+GO
+create proc usp_Receipt_SelectByReceiptCreationTime  @ReceiptCreationTime DATETIME
+as
+	IF (@ReceiptCreationTime IS NOT NULL)
+		BEGIN
+			IF  (NOT(DatePart(yy,@ReceiptCreationTime)=0)) AND 
+			(NOT(DatePart(mm,@ReceiptCreationTime) = 0)) AND 
+			(NOT(DatePart(dd,@ReceiptCreationTime)=0)) AND 
+			(NOT(DatePart(hh,@ReceiptCreationTime) =0)) AND 
+			(NOT(DatePart(Mi,@ReceiptCreationTime) =0))
+			BEGIN	
+			select * from Receipt
+			where ReceiptStatus='0' AND (DatePart(yy,ReceiptCreationTime) = DatePart(yy,@ReceiptCreationTime)) and
+			(DatePart(mm,ReceiptCreationTime) = DatePart(mm,@ReceiptCreationTime))
+			and (DatePart(dd,ReceiptCreationTime) = DatePart(dd,@ReceiptCreationTime)
+			and (DatePart(hh,ReceiptCreationTime) = DatePart(hh,@ReceiptCreationTime))
+			and (DatePart(mi,ReceiptCreationTime) = DatePart(mi,@ReceiptCreationTime)) )
+		END
+		ELSE IF  (NOT(DatePart(yy,@ReceiptCreationTime)=0)) AND 
+			(NOT(DatePart(mm,@ReceiptCreationTime) = 0)) AND 
+			(NOT(DatePart(dd,@ReceiptCreationTime)=0)) AND 
+			(NOT(DatePart(hh,@ReceiptCreationTime) =0)) AND
+			(DatePart(Mi,@ReceiptCreationTime)=0)
+			BEGIN	
+			select * from Receipt
+			where  ReceiptStatus='0' AND  (DatePart(yy,ReceiptCreationTime) = DatePart(yy,@ReceiptCreationTime)) and
+			(DatePart(mm,ReceiptCreationTime) = DatePart(mm,@ReceiptCreationTime))
+			and (DatePart(dd,ReceiptCreationTime) = DatePart(dd,@ReceiptCreationTime)
+			and (DatePart(hh,ReceiptCreationTime) = DatePart(hh,@ReceiptCreationTime))) 
+		END
+		ELSE IF  (NOT(DatePart(yy,@ReceiptCreationTime)=0)) AND 
+			(NOT(DatePart(mm,@ReceiptCreationTime) = 0)) AND 
+			(NOT(DatePart(dd,@ReceiptCreationTime)=0)) AND 
+			(DatePart(hh,@ReceiptCreationTime)=0) AND 
+			(DatePart(mi,@ReceiptCreationTime)=0)
+			BEGIN	
+			select * from Receipt
+			where  ReceiptStatus='0' AND  (DatePart(yy,ReceiptCreationTime) = DatePart(yy,@ReceiptCreationTime)) and
+			(DatePart(mm,ReceiptCreationTime) = DatePart(mm,@ReceiptCreationTime))
+			and (DatePart(dd,ReceiptCreationTime) = DatePart(dd,@ReceiptCreationTime) )
+		END
+		ELSE IF  (NOT(DatePart(yy,@ReceiptCreationTime) = 0)) AND 
+			(NOT(DatePart(mm,@ReceiptCreationTime) = 0)) AND 
+			(DatePart(dd,@ReceiptCreationTime) = 0) AND 
+			(DatePart(hh,@ReceiptCreationTime) = 0) AND 
+			(DatePart(Mi,@ReceiptCreationTime) = 0)
+			BEGIN	
+			select * from Receipt
+			where  ReceiptStatus='0' AND (DatePart(yy,ReceiptCreationTime) = DatePart(yy,@ReceiptCreationTime)) and
+			(DatePart(mm,ReceiptCreationTime) = DatePart(mm,@ReceiptCreationTime)) 
+		END
+			ELSE IF  (NOT(DatePart(yy,@ReceiptCreationTime)=0)) AND 
+			(DatePart(mm,@ReceiptCreationTime)=0) AND 
+			(DatePart(dd,@ReceiptCreationTime)=0) AND 
+			(DatePart(hh,@ReceiptCreationTime)=0) AND 
+			(DatePart(Mi,@ReceiptCreationTime)=0)
+			BEGIN	
+			select * from Receipt
+			where  ReceiptStatus='0' AND DatePart(yy,ReceiptCreationTime) = DatePart(yy,@ReceiptCreationTime)
+	END
+	end
+	ELSE
+		RETURN -1
+-----------------------------------------------------------------------------
+	GO
+create proc usp_Receipt_By_Full_Time  @ReceiptCreationTime DATETIME
+as
+	IF (@ReceiptCreationTime IS NOT NULL)
+		BEGIN	
+			select * from Receipt
+			where ReceiptStatus='0' AND	(ReceiptCreationTime=@ReceiptCreationTime)
+end
+	ELSE
+		RETURN -1
+-------------------------------------------------------
+GO
+create proc usp_Receipt_By_Year  @ReceiptCreationYear int
+as
+	IF (@ReceiptCreationYear IS NOT NULL)
+		BEGIN	
+			select * from Receipt
+			where ReceiptStatus='0' AND (DatePart(yy,ReceiptCreationTime) = @ReceiptCreationYear)
+	end
+ELSE
+	RETURN -1
+------------------------------------------------------
+GO
+create proc usp_Receipt_By_Year_Month   @ReceiptCreationYear int, @ReceiptCreationMonth int
+as
+	IF ((@ReceiptCreationYear IS NOT NULL) and (@ReceiptCreationMonth is not null))
+		BEGIN	
+			select * from Receipt
+			where ReceiptStatus='0' AND (DatePart(yy,ReceiptCreationTime) = @ReceiptCreationYear)
+			and(DatePart(mm,ReceiptCreationTime) = @ReceiptCreationMonth)
+end
+	ELSE
+		RETURN -1
+------------------------------------------------
+GO
+create proc usp_Receipt_By_Year_Month_Day  @ReceiptCreationYear int, @ReceiptCreationMonth int,@ReceiptCreationDay int
+as
+	IF ((@ReceiptCreationYear IS NOT NULL) and (@ReceiptCreationMonth IS NOT NULL) and (@ReceiptCreationDay IS NOT NULL))
+		BEGIN	
+			select * from Receipt
+			where ReceiptStatus='0' AND (DatePart(yy,ReceiptCreationTime) = @ReceiptCreationYear) and
+			(DatePart(mm,ReceiptCreationTime) = @ReceiptCreationMonth)
+			and (DatePart(dd,ReceiptCreationTime) = @ReceiptCreationDay)
+end
+	ELSE
+		RETURN -1
+------------------------------------------------
+GO
+create proc usp_Receipt_By_Year_Month_Day_Hour   @ReceiptCreationYear int, @ReceiptCreationMonth int,@ReceiptCreationDay int,@ReceiptCreationHour int
+as
+	IF ((@ReceiptCreationYear IS NOT NULL) and (@ReceiptCreationMonth IS NOT NULL) and (@ReceiptCreationDay IS NOT NULL) and (@ReceiptCreationHour is not null) )
+		BEGIN	
+			select * from Receipt
+			where ReceiptStatus='0' AND (DatePart(yy,ReceiptCreationTime) = @ReceiptCreationYear) and
+			(DatePart(mm,ReceiptCreationTime) = @ReceiptCreationMonth)
+			and (DatePart(dd,ReceiptCreationTime) = @ReceiptCreationDay
+			and (DatePart(hh,ReceiptCreationTime) = @ReceiptCreationHour))
+end
+	ELSE
+		RETURN -1
+--------------------------------------------------
+-----------------------------------------------------------
+GO
+CREATE PROC usp_Report_Insert 
+	
+	@ReportTitle VARCHAR(64),
+	@PatientID INT,
+	@ReportDestination NVARCHAR(64),
+    @responseCode NVARCHAR(2)='FF' OUTPUT,
+	@responseMessage NVARCHAR(128)='' OUTPUT
+	
+		as 
+	BEGIN TRY
+	IF (@ReportTitle IS NOT NULL )
+		BEGIN
+			INSERT INTO Reports (ReportTitle,PatientID,ReportDestination)
+			values (@ReportTitle,@PatientID,@ReportDestination)
+	         SELECT @responseCode = '00'
+				SELECT @responseMessage = 'Success'
+		END
+	ELSE
+	BEGIN
+				return -1
+				SELECT @responseCode = 'FF'
+				SELECT @responseMessage = 'Unknown Error'
+			END
+	END TRY
+	BEGIN CATCH
+			SELECT @responseCode = 'FF',
+			@responseMessage=ERROR_MESSAGE()
+			return -1;
+	END CATCH
+		return -1
+
+--(1) Get Report by ReportTitle --
+GO
+create proc usp_Reports_SelectByReportTitle  @ReportTitle NVARCHAR(64)
+as
+	IF (@ReportTitle IS NOT NULL)
+	BEGIN
+		select * from Reports
+		where ReportTitle = @ReportTitle AND ReportStatus=0
+	END
+	ELSE
+		RETURN -1
+
+
+--(2) Get Report by ReportStatus --
+GO
+create proc usp_Reports_SelectByReportStatus  @ReportStatus NVARCHAR(64)
+as
+	IF (@ReportStatus IS NOT NULL)
+	BEGIN
+		select * from Reports
+		where ReportStatus = @ReportStatus AND ReportStatus=0
+	END
+	ELSE
+		RETURN -1
+
+--(3) Get Report by ReportIssueTime --
+GO
+Use KAN_AMO
+GO
+
+create proc usp_Reports_SelectByReportIssueTime  @ReportIssueTime DATETIME
+as
+	IF (@ReportIssueTime IS NOT NULL)
+		BEGIN
+			IF  (NOT(DatePart(yy,@ReportIssueTime)=0)) AND 
+			(NOT(DatePart(mm,@ReportIssueTime) = 0)) AND 
+			(NOT(DatePart(dd,@ReportIssueTime)=0)) AND 
+			(NOT(DatePart(hh,@ReportIssueTime) =0)) AND 
+			(NOT(DatePart(Mi,@ReportIssueTime) =0))
+			BEGIN	
+			select * from Reports
+			where ReportStatus=0 AND (DatePart(yy,ReportIssueTime) = DatePart(yy,@ReportIssueTime)) and
+			(DatePart(mm,ReportIssueTime) = DatePart(mm,@ReportIssueTime))
+			and (DatePart(dd,ReportIssueTime) = DatePart(dd,@ReportIssueTime)
+			and (DatePart(hh,ReportIssueTime) = DatePart(hh,@ReportIssueTime))
+			and (DatePart(mi,ReportIssueTime) = DatePart(mi,@ReportIssueTime)) )
+		END
+		ELSE IF  (NOT(DatePart(yy,@ReportIssueTime)=0)) AND 
+			(NOT(DatePart(mm,@ReportIssueTime) = 0)) AND 
+			(NOT(DatePart(dd,@ReportIssueTime)=0)) AND 
+			(NOT(DatePart(hh,@ReportIssueTime) =0)) AND
+			(DatePart(Mi,@ReportIssueTime)=0)
+			BEGIN	
+			select * from Reports
+			where  ReportStatus=0 AND  (DatePart(yy,ReportIssueTime) = DatePart(yy,@ReportIssueTime)) and
+			(DatePart(mm,ReportIssueTime) = DatePart(mm,@ReportIssueTime))
+			and (DatePart(dd,ReportIssueTime) = DatePart(dd,@ReportIssueTime)
+			and (DatePart(hh,ReportIssueTime) = DatePart(hh,@ReportIssueTime))) 
+		END
+		ELSE IF  (NOT(DatePart(yy,@ReportIssueTime)=0)) AND 
+			(NOT(DatePart(mm,@ReportIssueTime) = 0)) AND 
+			(NOT(DatePart(dd,@ReportIssueTime)=0)) AND 
+			(DatePart(hh,@ReportIssueTime)=0) AND 
+			(DatePart(mi,@ReportIssueTime)=0)
+			BEGIN	
+			select * from Reports
+			where  ReportStatus=0 AND  (DatePart(yy,ReportIssueTime) = DatePart(yy,@ReportIssueTime)) and
+			(DatePart(mm,ReportIssueTime) = DatePart(mm,@ReportIssueTime))
+			and (DatePart(dd,ReportIssueTime) = DatePart(dd,@ReportIssueTime) )
+		END
+		ELSE IF  (NOT(DatePart(yy,@ReportIssueTime) = 0)) AND 
+			(NOT(DatePart(mm,@ReportIssueTime) = 0)) AND 
+			(DatePart(dd,@ReportIssueTime) = 0) AND 
+			(DatePart(hh,@ReportIssueTime) = 0) AND 
+			(DatePart(Mi,@ReportIssueTime) = 0)
+			BEGIN	
+			select * from Reports
+			where  ReportStatus=0 AND (DatePart(yy,ReportIssueTime) = DatePart(yy,@ReportIssueTime)) and
+			(DatePart(mm,ReportIssueTime) = DatePart(mm,@ReportIssueTime)) 
+		END
+			ELSE IF  (NOT(DatePart(yy,@ReportIssueTime)=0)) AND 
+			(DatePart(mm,@ReportIssueTime)=0) AND 
+			(DatePart(dd,@ReportIssueTime)=0) AND 
+			(DatePart(hh,@ReportIssueTime)=0) AND 
+			(DatePart(Mi,@ReportIssueTime)=0)
+			BEGIN	
+			select * from Reports
+			where  ReportStatus=0 AND DatePart(yy,ReportIssueTime) = DatePart(yy,@ReportIssueTime)
+	END
+	end
+	ELSE
+		RETURN -1
+
+
+--(4) Get Report by ReportStatus --
+GO
+create proc usp_Reports_SelectByPatientID  @PatientID INT
+as
+	IF (@PatientID IS NOT NULL)
+	BEGIN
+		select * from Reports
+		where  ReportStatus=0 AND  PatientID = @PatientID
+	END
+	ELSE
+		RETURN -1
+--(5) Get Report by ReportTitleAndStatus --
+GO
+create proc usp_Reports_SelectByReportTitleAndStatus  @ReportTitle NVARCHAR(64),
+ @ReportStatus NVARCHAR(64)
+as
+	IF (@ReportTitle IS NOT NULL AND @ReportStatus IS NOT NULL)
+	BEGIN
+		select * from Reports
+		where ReportTitle = @ReportTitle AND ReportStatus = @ReportStatus
+	END
+	ELSE
+		RETURN -1
+GO
+create proc usp_Reports_Delete 
+ @ReportID INT,
+  @responseCode NVARCHAR(2)='FF' OUTPUT,
+	@responseMessage NVARCHAR(128)='' OUTPUT
+
+as
+BEGIN TRY
+	IF (@ReportID IS NOT NULL)
+	BEGIN
+		UPDATE Reports
+		SET ReportStatus = 99
+		where ReportID = @ReportID AND  ReportStatus=0
+	    SELECT @responseCode = '00'
+		SELECT @responseMessage = 'Success'
+		
+	END
+		ELSE
+	BEGIN
+				return -1
+				SELECT @responseCode = 'FF'
+				SELECT @responseMessage = 'Unknown Error'
+			END
+	END TRY
+	BEGIN CATCH
+			SELECT @responseCode = 'FF',
+			       @responseMessage=ERROR_MESSAGE()
+			return -1;
+	END CATCH
+		return -1	
+
+
+-- END of Reports SP --
+------------------------------------------------------------------------------
+GO
+create proc usp_Report_By_Full_Time  @ReportIssueTime DATETIME
+as
+	IF (@ReportIssueTime IS NOT NULL)
+		BEGIN	
+			select * from Reports
+			where ReportStatus='0' AND	(ReportIssueTime=@ReportIssueTime)
+end
+	ELSE
+		RETURN -1
+-------------------------------------------------------
+GO
+create proc usp_Report_By_Year  @ReportCreationYear int
+as
+	IF (@ReportCreationYear IS NOT NULL)
+		BEGIN	
+			select * from Reports
+			where ReportStatus='0' AND (DatePart(yy,ReportIssueTime) = @ReportCreationYear)
+	end
+ELSE
+	RETURN -1
+------------------------------------------------------
+GO
+create proc usp_Report_By_Year_Month   @ReportCreationYear int, @ReportCreationMonth int
+as
+	IF ((@ReportCreationYear IS NOT NULL) and (@ReportCreationMonth is not null))
+		BEGIN	
+			select * from Reports
+			where ReportStatus='0' AND (DatePart(yy,ReportIssueTime) = @ReportCreationYear)
+			and(DatePart(mm,ReportIssueTime) = @ReportCreationMonth)
+end
+	ELSE
+		RETURN -1
+------------------------------------------------
+GO
+create proc usp_Report_By_Year_Month_Day  @ReportCreationYear int, @ReportCreationMonth int,@ReportCreationDay int
+as
+	IF ((@ReportCreationYear IS NOT NULL) and (@ReportCreationMonth IS NOT NULL) and (@ReportCreationDay IS NOT NULL))
+		BEGIN	
+			select * from Reports
+			where ReportStatus='0' AND (DatePart(yy,ReportIssueTime) = @ReportCreationYear) and
+			(DatePart(mm,ReportIssueTime) = @ReportCreationMonth)
+			and (DatePart(dd,ReportIssueTime) = @ReportCreationDay)
+end
+	ELSE
+		RETURN -1
+------------------------------------------------
+GO
+create proc usp_Report_By_Year_Month_Day_Hour   @ReportCreationYear int, @ReportCreationMonth int,@ReportCreationDay int,@ReportCreationHour int
+as
+	IF ((@ReportCreationYear IS NOT NULL) and (@ReportCreationMonth IS NOT NULL) and (@ReportCreationDay IS NOT NULL) and (@ReportCreationHour is not null) )
+		BEGIN	
+			select * from Reports
+			where ReportStatus='0' AND (DatePart(yy,ReportIssueTime) = @ReportCreationYear) and
+			(DatePart(mm,ReportIssueTime) = @ReportCreationMonth)
+			and (DatePart(dd,ReportIssueTime) = @ReportCreationDay
+			and (DatePart(hh,ReportIssueTime) = @ReportCreationHour))
+end
+	ELSE
+		RETURN -1
+--------------------------------------------------
 --GO
 --EXEC usp_Location_Update @LocationID = 1, @FreeFormatAddress = 'adsdasdfsa', @Longitude = 25.334,
 --@Latitude = 65.32, @Street = 'Tahrir',  @HouseNumber = '7'
