@@ -192,7 +192,7 @@ CREATE TABLE BatchMedicine
 
 CREATE TABLE Yellopad
 (
-	YelloPadID INT NOT NULL,
+	YelloPadID INT IDENTITY,
 	YelloPadUniqueID NVARCHAR(16) NOT NULL UNIQUE,
 	YellopadNetworkcardNo NVARCHAR(64),
 	YelloPadorderdate DATE,
