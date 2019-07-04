@@ -84,6 +84,14 @@ CREATE TABLE Priorities
 		PRIMARY KEY (PrioritYID)
 );
 
+INSERT INTO Priorities
+	(PriorityName, PriorityNote)
+VALUES
+	('Urgent','100%'),
+	('High','80%'),
+	('Normal','50%'),
+	('Low','20%')
+
 CREATE TABLE AlarmLevels
 (
 	AlarmLevelID INT,
@@ -184,7 +192,7 @@ CREATE TABLE BatchMedicine
 
 CREATE TABLE Yellopad
 (
-	YelloPadID INT NOT NULL,
+	YelloPadID INT IDENTITY,
 	YelloPadUniqueID NVARCHAR(16) NOT NULL UNIQUE,
 	YellopadNetworkcardNo NVARCHAR(64),
 	YelloPadorderdate DATE,
