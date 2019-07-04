@@ -1,4 +1,3 @@
-use KAN_AMO
 GO
 Create OR ALTER proc usp_AmbulanceVehicle_SelectAll 
 as

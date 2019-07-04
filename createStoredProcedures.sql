@@ -1,4 +1,21 @@
 USE KAN_AMO;
+----------------------------------------
+--Last Update: Amr Khaled -> 10:54
+
+-----------------------------------------
+--Files Included:
+--Locations_SP
+--YelloPad_SP
+--Batch
+--Medicine
+--Patient_SP
+--Respnse-SP
+--AmbulanceVehicle
+--AlarmLevel_SP
+
+
+
+
 ------------------------- Stored Procedures ----------------------------
 ------------------------------------------------------------------------
 -- Medicine Stored Procedures --
@@ -1130,7 +1147,943 @@ WHERE VIN = @VIN
 GO
 
 
+
+------------------------- Stored Procedures ----------------------------
+------------------------------------------------------------------------
+-- Location Stored Procedures --
+-- (1) Insert New Location --
+GO
+CREATE PROC usp_Locations_Insert 
+	@FreeFormatAddress NVARCHAR(256),
+    @City NVARCHAR(32) = NULL,
+    @Longitude  NVARCHAR(32) = NULL,
+    @Latitude  NVARCHAR(32) = NULL,
+    @Street NVARCHAR(32) = NULL,
+    @Apartement NVARCHAR(32) = NULL,
+    @PostalCode NVARCHAR(20) = NULL,
+    @FloorLevel NVARCHAR(20) = NULL,
+	@HouseNumber NVARCHAR(12) = NULL,
+	@responseCode NVARCHAR(2)='FF' OUTPUT,
+	@responseMessage NVARCHAR(128)='' OUTPUT
+as
+	BEGIN TRY
+		IF (@FreeFormatAddress IS NOT NULL)
+			BEGIN
+				INSERT INTO Locations (FreeFormatAddress,City,Longitude,Latitude,Street,Apartement,PostalCode,FloorLevel,HouseNumber)
+				values (@FreeFormatAddress,@City,@Longitude,@Latitude,@Street,@Apartement,@PostalCode,@FloorLevel,@HouseNumber)
+				SELECT @responseCode = '00'
+				SELECT @responseMessage = 'Location Added Successfully'
+			END
+		ELSE	
+			BEGIN
+				return -1
+				SELECT @responseCode = 'FF'
+				SELECT @responseMessage = 'Unknown Error'
+			END
+	END TRY
+	BEGIN CATCH
+			SELECT @responseCode = 'FF',@responseMessage=ERROR_MESSAGE()
+			return -1;
+	END CATCH
+Go
+----------------------------------------------------------------------
+-- (1) Insert New Location Test --
+--EXEC usp_Locations_Insert @FreeFormatAddress = 'dgd',
+--@City = 'Giza',
+--@Longitude = 34.56,
+--@Latitude = 23.67,
+--@Street = 'dokki',
+--@Apartement = '4',
+--@PostalCode = '1232',
+--@FloorLevel = '4',
+--@HouseNumber = '10'
+
+-----------------------------------------------------------------------
+-- (2) Get All Locations --
+---------------------------------------- 
+GO
+Create proc usp_Locations_SelectAll
+as
+	select * from Locations
+------------------------------------------
+-- (2) Get Get All Locations Test --
+--GO
+--EXEC usp_Locations_SelectAll
+-----------------------------------------
+-- (2.1) Get Locations by city --
+GO
+Create proc usp_Locations_SelectByCity @CityName NVARCHAR(32)
+as
+	IF (@CityName IS NOT NULL)
+	BEGIN
+		select * from Locations
+		where City = @CityName
+	END
+	ELSE
+		RETURN -1
+-----------------------------------------
+-- (2.1) Get Locations by city Test --
+--GO
+--EXEC usp_Locations_SelectByCity @CityName = 'Giza'
+-----------------------------------------
+-- (2.2) GET Locations by Cooredinates --
+GO
+CREATE PROC usp_Locations_SelectByGPS 
+	@Longitude  NVARCHAR(32),
+	@Latitude  NVARCHAR(32)
+as
+	IF (@Longitude IS NOT NULL AND @Latitude IS NOT NULL)
+	BEGIN
+		select * from Locations
+		where Longitude = @Longitude AND Latitude = @Latitude
+	END
+	ELSE
+		RETURN -1
+-----------------------------------------
+-- (2.2) GET Locations by Cooredinates Test --
+--GO
+--EXEC usp_Locations_SelectByCity @Longitude = '34.56', @Latitude = '23.67'
+-----------------------------------------
+-- (2.3) GET Locations by Street --
+GO
+CREATE PROC usp_Locations_SelectByStreet
+	@Street NVARCHAR(32)
+as
+	IF (@Street IS NOT NULL)
+	BEGIN
+		select * from Locations
+		where Street = @Street
+	END
+	ELSE
+		RETURN -1
+-----------------------------------------
+-- (2.3) GET Locations by Street Test --
+--GO
+--EXEC usp_Locations_SelectByStreet @Street = 'dokki'
+-----------------------------------------
+-- (2.4) GET Locations by PostalCode --
+GO
+CREATE PROC usp_Locations_SelectByPostalCode
+	@PostalCode NVARCHAR(20)
+as
+	IF (@PostalCode IS NOT NULL)
+	BEGIN
+		select * from Locations
+		where PostalCode = @PostalCode
+	END
+	ELSE
+		RETURN -1
+-----------------------------------------
+-- (2.4) GET Locations by PostalCode Test --
+--GO
+--EXEC usp_Locations_SelectByPostalCode @PostalCode = '1232'
+-----------------------------------------
+-- (2.5) GET Locations by PostalZipCode --
+GO
+CREATE PROC usp_Locations_SelectByPostalZipCode
+	@PostalZipCode NVARCHAR(32)
+as
+	IF (@PostalZipCode IS NOT NULL)
+	BEGIN
+		select * from Locations
+		where PostalCode = @PostalZipCode
+	END
+	ELSE
+		RETURN -1
+-----------------------------------------
+-- (2.5) GET Locations by PostalZipCode Test --
+--GO
+--EXEC usp_Locations_SelectByPostalZipCode @PostalZipCode = '20'
+-----------------------------------------
+-- (2.6) GET Locations by LocationID --
+GO
+CREATE PROC usp_Locations_SelectByID
+	@LocationID INT
+as
+	IF (@LocationID IS NOT NULL)
+	BEGIN
+		select * from Locations
+		where LocationID = @LocationID
+	END
+	ELSE
+		RETURN -1
+-----------------------------------------
+-- (2.6) GET Locations by LocationID Test --
+--GO
+--EXEC usp_Locations_SelectByID @LocationID = 2
+-----------------------------------------
+-- (2.7) GET Locations by Location Address --
+GO
+CREATE PROC usp_Locations_SelectByAddress
+	@FreeFormatAddress NVARCHAR(256)
+as
+	IF (@FreeFormatAddress IS NOT NULL)
+	BEGIN
+		select * from Locations
+		where FreeFormatAddress LIKE '%' + @FreeFormatAddress + '%'
+	END
+	ELSE
+		RETURN -1
+-----------------------------------------
+-- (2.7) GET Locations by Location Address Test --
+GO
+EXEC usp_Locations_SelectByAddress @FreeFormatAddress = 'giza'
+-----------------------------------------
+-- (3) Delete Location By LocationID --
+GO
+create proc usp_Location_Delete  @LocationID INT
+as
+	IF (@LocationID IS NOT NULL)
+	BEGIN
+		UPDATE Locations
+		SET LocationStatus = 99
+		where LocationID = @LocationID
+	END
+	ELSE
+		return -1
+-----------------------------------------
+-- (3) Delete Location By LocationID Test --
+--GO
+--EXEC usp_Location_Delete @LocationID = 4
+-----------------------------------------
+-- (4) Update Location By LocationID --
+GO
+CREATE PROC usp_Location_Update
+	@LocationID INT,
+	@FreeFormatAddress NVARCHAR(256) = NULL,
+    @Longitude  NVARCHAR(32) = NULL,
+    @Latitude  NVARCHAR(32) = NULL,
+    @Street NVARCHAR(32) = NULL,
+    @Apartement NVARCHAR(32) = NULL,
+    @PostalCode NVARCHAR(20) = NULL,
+    @FloorLevel NVARCHAR(20) = NULL,
+	@HouseNumber NVARCHAR(12) = NULL
+as
+	IF (@LocationID IS NOT NULL)
+		BEGIN
+			UPDATE Locations
+			SET FreeFormatAddress = ISNULL(@FreeFormatAddress,FreeFormatAddress),
+			Longitude = ISNULL(@Longitude,Longitude),
+			Latitude = ISNULL(@Latitude,Latitude),
+			Street = ISNULL(@Street,Street),
+			Apartement = ISNULL(@Apartement,Apartement),
+			PostalCode = ISNULL(@PostalCode,PostalCode),
+			FloorLevel = ISNULL(@FloorLevel,FloorLevel),
+			HouseNumber = ISNULL(@HouseNumber,HouseNumber),
+			LocationStatus = 2
+			WHERE LocationID = @LocationID
+		END
+	ELSE
+		return -1
+-----------------------------------------
+-- (4) Update Location By LocationID Test --
 --GO
 --EXEC usp_Location_Update @LocationID = 1, @FreeFormatAddress = 'adsdasdfsa', @Longitude = 25.334,
 --@Latitude = 65.32, @Street = 'Tahrir',  @HouseNumber = '7'
 -----------------------------------------
+
+GO
+CREATE OR ALTER PROC usp_InsertNewLocation 
+	@FreeFormatAddress NVARCHAR(256),--1
+	@City NVARCHAR(32),--2
+	@Longitude NVARCHAR(32),--3
+	@Latitude NVARCHAR(32),--4
+	@Street NVARCHAR(32),--5
+	@Apartement NVARCHAR(32),--6
+	@PostalCode NVARCHAR(32),--7
+	@FloorLevel NVARCHAR(32),--8
+	@HouseNumber NVARCHAR(12),--9
+	@return_Hex_value NVARCHAR(2)='FF' OUTPUT,--10
+	@responseMessage NVARCHAR(128)='' OUTPUT,--11
+	@LocationID INT= 0 OUTPUT--12
+	AS
+	BEGIN
+	SET NOCOUNT ON
+	DECLARE @locID INT
+	DECLARE @LocationStatus NVARCHAR(32)
+	IF (@FreeFormatAddress IS NOT NULL AND @Longitude IS NOT NULL AND @Latitude IS NOT NULL)
+		BEGIN
+			SET @locID = (SELECT LocationID FROM dbo.Locations WHERE (Longitude = @Longitude AND Latitude = @Latitude AND FreeFormatAddress = @FreeFormatAddress))
+			IF(@locID IS NOT NULL)
+			BEGIN
+				SET @responseMessage = 'LOCATION ALREADY EXIST'
+				SELECT @return_Hex_value = 'FF'
+				RETURN -1
+			END
+			ELSE
+				BEGIN
+				SELECT @LocationStatus = '00'
+				INSERT INTO dbo.Locations
+				(
+					FreeFormatAddress,
+					City,
+					Longitude,
+					Latitude,
+					Street,
+					Apartement,
+					PostalCode,
+					FloorLevel,
+					HouseNumber,
+					LocationStatus
+				)
+				VALUES
+				(   @FreeFormatAddress,  -- FreeFormatAddress - nvarchar(256)
+					@City,  -- City - nvarchar(32)
+					@Longitude, -- Longitude - decimal(9, 6)
+					@Latitude, -- Latitude - decimal(9, 6)
+					@Street,  -- Street - nvarchar(32)
+					@Apartement,  -- Apartement - nvarchar(32)
+					@PostalCode,  -- PostalCode - nvarchar(20)
+					@FloorLevel,  -- FloorLevel - nvarchar(20)
+					@HouseNumber,  -- HouseNumber - nvarchar(12)
+					@LocationStatus     -- LocationStatus - int
+					)
+				END	
+		END
+		ELSE 
+		BEGIN
+			SET @responseMessage = 'FAILED TO ADD LOCATION'
+			SELECT @return_Hex_value = 'FF'
+			RETURN -1
+		END
+		SET @locID = (SELECT LocationID FROM dbo.Locations WHERE (Longitude = @Longitude AND Latitude = @Latitude AND FreeFormatAddress = @FreeFormatAddress))
+		IF (@locID IS NULL)
+		BEGIN
+			SET @responseMessage = 'FAILED TO FIND LOCATION'
+			SELECT @return_Hex_value = 'FF'
+			RETURN -1
+		END 
+		ELSE
+		BEGIN
+			SET @responseMessage = 'LOCATION ADDED SUCCESFULLY'
+			SELECT @return_Hex_value = '00'
+			PRINT @locID
+			RETURN 1
+		END
+	END
+	GO
+	--EXEC usp_InsertNewLocation  @FreeFormatAddress='FGDG', @City=NULL,
+	--@Longitude='45.3313',
+	--@Latitude='32.341231',
+	--@Street=NULL,
+	--@Apartement=NULL,
+	--@PostalCode=NULL,
+	--@FloorLevel=NULL,
+	--@HouseNumber=NULL
+	GO 
+	CREATE OR ALTER PROC usp_location_getByID
+	@LocID INT,
+	@responseMessage NVARCHAR(128)='' OUTPUT
+	AS
+	BEGIN
+		IF(@LocID IS NOT NULL)
+		BEGIN
+			SELECT * FROM  dbo.Locations WHERE (LocationID=@LocID)
+			SET @responseMessage = 'Found The Location'
+		END
+		ELSE
+		BEGIN
+			SET @responseMessage = 'Location Not Found'
+		END
+	END
+	GO 
+	CREATE OR ALTER PROC usp_location_getAll
+	as
+	select * from dbo.Locations
+	GO
+	--EXEC usp_location_getAll
+	
+
+--GO
+--EXEC usp_Location_Update @LocationID = 1, @FreeFormatAddress = 'adsdasdfsa', @Longitude = 25.334,
+--@Latitude = 65.32, @Street = 'Tahrir',  @HouseNumber = '7'
+-----------------------------------------
+
+
+GO
+Create  OR ALTER PROC usp_Medicine_SelectByCompanyName
+@CompanyName NVARCHAR(64)
+as
+DECLARE @CompanyID INT
+if (@CompanyName IS NOT NULL)
+	BEGIN
+SET @CompanyID = (select CompanyID from PharmaCompany where CompanyName=@CompanyName)
+	select BarCode,  MedicineStatus, MedicineName,CountInStock, Implications,MedicineUsage, SideEffects, ActiveComponent,price FROM Medicine
+	INNER JOIN CompanyMedicineMap  
+	ON CompanyMedicineMap.MedBCode=Medicine.BarCode
+	where CompID=@CompanyID AND MapStatus<>'ff'
+	END
+	ELSE
+	RETURN -1
+GO
+Create  OR ALTER PROC usp_PharmaCompany_SelectByMedicineName
+@MedicineName NVARCHAR(64)
+as
+DECLARE @BarCode INT
+if (@MedicineName IS NOT NULL)
+	BEGIN
+SET @BarCode = (select BarCode from Medicine where MedicineName = @MedicineName)
+	select CompanyID ,CompanyName,ContactPerson ,CompanyAddress ,CompanyPhone , CompanyStatus
+	 from PharmaCompany
+	INNER JOIN CompanyMedicineMap
+	ON CompanyMedicineMap.CompID=PharmaCompany.CompanyID
+	where MedBCode=@BarCode AND MapStatus<>'ff'
+	END
+	ELSE
+	return -1
+
+
+GO
+Create  OR ALTER PROC usp_Medicine_SelectByContactPerson
+@ContactPerson NVARCHAR(32)
+as
+if (@ContactPerson IS NOT NULL)
+	BEGIN
+	select DISTINCT BarCode,  MedicineStatus, MedicineName,CountInStock, Implications,MedicineUsage, 
+	SideEffects,ActiveComponent,ActiveComponent,price
+	from Medicine INNER join  CompanyMedicineMap
+	ON CompanyMedicineMap.MedBCode = Medicine.BarCode 
+	INNER join PharmaCompany 
+	on CompanyMedicineMap.CompID = PharmaCompany.CompanyID  
+	where PharmaCompany.ContactPerson =@ContactPerson AND MapStatus<>'ff'
+	END
+	ELSE
+	return -1
+	
+GO
+CREATE  OR alter proc usp_Medicine_SelectByCompanyStatus
+@CompanyStatus NVARCHAR(32)
+as
+if (@CompanyStatus IS NOT NULL)
+	BEGIN
+	select DISTINCT BarCode,  MedicineStatus,  MedicineName,CountInStock, Implications,MedicineUsage, 
+	SideEffects,ActiveComponent,ActiveComponent,price
+	from Medicine INNER join  CompanyMedicineMap
+	ON CompanyMedicineMap.MedBCode = Medicine.BarCode 
+	INNER join PharmaCompany 
+	on CompanyMedicineMap.CompID = PharmaCompany.CompanyID  
+	where PharmaCompany.CompanyStatus=@CompanyStatus  AND MapStatus<>'ff'
+	END
+	ELSE
+	return -1
+
+GO
+CREATE OR alter proc usp_Medicine_SelectByActiveComponent
+@ActiveComponent NVARCHAR(MAX)
+as
+if (@ActiveComponent IS NOT NULL)
+	BEGIN
+	select * from Medicine
+	where ActiveComponent=@ActiveComponent
+	END
+	ELSE
+	return -1
+
+ ------------------------------------------
+
+ 	
+GO
+CREATE  OR alter proc usp_Medicine_UpdateStatus
+@MedicineStatus NVARCHAR(2),
+@barCode NVARCHAR(64),
+@responseCode NVARCHAR(2)='FF' OUTPUT,
+@responseMessage NVARCHAR(128)='' OUTPUT
+
+AS
+BEGIN TRY
+if (@barCode IS NOT NULL AND @MedicineStatus  IS NOT NULL )
+	BEGIN
+	UPDATE dbo.Medicine
+	SET MedicineStatus = ISNULL (@MedicineStatus,MedicineStatus)
+	where BarCode=@barCode
+	SELECT @responseCode = '00'
+		SELECT @responseMessage = 'Success'
+	END
+	ELSE
+	BEGIN 
+
+				SELECT @responseCode = 'FF'
+				SELECT @responseMessage = 'nO PARAMETER'
+				 RETURN -1
+	END
+	END TRY
+BEGIN CATCH
+			SELECT @responseCode = 'FF',
+	           	@responseMessage=ERROR_MESSAGE()
+			return -1;
+	END CATCH
+		
+	return -1
+		
+-----------------------------------------------------
+
+GO
+CREATE OR ALTER PROC usp_Response_Insert
+@AssociatedVehicleVIN INT, --1
+@StartLocationID INT,--2
+@PickLocationID INT,--3
+@DropLocationID INT,--4
+@DestinationLocationID INT,--5
+@IncidentSQN INT,--6
+@PrimaryResponseSQN INT,--7
+@RespAlarmLevel INT,--8
+@PersonCount NVARCHAR(32),--9
+@return_Hex_value NVARCHAR(2)='FF' OUTPUT,--10
+@responseMessage NVARCHAR(128)='' OUTPUT,--11
+@ResponseID INT= 0 OUTPUT--12
+AS
+BEGIN
+	SET NOCOUNT ON
+	DECLARE @ResponseStatus NVARCHAR(32)
+	IF(@AssociatedVehicleVIN IS NULL OR @AssociatedVehicleVIN=0)
+	BEGIN
+		SET @responseMessage = 'Missing VIN'
+		SELECT @return_Hex_value = 'AF'
+		RETURN -1	
+	END
+	ELSE IF (@StartLocationID IS NULL OR @StartLocationID=0)
+	BEGIN
+		SET @responseMessage = 'Missing Start Location'
+		SELECT @return_Hex_value = 'BF'
+		RETURN -1
+	END
+	ELSE IF (@PickLocationID IS NULL OR @PickLocationID=0)
+	BEGIN
+		SET @responseMessage = 'Missing Pick Location'
+		SELECT @return_Hex_value = 'CF'
+		RETURN -1
+	END
+	ELSE IF (@DropLocationID IS NULL OR @DropLocationID=0)
+	BEGIN
+		SET @responseMessage = 'Missing Drop Location'
+		SELECT @return_Hex_value = 'DF'
+		RETURN -1
+	END
+	ELSE IF (@DestinationLocationID IS NULL OR @DestinationLocationID=0)
+	BEGIN
+		SET @responseMessage = 'Missing Destination Location'
+		SELECT @return_Hex_value = 'EF'
+		RETURN -1
+	END
+	ELSE IF (@IncidentSQN IS NULL OR @IncidentSQN=0)
+	BEGIN
+		SET @responseMessage = 'Missing Incident SQN'
+		SELECT @return_Hex_value = 'FA'
+		RETURN -1
+	END
+	ELSE IF (@RespAlarmLevel IS NULL OR @PrimaryResponseSQN=0)
+	BEGIN
+		SET @responseMessage = 'Missing Alarm Level'
+		SELECT @return_Hex_value = 'FB'
+		RETURN -1
+	END
+	ELSE IF (@PersonCount IS NULL OR @PersonCount='')
+	BEGIN
+		SET @responseMessage = 'Missing Persons Count'
+		SELECT @return_Hex_value = 'FC'
+		RETURN -1
+	END
+	SET @ResponseID = (SELECT SequenceNumber FROM dbo.Responses WHERE (AssociatedVehicleVIN=@AssociatedVehicleVIN AND StartLocationID=@StartLocationID AND PickLocationID=@PickLocationID 
+	AND DropLocationID=@DropLocationID AND DestinationLocationID=@DestinationLocationID AND IncidentSQN=@IncidentSQN AND RespAlarmLevel=@RespAlarmLevel))
+	IF(@ResponseID IS NOT NULL)
+	BEGIN
+		SET @responseMessage = 'Response Already Exist'
+		SELECT @return_Hex_value = 'FE'
+		RETURN -1
+	END
+	ELSE 
+	SET @ResponseStatus='00'
+	BEGIN
+		INSERT INTO Responses
+		(
+			AssociatedVehicleVIN,
+			StartLocationID,
+			PickLocationID,
+			DropLocationID,
+			DestinationLocationID,
+			RespStatus,
+			IncidentSQN,
+			PrimaryResponseSQN,
+			RespAlarmLevel,
+			PersonCount
+		)
+		VALUES
+		(   
+			@AssociatedVehicleVIN, 
+			@StartLocationID,
+			@PickLocationID,
+			@DropLocationID,
+			@DestinationLocationID,
+			@ResponseStatus,
+			@IncidentSQN,
+			@PrimaryResponseSQN,
+			@RespAlarmLevel,
+			@PersonCount
+		)
+	END
+	SET @ResponseID = (SELECT SequenceNumber FROM dbo.Responses WHERE (AssociatedVehicleVIN=@AssociatedVehicleVIN AND StartLocationID=@StartLocationID AND PickLocationID=@PickLocationID 
+	AND DropLocationID=@DropLocationID AND DestinationLocationID=@DestinationLocationID AND IncidentSQN=@IncidentSQN AND RespAlarmLevel=@RespAlarmLevel))
+	IF(@ResponseID IS NULL)
+	BEGIN
+		SET @responseMessage = 'Failed To Add The Response'
+		SELECT @return_Hex_value = 'FF'
+		RETURN -1
+	END
+	ELSE
+	BEGIN
+		SET @responseMessage = 'Response Has Been Added'
+		SELECT @return_Hex_value = '00'
+		RETURN 1
+	END
+END
+GO
+------------------------------------------------------------------------------------
+-- FIND RESPONSE STATUS BY ID --
+CREATE OR ALTER PROC usp_ResponseStatus_SearchByID 
+@SequenceNumber INT, --1
+@return_Hex_value NVARCHAR(2)='FF' OUTPUT,--2
+@responseMessage NVARCHAR(128)='' OUTPUT,--3
+@RespStatus NVARCHAR(32) = '' OUTPUT--4
+AS
+BEGIN
+	IF EXISTS (SELECT TOP 1 SequenceNumber FROM dbo.Responses WHERE SequenceNumber=@SequenceNumber)
+	BEGIN
+		SET @RespStatus = (SELECT RespStatus FROM Responses WHERE SequenceNumber=@SequenceNumber)
+		SET @responseMessage = 'RESPONSE STATUS LOCATED'
+		SELECT @return_Hex_value = '00'
+		RETURN 1
+	END
+	ELSE
+	BEGIN
+		SET @responseMessage = 'FAILED TO LOCATE RESPONSE STATUS'
+		SELECT @return_Hex_value = 'FF'
+		RETURN -1
+	END
+END
+GO
+------------------------------------------------------------------------------------
+-- UPDATE RESPONSE STATUS BY ID --
+CREATE OR ALTER PROC usp_ResponseStatus_UpdateByID 
+@SequenceNumber INT, --1
+@ResponseStatus NVARCHAR(32),--2
+@return_Hex_value NVARCHAR(2)='FF' OUTPUT,--3
+@responseMessage NVARCHAR(128)='' OUTPUT,--4
+@RespStatus NVARCHAR(32) = '' OUTPUT--5
+AS
+BEGIN
+	IF(@ResponseStatus IS NULL OR @ResponseStatus = '')
+	BEGIN
+		SET @responseMessage = 'MISSING RESPONSE STATUS VALUE TO UPDATED'
+		SELECT @return_Hex_value = 'EE'
+		RETURN -1
+	END
+	ELSE
+	BEGIN
+		IF EXISTS (SELECT TOP 1 SequenceNumber FROM dbo.Responses WHERE SequenceNumber=@SequenceNumber)
+		BEGIN
+			UPDATE dbo.Responses
+			SET RespStatus = @ResponseStatus
+			WHERE SequenceNumber = @SequenceNumber
+			SET @RespStatus = (SELECT RespStatus FROM Responses WHERE SequenceNumber=@SequenceNumber)
+			SET @responseMessage = 'RESPONSE STATUS LOCATED'
+			SELECT @return_Hex_value = '00'
+			RETURN 1
+		END
+		ELSE
+		BEGIN
+			SET @responseMessage = 'FAILED TO LOCATE RESPONSE STATUS'
+			SELECT @return_Hex_value = 'FF'
+			RETURN -1
+		END
+	END
+END
+------------------------------------------------------------------------------
+GO
+Create OR ALTER proc usp_AmbulanceVehicle_SelectAll 
+as
+	select * from AmbulanceVehicle
+	WHERE VehicleStatus <>'FF'
+-- (2.1) Get Patient By ID --
+GO
+Create OR ALTER proc usp_AmbulanceVehicle_SelectByVIN
+  @VIN INT,
+   @responseCode NVARCHAR(2)='FF' OUTPUT,
+	@responseMessage NVARCHAR(128)='' OUTPUT
+
+as
+BEGIN TRY
+	IF (@VIN IS NOT NULL)
+	BEGIN
+		select * from AmbulanceVehicle
+		where VIN = @VIN
+	    SELECT @responseCode = '00'
+		SELECT @responseMessage = 'Success'
+	END
+	ELSE
+	BEGIN 
+	return -1
+				SELECT @responseCode = 'FF'
+				SELECT @responseMessage = 'nO PARAMETER'
+	END
+	END TRY
+BEGIN CATCH
+			SELECT @responseCode = 'FF',
+		@responseMessage=ERROR_MESSAGE()
+			return -1;
+	END CATCH
+		return -1
+
+		
+GO
+Create OR ALTER proc usp_AmbulanceVehicle_SelectByBrand
+  @Brand  NVARCHAR(32),
+   @responseCode NVARCHAR(2)='FF' OUTPUT,
+	@responseMessage NVARCHAR(128)='' OUTPUT
+
+as
+BEGIN TRY
+	IF (@Brand IS NOT NULL)
+	BEGIN
+		select * from AmbulanceVehicle
+		where Brand = @Brand
+	    SELECT @responseCode = '00'
+		SELECT @responseMessage = 'Success'
+	END
+	ELSE
+	BEGIN 
+	return -1
+				SELECT @responseCode = 'FF'
+				SELECT @responseMessage = 'nO PARAMETER'
+	END
+	END TRY
+BEGIN CATCH
+			SELECT @responseCode = 'FF',
+		@responseMessage=ERROR_MESSAGE()
+			return -1;
+	END CATCH
+		
+	return -1
+		 
+	
+GO
+
+Create OR ALTER proc usp_AmbulanceVehicle_SelectBySts
+  @VehicleStatus  NVARCHAR(32),
+   @responseCode NVARCHAR(2)='FF' OUTPUT,
+	@responseMessage NVARCHAR(128)='' OUTPUT
+
+as
+BEGIN TRY
+	IF (@VehicleStatus IS NOT NULL)
+	BEGIN
+		select * from AmbulanceVehicle
+		where VehicleStatus = @VehicleStatus
+	    SELECT @responseCode = '00'
+		SELECT @responseMessage = 'Success'
+	END
+	ELSE
+	BEGIN 
+	return -1
+				SELECT @responseCode = 'FF'
+				SELECT @responseMessage = 'nO PARAMETER'
+	END
+	END TRY
+BEGIN CATCH
+			SELECT @responseCode = 'FF',
+		@responseMessage=ERROR_MESSAGE()
+			return -1;
+	END CATCH
+		return -1
+		 
+-- (3) Insert Patient --
+GO
+Create OR ALTER PROC usp_AmbulanceVehicle_Insert 
+	
+	@VIN INT,
+	@Implication NVARCHAR(32),
+	@Make NVARCHAR(32) ,
+	@Type NVARCHAR(32) ,
+	@ProductionYear NVARCHAR(32) ,
+	@RegYear NVARCHAR(32),
+	@LicencePlate NVARCHAR(32),
+	@OwnerName NVARCHAR(128),
+	@LicenceStateOrProvince NVARCHAR(32),
+    @ServiceStartDate NVARCHAR(32),
+    @EngineNumber NVARCHAR(32),
+    @Brand NVARCHAR(32),
+    @ChasiahNumber NVARCHAR(32),
+    @Model NVARCHAR(32),
+    @DriverPhoneNumber NVARCHAR(32),
+	@AssignedYPID NVARCHAR(16),
+    @AmbulanceVehiclePicture NVARCHAR(500),
+
+   @responseCode NVARCHAR(2)='FF' OUTPUT,
+	@responseMessage NVARCHAR(128)='' OUTPUT
+	
+		as 
+	BEGIN TRY
+	
+	IF (@VIN IS NOT NULL )
+		BEGIN
+			INSERT INTO AmbulanceVehicle (VIN,Implication,Make,[Type],ProductionYear,RegYear,LicencePlate,OwnerName,
+			LicenceStateOrProvince,ServiceStartDate,EngineNumber,Brand,ChasiahNumber,Model,DriverPhoneNumber,	AmbulanceVehiclePicture)
+			values (@VIN,@Implication,@Make,@Type,@ProductionYear,@RegYear,@LicencePlate,@OwnerName,@LicenceStateOrProvince,
+			@ServiceStartDate,@EngineNumber,@Brand,@ChasiahNumber,@Model,@DriverPhoneNumber ,@AmbulanceVehiclePicture )
+	         SELECT @responseCode = '00'
+			SELECT @responseMessage = 'Success'
+		END
+	
+	
+	ELSE
+	BEGIN
+				return -1
+				SELECT @responseCode = 'FF'
+				SELECT @responseMessage = 'wrong Parameters'
+			END
+	END TRY
+	BEGIN CATCH
+			SELECT @responseCode = 'FF',
+			@responseMessage=ERROR_MESSAGE()
+			return -1;
+	END CATCH
+		return -1
+
+-- (4) Update AmbulanceVehicle --
+GO
+Create OR ALTER PROC usp_AmbulanceVehicle_Update
+	@VIN INT,
+	@Implication NVARCHAR(32),
+	@Make NVARCHAR(32) ,
+	@Type NVARCHAR(32) ,
+	@ProductionYear NVARCHAR(32) ,
+	@RegYear NVARCHAR(32),
+	@LicencePlate NVARCHAR(32),
+	@OwnerName NVARCHAR(128),
+	@LicenceStateOrProvince NVARCHAR(32),
+    @ServiceStartDate NVARCHAR(32),
+    @EngineNumber NVARCHAR(32),
+    @Brand NVARCHAR(32),
+    @ChasiahNumber NVARCHAR(32),
+    @Model NVARCHAR(32),
+    @DriverPhoneNumber NVARCHAR(32),
+    @AmbulanceVehiclePicture NVARCHAR(500),
+	@responseCode NVARCHAR(2)='FF' OUTPUT,
+	@responseMessage NVARCHAR(128)='' OUTPUT
+
+as   
+
+	BEgin Try	
+	IF (@VIN IS NOT NULL)
+		BEGIN
+			UPDATE AmbulanceVehicle
+			SET Implication = ISNULL(@Implication,Implication),
+			Make = ISNULL(@Make,Make),
+			[Type] = ISNULL(@Type,[Type]),
+			ProductionYear = ISNULL(@ProductionYear,ProductionYear),
+			RegYear = ISNULL(@RegYear,RegYear),
+			LicencePlate = ISNULL(@LicencePlate,LicencePlate),
+			OwnerName = ISNULL(@OwnerName,OwnerName),
+			LicenceStateOrProvince = ISNULL(@LicenceStateOrProvince,LicenceStateOrProvince),
+			ServiceStartDate = ISNULL(@ServiceStartDate,ServiceStartDate),
+			EngineNumber = ISNULL(@EngineNumber,EngineNumber),
+			Brand = ISNULL(@Brand,Brand),
+			ChasiahNumber = ISNULL(@ChasiahNumber,ChasiahNumber),
+			Model = ISNULL(@Model,Model),
+			DriverPhoneNumber = ISNULL(@DriverPhoneNumber,DriverPhoneNumber),
+				AmbulanceVehiclePicture=ISNULL(	@AmbulanceVehiclePicture,	AmbulanceVehiclePicture),
+			VehicleStatus = 2 
+			WHERE VIN = @VIN
+			
+        SELECT @responseCode = '00'
+		SELECT @responseMessage = 'Success'
+		END
+		ELSE
+	BEGIN
+				return -1
+				SELECT @responseCode = 'FF'
+				SELECT @responseMessage = 'Unknown Error'
+			END
+			END TRY
+			BEGIN CATCH
+				SELECT @responseCode = 'FF',
+			       @responseMessage=ERROR_MESSAGE()
+			return -1;
+			END CATCH
+				return -1
+
+-- (5) Delete Patient By VIN --
+GO
+Create OR ALTER proc usp_AmbulanceVehicle_Delete 
+ @VIN INT,
+ @responseCode NVARCHAR(2)='FF' OUTPUT,
+@responseMessage NVARCHAR(128)='' OUTPUT
+
+as
+BEGIN TRY
+	IF (@VIN IS NOT NULL)
+	BEGIN
+		UPDATE AmbulanceVehicle
+		SET VehicleStatus = 'FF'
+		where VIN = @VIN
+	    SELECT @responseCode = '00'
+		SELECT @responseMessage = 'Success'
+		
+	END
+		ELSE
+	BEGIN
+				return -1
+				SELECT @responseCode = 'FF'
+				SELECT @responseMessage = 'Unknown Error'
+			END
+	END TRY
+	BEGIN CATCH
+			SELECT @responseCode = 'FF',
+			       @responseMessage=ERROR_MESSAGE()
+			return -1;
+	END CATCH
+		return -1	
+
+		
+ 	
+GO
+CREATE  OR alter proc usp_AmbulanceVehicle_UpdateStatus
+@AmbulanceVehicleStatus NVARCHAR(2),
+@Vin INT,
+@responseCode NVARCHAR(2)='FF' OUTPUT,
+@responseMessage NVARCHAR(128)='' OUTPUT
+
+AS
+BEGIN TRY
+if (@Vin IS NOT NULL AND @AmbulanceVehicleStatus  IS NOT NULL )
+	BEGIN
+	UPDATE AmbulanceVehicle
+	SET VehicleStatus = ISNULL (@AmbulanceVehicleStatus,VehicleStatus)
+	where Vin=@Vin
+	SELECT @responseCode = '00'
+	SELECT @responseMessage = 'Success'
+	
+	END
+	ELSE
+	BEGIN 
+
+				SELECT @responseCode = 'FF'
+				SELECT @responseMessage = 'nO PARAMETER'
+				 RETURN -1
+	END
+	END TRY
+BEGIN CATCH
+			SELECT @responseCode = 'FF',
+	           	@responseMessage=ERROR_MESSAGE()
+			return -1;
+	END CATCH
+		
+	return -1
+		go
+
+
+GO
+CREATE OR ALTER proc usp_AlarmLevel_GetAll
+as
+	select * from AlarmLevels
+GO
+EXEC usp_AlarmLevel_GetAll
