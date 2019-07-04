@@ -1,4 +1,3 @@
-USE KAN_AMO
 -- Employee SP --
 
 GO
@@ -7,8 +6,8 @@ CREATE OR ALTER PROC usp_Employee_Login
 	@HashPassword NVARCHAR(128),
 	@return_Hex_value NVARCHAR(2)='FF' OUTPUT,
 	@responseMessage NVARCHAR(128)='' OUTPUT,
-	@JobID NVARCHAR(64)='' OUTPUT,
-	@employeeID NVARCHAR(64)='' OUTPUT
+	@JobID INTEGER = -1 OUTPUT,
+	@employeeID Integer = -1 OUTPUT
 WITH ENCRYPTION
 AS
 BEGIN
@@ -18,7 +17,7 @@ BEGIN
 	
 	IF (@EmailOrPAN IS NOT NULL AND @HashPassword IS NOT NULL)
 	BEGIN
-		IF (LEN(@HashPassword) > 7 )
+		IF ((SELECT(LEN(@HashPassword))) > 7 )
 		BEGIN
 			BEGIN TRY
 				
