@@ -468,74 +468,82 @@ BEGIN
 	
 	IF (@EmailOrPAN IS NOT NULL AND @HashPassword IS NOT NULL)
 	BEGIN
-		BEGIN TRY
-			
-			IF EXISTS (SELECT TOP 1 EID FROM Employee WHERE (Email=@EmailOrPAN OR PAN = @EmailOrPAN OR NationalID=@EmailOrPAN))
-			BEGIN
-				-- Found the user using email or PAN or National ID
-				SET @userID = (SELECT EID FROM Employee WHERE (Email=@EmailOrPAN OR PAN = @EmailOrPAN OR NationalID=@EmailOrPAN) AND (HashPassword=@HashPassword))
-				IF(@userID IS NULL)
-				BEGIN
-					-- Wrong Password
-					SET @responseMessage='Incorrect password'
-					SELECT @return_Hex_value = '02'
-				END
+		IF (LEN(@HashPassword) > 7 )
+		BEGIN
+			BEGIN TRY
 				
-				ELSE
+				IF EXISTS (SELECT TOP 1 EID FROM Employee WHERE (Email=@EmailOrPAN OR PAN = @EmailOrPAN OR NationalID=@EmailOrPAN))
 				BEGIN
-					-- @userID IS NOT NULL
-					-- Correct password, so check if he's already logged in
-					SET @status=(SELECT LogInStatus from Employee WHERE EID=@userID)				
-					IF(@status = '00')
+					-- Found the user using email or PAN or National ID
+					SET @userID = (SELECT EID FROM Employee WHERE (Email=@EmailOrPAN OR PAN = @EmailOrPAN OR NationalID=@EmailOrPAN) AND (HashPassword=@HashPassword))
+					IF(@userID IS NULL)
 					BEGIN
-						-- Not logged in, so login successful, send his type to backend and jobID
-						-- And set status to 1
-						SET @responseMessage='User logged in successfully'
-						SELECT @return_Hex_value = '00'
-						SET @JobID = (SELECT JobID from Employee where EID = @userID)
-						SET @employeeID = @userID
-						UPDATE Employee SET LogInStatus = '01' WHERE EID = @userID
-						UPDATE Employee SET LogInTStamp = GETDATE() WHERE EID = @userID
-						RETURN 0
+						-- Wrong Password
+						SET @responseMessage='Incorrect password'
+						SELECT @return_Hex_value = '02'
 					END
-					IF(@status = '01')
-					BEGIN
-						-- Already logged in, so can't continue
-						SET @responseMessage='User is logged in somewhere'
-						SELECT @return_Hex_value = '03'
-						RETURN 3
-					END
-					IF(@status = '02')
-					BEGIN
-						-- Not verrified
-						SET @responseMessage='This user is not verified'
-						SELECT @return_Hex_value = '04'
-						RETURN 4
-					END
+					
 					ELSE
 					BEGIN
-						-- Unknown status
-						SET @responseMessage='User status undefined'
-						SELECT @return_Hex_value = 'FE'
-						RETURN -1
+						-- @userID IS NOT NULL
+						-- Correct password, so check if he's already logged in
+						SET @status=(SELECT LogInStatus from Employee WHERE EID=@userID)				
+						IF(@status = '00')
+						BEGIN
+							-- Not logged in, so login successful, send his type to backend and jobID
+							-- And set status to 1
+							SET @responseMessage='User logged in successfully'
+							SELECT @return_Hex_value = '00'
+							SET @JobID = (SELECT JobID from Employee where EID = @userID)
+							SET @employeeID = @userID
+							UPDATE Employee SET LogInStatus = '01' WHERE EID = @userID
+							UPDATE Employee SET LogInTStamp = GETDATE() WHERE EID = @userID
+							RETURN 0
+						END
+						IF(@status = '01')
+						BEGIN
+							-- Already logged in, so can't continue
+							SET @responseMessage='User is logged in somewhere'
+							SELECT @return_Hex_value = '03'
+							RETURN 3
+						END
+						IF(@status = '02')
+						BEGIN
+							-- Not verrified
+							SET @responseMessage='This user is not verified'
+							SELECT @return_Hex_value = '04'
+							RETURN 4
+						END
+						ELSE
+						BEGIN
+							-- Unknown status
+							SET @responseMessage='User status undefined'
+							SELECT @return_Hex_value = 'FE'
+							RETURN -1
+						END
 					END
 				END
-			END
-			ELSE
-			BEGIN
-			-- Didn't find the user using Email or PAN or National ID
-			-- Wrong Email
-				SET @responseMessage='No user found with given Email or PAN or National ID'
-				SELECT @return_Hex_value = 'FF'
-				RETURN -1
+				ELSE
+				BEGIN
+				-- Didn't find the user using Email or PAN or National ID
+				-- Wrong Email
+					SET @responseMessage='No user found with given Email or PAN or National ID'
+					SELECT @return_Hex_value = 'FF'
+					RETURN -1
+				
+				END
+			END TRY
 			
-			END
-		END TRY
-		
-		BEGIN CATCH
-			SELECT @return_Hex_value='FC', @responseMessage='CATCH BLOCK: ' + ERROR_MESSAGE()
+			BEGIN CATCH
+				SELECT @return_Hex_value='FC', @responseMessage='CATCH BLOCK: ' + ERROR_MESSAGE()
+				RETURN -1
+			END CATCH
+		END
+		ELSE
+		BEGIN
+			SELECT @return_Hex_value='FB', @responseMessage='Password length is less than 8'
 			RETURN -1
-		END CATCH
+		END
 	END
 	
 	ELSE
