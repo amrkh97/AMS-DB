@@ -33,7 +33,7 @@ BEGIN
 				BEGIN
 					-- @userID IS NOT NULL
 					-- Correct password, so check if he's already logged in
-					SET @status=(SELECT EmployeeStatus from Employee WHERE EID=@userID)				
+					SET @status=(SELECT LogInStatus from Employee WHERE EID=@userID)				
 					IF(@status = '00')
 					BEGIN
 						-- Not logged in, so login successful, send his type to backend and jobID
@@ -42,7 +42,7 @@ BEGIN
 						SELECT @return_Hex_value = '00'
 						SET @JobID = (SELECT JobID from Employee where EID = @userID)
 						SET @employeeID = @userID
-						UPDATE Employee SET EmployeeStatus = '01' WHERE EID = @userID
+						UPDATE Employee SET LogInStatus = '01' WHERE EID = @userID
 						UPDATE Employee SET LogInTStamp = GETDATE() WHERE EID = @userID
 						RETURN 0
 					END
@@ -113,13 +113,13 @@ BEGIN
 			BEGIN
 				-- Found the user using userID
 				-- SET @status=(SELECT EmployeeStatus from Employee WHERE EID=@userID)
-				SET @status=(SELECT EmployeeStatus from Employee WHERE Email=@dummyToken OR PAN=@dummyToken OR NationalID=@dummyToken)
+				SET @status=(SELECT LogInStatus from Employee WHERE Email=@dummyToken OR PAN=@dummyToken OR NationalID=@dummyToken)
 				IF(@status='01')
 				BEGIN
 					-- Right Status
 					-- UPDATE Employee SET EmployeeStatus = 0 WHERE EID = @userID
 					-- UPDATE Employee SET EmployeeStatus = '00' WHERE (Email=@dummyToken OR PAN=@dummyToken OR NationalID=@dummyToken)
-					UPDATE dbo.Employee SET EmployeeStatus = '00' WHERE (Email=@dummyToken OR PAN=@dummyToken OR NationalID=@dummyToken)
+					UPDATE dbo.Employee SET LogInStatus = '00' WHERE (Email=@dummyToken OR PAN=@dummyToken OR NationalID=@dummyToken)
 					SET @responseMessage='Logged out successfully'
 					SELECT @return_Hex_value = '00'
 					RETURN 0
@@ -253,3 +253,4 @@ END
 --                             @responseMessage = @responseMessage OUTPUT    -- nvarchar(128)
 --							 PRINT @responseMessage
 --							 PRINT @return_Hex_value
+-- END of Employee SP --

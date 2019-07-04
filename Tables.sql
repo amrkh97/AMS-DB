@@ -84,6 +84,14 @@ CREATE TABLE Priorities
 		PRIMARY KEY (PrioritYID)
 );
 
+INSERT INTO Priorities
+	(PriorityName, PriorityNote)
+VALUES
+	('Urgent','100%'),
+	('High','80%'),
+	('Normal','50%'),
+	('Low','20%')
+
 CREATE TABLE AlarmLevels
 (
 	AlarmLevelID INT,
