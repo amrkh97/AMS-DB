@@ -1,4 +1,3 @@
-use KAN_AMO
 GO
 Create OR ALTER proc usp_AmbulanceVehicle_SelectAll 
 as
@@ -127,9 +126,9 @@ Create OR ALTER PROC usp_AmbulanceVehicle_Insert
 	IF (@VIN IS NOT NULL )
 		BEGIN
 			INSERT INTO AmbulanceVehicle (VIN,Implication,Make,[Type],ProductionYear,RegYear,LicencePlate,OwnerName,
-			LicenceStateOrProvince,ServiceStartDate,EngineNumber,Brand,ChasiahNumber,Model,DriverPhoneNumber,AssignedYPID,	AmbulanceVehiclePicture)
+			LicenceStateOrProvince,ServiceStartDate,EngineNumber,Brand,ChasiahNumber,Model,DriverPhoneNumber,	AmbulanceVehiclePicture)
 			values (@VIN,@Implication,@Make,@Type,@ProductionYear,@RegYear,@LicencePlate,@OwnerName,@LicenceStateOrProvince,
-			@ServiceStartDate,@EngineNumber,@Brand,@ChasiahNumber,@Model,@DriverPhoneNumber,@AssignedYPID ,@AmbulanceVehiclePicture )
+			@ServiceStartDate,@EngineNumber,@Brand,@ChasiahNumber,@Model,@DriverPhoneNumber ,@AmbulanceVehiclePicture )
 	         SELECT @responseCode = '00'
 			SELECT @responseMessage = 'Success'
 		END
@@ -167,7 +166,6 @@ Create OR ALTER PROC usp_AmbulanceVehicle_Update
     @ChasiahNumber NVARCHAR(32),
     @Model NVARCHAR(32),
     @DriverPhoneNumber NVARCHAR(32),
-	@AssignedYPID NVARCHAR(32),
     @AmbulanceVehiclePicture NVARCHAR(500),
 	@responseCode NVARCHAR(2)='FF' OUTPUT,
 	@responseMessage NVARCHAR(128)='' OUTPUT
@@ -192,7 +190,6 @@ as
 			ChasiahNumber = ISNULL(@ChasiahNumber,ChasiahNumber),
 			Model = ISNULL(@Model,Model),
 			DriverPhoneNumber = ISNULL(@DriverPhoneNumber,DriverPhoneNumber),
-			AssignedYPID =ISNULL(@AssignedYPID,AssignedYPID),
 				AmbulanceVehiclePicture=ISNULL(	@AmbulanceVehiclePicture,	AmbulanceVehiclePicture),
 			VehicleStatus = 2 
 			WHERE VIN = @VIN

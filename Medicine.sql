@@ -1,46 +1,4 @@
-
---CREATE TABLE Medicine
---(
---	BarCode NVARCHAR(64),
---	MedicineName NVARCHAR(64) NOT NULL UNIQUE, 
---    CountInStock NVARCHAR(64),
---    Price NVARCHAR(32),
---    Implications NVARCHAR(MAX),
---    MedicineUsage NVARCHAR(MAX),
---    SideEffects NVARCHAR(MAX),
---    ActiveComponent NVARCHAR(MAX),
---	MedicineStatus NVARCHAR(32) DEFAULT(1)
-
---    PRIMARY KEY(BarCode),
---	FOREIGN KEY(MedicineStatus) REFERENCES EntityStatus(EntityStatusID), 
---	CHECK (Price > 0)
-
---);
-
---CREATE TABLE PharmaCompany
---(
---	CompanyID INT IDENTITY,
---    CompanyName NVARCHAR(64),
---    ContactPerson NVARCHAR(32),
---    CompanyAddress NVARCHAR(128),
---    CompanyPhone NVARCHAR(32),
---    CompanyStatus NVARCHAR(32) DEFAULT(1)
-
---	PRIMARY key (CompanyID)
---	FOREIGN KEY (CompanyStatus) REFERENCES EntityStatus(EntityStatusID), 
---);
-
---CREATE TABLE CompanyMedicineMap (
---    CompID INT,
---    MedBCode NVARCHAR(64),
---    PRIMARY key (CompID,MedBCode),
---    FOREIGN KEY (CompID) REFERENCES PharmaCompany (CompanyID),
---    FOREIGN KEY (MedBCode) REFERENCES Medicine (BarCode)
---);
-----------------------------------------------------------------------
--- (1) Get All YelloPads --
----------------------------------------- 
-USE KAN_AMO
+use KAN_AMO
 GO
 Create  OR ALTER PROC usp_Medicine_SelectByCompanyName
 @CompanyName NVARCHAR(64)
