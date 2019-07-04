@@ -1,3 +1,4 @@
+USE KAN_AMO
 GO
 CREATE OR ALTER PROC usp_Employee_Login 
 	@EmailOrPAN NVARCHAR(128),

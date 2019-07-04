@@ -1,6 +1,6 @@
 USE KAN_AMO;
 ----------------------------------------
---Last Update: Amr Khaled -> 10:54
+--Last Update: Amr Khaled -> 11:30
 
 -----------------------------------------
 --Files Included:
@@ -12,6 +12,7 @@ USE KAN_AMO;
 --Respnse-SP
 --AmbulanceVehicle
 --AlarmLevel_SP
+--AuthenticationProcedures
 
 
 
@@ -450,156 +451,260 @@ AS
 ------------------------------------------------------------------------------------
 -- Employee SP --
 
---(1) Register --
-GO
-CREATE OR ALTER PROC usp_Employee_Register
-	@Fname NVARCHAR(32) = NULL,
-	@Lname NVARCHAR(32) = NULL,
-	@BDate Date = NULL,
-	@Email NVARCHAR(128),
-	@HashPassword NVARCHAR(128),
-	@Gender NVARCHAR(1) = NULL,
-	@ContactNumber NVARCHAR(64) = NULL,
-	@Country NVARCHAR(32) = NULL,
-  @City NVARCHAR(32) = NULL,
-  @AddressState NVARCHAR(32) = NULL,
-  @AddressStreet NVARCHAR(64) = NULL,
-  @AddressPcode VARCHAR(20) = NULL,
-  @PAN NVARCHAR(20) = NULL,
-  @NationalID NVARCHAR(14) = NULL,
-  @LogInTStamp DATETIME = NULL,
-  @LogInGPS NVARCHAR(20) = NULL,
-  @SuperSSN INT = NULL,
-	@JobID INT = NULL,
-  @Photo VARBINARY(MAX) = NULL,
-	@return_Hex_value NVARCHAR(2)='FF' OUTPUT,
-	@responseMessage NVARCHAR(128)='' OUTPUT
-WITH ENCRYPTION
-AS
-BEGIN
-	SET NOCOUNT ON
-	declare @id INT = null
-    BEGIN TRY
-		IF NOT EXISTS (SELECT TOP 1 EID FROM Employee WHERE Email=@Email)
-			BEGIN
-					INSERT INTO Employee (Fname, Lname, BDate, Email, HashPassword, Gender, ContactNumber, Country, 
-					City, AddressState, AddressStreet, AddressPcode, PAN, NationalID, LogInTStamp, LogInGPS, SuperSSN, JobID, Photo)
-					VALUES (@Fname,@Lname,@BDate,@Email,HASHBYTES('SHA1', @HashPassword),@Gender,@ContactNumber,@Country ,
-					@City ,@AddressState ,@AddressStreet ,@AddressPcode ,@PAN,@NationalID ,@LogInTStamp,@LogInGPS ,@SuperSSN ,@JobID ,@Photo)
-					SELECT @return_Hex_value='00',@responseMessage='User Signed Up Successfully'
-					
-			END
-		ELSE
-			BEGIN
-				SELECT @return_Hex_value='04', @responseMessage='Email Already Exists'
-				return 4;
-			END
-
-	END TRY
-	BEGIN CATCH
-			SELECT @return_Hex_value='FF',@responseMessage=ERROR_MESSAGE()
-			return -1;
-	END CATCH
-END
---(2) Login --
 GO
 CREATE OR ALTER PROC usp_Employee_Login 
 	@EmailOrPAN NVARCHAR(128),
 	@HashPassword NVARCHAR(128),
 	@return_Hex_value NVARCHAR(2)='FF' OUTPUT,
 	@responseMessage NVARCHAR(128)='' OUTPUT,
-	@JobID NVARCHAR(64) OUTPUT
+	@JobID NVARCHAR(64)='' OUTPUT,
+	@employeeID NVARCHAR(64)='' OUTPUT
+WITH ENCRYPTION
+AS
+BEGIN
+	SET NOCOUNT on
+	DECLARE @userID INT
+	DECLARE @status NVARCHAR(32)
+	
+	IF (@EmailOrPAN IS NOT NULL AND @HashPassword IS NOT NULL)
+	BEGIN
+		BEGIN TRY
+			
+			IF EXISTS (SELECT TOP 1 EID FROM Employee WHERE (Email=@EmailOrPAN OR PAN = @EmailOrPAN OR NationalID=@EmailOrPAN))
+			BEGIN
+				-- Found the user using email or PAN or National ID
+				SET @userID = (SELECT EID FROM Employee WHERE (Email=@EmailOrPAN OR PAN = @EmailOrPAN OR NationalID=@EmailOrPAN) AND (HashPassword=@HashPassword))
+				IF(@userID IS NULL)
+				BEGIN
+					-- Wrong Password
+					SET @responseMessage='Incorrect password'
+					SELECT @return_Hex_value = '02'
+				END
+				
+				ELSE
+				BEGIN
+					-- @userID IS NOT NULL
+					-- Correct password, so check if he's already logged in
+					SET @status=(SELECT LogInStatus from Employee WHERE EID=@userID)				
+					IF(@status = '00')
+					BEGIN
+						-- Not logged in, so login successful, send his type to backend and jobID
+						-- And set status to 1
+						SET @responseMessage='User logged in successfully'
+						SELECT @return_Hex_value = '00'
+						SET @JobID = (SELECT JobID from Employee where EID = @userID)
+						SET @employeeID = @userID
+						UPDATE Employee SET LogInStatus = '01' WHERE EID = @userID
+						UPDATE Employee SET LogInTStamp = GETDATE() WHERE EID = @userID
+						RETURN 0
+					END
+					IF(@status = '01')
+					BEGIN
+						-- Already logged in, so can't continue
+						SET @responseMessage='User is logged in somewhere'
+						SELECT @return_Hex_value = '03'
+						RETURN 3
+					END
+					IF(@status = '02')
+					BEGIN
+						-- Not verrified
+						SET @responseMessage='This user is not verified'
+						SELECT @return_Hex_value = '04'
+						RETURN 4
+					END
+					ELSE
+					BEGIN
+						-- Unknown status
+						SET @responseMessage='User status undefined'
+						SELECT @return_Hex_value = 'FE'
+						RETURN -1
+					END
+				END
+			END
+			ELSE
+			BEGIN
+			-- Didn't find the user using Email or PAN or National ID
+			-- Wrong Email
+				SET @responseMessage='No user found with given Email or PAN or National ID'
+				SELECT @return_Hex_value = 'FF'
+				RETURN -1
+			
+			END
+		END TRY
+		
+		BEGIN CATCH
+			SELECT @return_Hex_value='FC', @responseMessage='CATCH BLOCK: ' + ERROR_MESSAGE()
+			RETURN -1
+		END CATCH
+	END
+	
+	ELSE
+	BEGIN
+		SELECT @return_Hex_value='FD', @responseMessage='FAILED: Email or Password is NULL'
+		RETURN -1
+	END
+END
+
+GO
+CREATE OR ALTER PROC usp_Employee_Logout
+	-- @userID INT,
+	@dummyToken NVARCHAR(128),
+	@return_Hex_value NVARCHAR(2)='FF' OUTPUT,
+	@responseMessage NVARCHAR(128)='' OUTPUT
+WITH ENCRYPTION
+AS
+BEGIN
+	SET NOCOUNT ON
+	DECLARE @status NVARCHAR(32)
+	-- IF (@userID IS NOT NULL)
+	IF (@dummyToken IS NOT NULL)
+	BEGIN
+		BEGIN TRY
+			-- IF EXISTS (SELECT TOP 1 EID FROM Employee WHERE EID=@userID)
+			IF EXISTS (SELECT TOP 1 Email FROM Employee WHERE (Email=@dummyToken OR PAN=@dummyToken OR NationalID=@dummyToken))
+			BEGIN
+				-- Found the user using userID
+				-- SET @status=(SELECT EmployeeStatus from Employee WHERE EID=@userID)
+				SET @status=(SELECT LogInStatus from Employee WHERE Email=@dummyToken OR PAN=@dummyToken OR NationalID=@dummyToken)
+				IF(@status='01')
+				BEGIN
+					-- Right Status
+					-- UPDATE Employee SET EmployeeStatus = 0 WHERE EID = @userID
+					-- UPDATE Employee SET EmployeeStatus = '00' WHERE (Email=@dummyToken OR PAN=@dummyToken OR NationalID=@dummyToken)
+					UPDATE dbo.Employee SET LogInStatus = '00' WHERE (Email=@dummyToken OR PAN=@dummyToken OR NationalID=@dummyToken)
+					SET @responseMessage='Logged out successfully'
+					SELECT @return_Hex_value = '00'
+					RETURN 0
+				END
+				ELSE IF(@status='00')
+				BEGIN
+					-- User already logged out
+					SET @responseMessage='Wrong user status; User is already logged out'
+					SELECT @return_Hex_value = '01'
+					RETURN 1
+				END
+				ELSE IF(@status='02')
+				BEGIN
+					-- User awaiting verification
+					SET @responseMessage='Wrong user status; User is awaiting verification'
+					SELECT @return_Hex_value = '02'
+					RETURN 2
+				END
+				ELSE
+				BEGIN
+					-- Unknown status
+					SET @responseMessage='Unknown user status'
+					SELECT @return_Hex_value = 'FE'
+					RETURN -1
+				END
+			END
+			ELSE
+			BEGIN
+				-- Didn't find the user using @userID
+				-- SET @responseMessage='No user found with given ID'
+				SET @responseMessage='No user found with given email or pan or national id'
+				SELECT @return_Hex_value = 'FF'
+				RETURN -1
+			END
+		END TRY
+		BEGIN CATCH
+			SELECT @return_Hex_value='FC', @responseMessage='CATCH BLOCK: ' + ERROR_MESSAGE()
+			RETURN -1
+		END CATCH
+	END
+	ELSE
+	BEGIN
+		SELECT @return_Hex_value='FD', @responseMessage='FAILED: User ID is NULL'
+		RETURN -1
+	END
+END
+
+GO
+CREATE OR ALTER PROC usp_Employee_Signup
+	@firstName NVARCHAR(32),
+	@lastName NVARCHAR(32),
+	@dateOfBirth DATE,
+	@email NVARCHAR(128),
+	@password NVARCHAR(128),
+	@gender NVARCHAR(1),
+	@contactNumber NVARCHAR(64),
+	@country NVARCHAR(32),
+	@city NVARCHAR(32),
+	@state NVARCHAR(32),
+	@street NVARCHAR(64),
+	@postalCode VARCHAR(20),
+	@pan NVARCHAR(20) = NULL,
+	@nationalID NVARCHAR(14) = NULL,
+	@job INT,
+	@image NVARCHAR(MAX) = NULL,
+	@return_Hex_value NVARCHAR(2)='FF' OUTPUT,
+	@responseMessage NVARCHAR(128)='' OUTPUT
 WITH ENCRYPTION
 AS
 BEGIN
 	SET NOCOUNT ON
 	DECLARE @userID INT
-	DECLARE @status INT
-	BEGIN TRY
-		IF EXISTS (SELECT TOP 1 EID FROM Employee WHERE Email=@EmailOrPAN OR PAN = @EmailOrPAN OR NationalID=@EmailOrPAN)
-		-- Found the user using email or PAN or National ID
+	DECLARE @status NVARCHAR(32)
+	IF (@email IS NOT NULL AND @password IS NOT NULL)
+	BEGIN
+		-- Check email is not already used
+		BEGIN TRY
+			IF EXISTS (SELECT * FROM Employee WHERE Email=@email OR PAN=@pan OR NationalID=@nationalID)
 			BEGIN
-				SET @userID = (SELECT EID FROM Employee WHERE (Email=@EmailOrPAN OR PAN = @EmailOrPAN OR NationalID=@EmailOrPAN) AND HashPassword=HASHBYTES('SHA1', @HashPassword))
-				IF(@userID IS NULL)
-				-- Worng Password
-					BEGIN
-						SET @responseMessage='Incorrect password'
-						SELECT @return_Hex_value = '02'
-						return 2
-					END
-				ELSE
-				-- Correct password, so check if he's already logged in
-					SET @status=(SELECT EmployeeStatus from Employee WHERE EID=@userID)
-					IF(@status = 0)
-					-- Not logged in, so login successful, send his type to backend
-					-- And set status to 1
-						BEGIN
-							SET @responseMessage='User successfully logged in'
-							SELECT @return_Hex_value = '00'
-							SET @JobID = (SELECT JobID from Employee where EID = @userID)
-							UPDATE Employee SET EmployeeStatus = 1 WHERE EID = @userID
-							return 0
-						END
-					ELSE IF(@status = 1)
-					-- Already logged in, so can't continue
-						BEGIN
-							SET @responseMessage='User is logged in somewhere'
-							SELECT @return_Hex_value = '03'
-							return 3
-						END
-				ELSE
-				BEGIN
-				   SET @responseMessage='Something went wrong'
-				   SELECT @return_Hex_value = 'ff'
-				END		
+				-- Found a user using this Email or PAN or National ID
+				-- ERROR: Already signed up
+				SET @responseMessage='User already registered. Try signing in'
+				SELECT @return_Hex_value = 'FF'
+				RETURN -1
 			END
-		ELSE
-		-- Didn't find the user using email or PAN or National ID
-	  -- Wrong Email
+			ELSE
 			BEGIN
-				SET @responseMessage='Invalid Email / PAN / National ID'
-				SELECT @return_Hex_value = '01'
-				return 1
-			END
-	END TRY
-	BEGIN CATCH
-			SELECT @return_Hex_value='FF', @responseMessage=ERROR_MESSAGE()
-			return -1;
-	END CATCH
-END
-
---(3) Logout --
-GO
-CREATE OR ALTER PROC usp_Employee_Logout
-	@userID INT,
-	@return_Hex_value NVARCHAR(2)='FF' OUTPUT,
-	@responseMessage NVARCHAR(128)='' OUTPUT
--- ASK --
-WITH ENCRYPTION
-AS
-BEGIN
-	BEGIN TRY
-		IF EXISTS (SELECT TOP 1 EID FROM Employee WHERE EID=@userID)
-			BEGIN
-				UPDATE Employee SET EmployeeStatus = 0 WHERE EID = @userID
-				SET @responseMessage='Successfuly Logged Out'
+				-- Email was not used before
+				-- Insert into DB
+				INSERT INTO Employee (Fname,Lname,BDate,Email,HashPassword,Gender,ContactNumber,Country,City,AddressState,AddressStreet,AddressPcode,PAN,NationalID,JobID,Photo)
+				values (@firstName,@lastName,@dateOfBirth,@email,@password,@gender,@contactNumber,@country,@city,@state,@street,@postalCode,@pan,@nationalID,@job,@image)
+				SET @responseMessage='Signed Up. Check Email for Verification'
 				SELECT @return_Hex_value = '00'
-				return 0
+				RETURN 0
 			END
-		ELSE
-		-- Didn't find the user
-			BEGIN
-				SET @responseMessage='Invalid User ID'
-				SELECT @return_Hex_value = '01'
-				return 1
-			END
-	END TRY
-	BEGIN CATCH
-		SELECT @return_Hex_value='FF', @responseMessage=ERROR_MESSAGE()
-		return -1;
-	END CATCH
+		END TRY
+		BEGIN CATCH
+			SELECT @return_Hex_value='FC', @responseMessage='CATCH BLOCK: ' + ERROR_MESSAGE()
+			RETURN -1
+		END CATCH
+	END
+	ELSE
+	BEGIN
+		-- Email or Password is NULL
+		SELECT @return_Hex_value='FD', @responseMessage='FAILED: Email or Password is NULL'
+		RETURN -1
+	END
 END
 
+--GO
+--DECLARE @return_Hex_value NVARCHAR(2),
+--        @responseMessage NVARCHAR(128),
+--        @JobID NVARCHAR(64),
+--        @employeeID NVARCHAR(64);
+--EXEC dbo.usp_Employee_Login @EmailOrPAN = N'07810798770078',                            -- nvarchar(128)
+--                            @HashPassword = N'Z8Y8IXV7AO8CAI77J1U380ITRONV2SY21MEJW9VFZN0U1I2I',                          -- nvarchar(128)
+--                            @return_Hex_value = @return_Hex_value OUTPUT, -- nvarchar(2)
+--                            @responseMessage = @responseMessage OUTPUT,   -- nvarchar(128)
+--                            @JobID = @JobID OUTPUT,                       -- nvarchar(64)
+--                            @employeeID = @employeeID OUTPUT              -- nvarchar(64)
+--							PRINT @responseMessage
+--							PRINT @return_Hex_value
+--							PRINT @JobID
+--							PRINT @employeeID
+
+--GO
+--DECLARE @return_Hex_value NVARCHAR(2),
+--        @responseMessage NVARCHAR(128);
+--EXEC dbo.usp_Employee_Logout @dummyToken = N'91008004917121647682',                            -- nvarchar(128)
+--                             @return_Hex_value = @return_Hex_value OUTPUT, -- nvarchar(2)
+--                             @responseMessage = @responseMessage OUTPUT    -- nvarchar(128)
+--							 PRINT @responseMessage
+--							 PRINT @return_Hex_value
 -- END of Employee SP --
 ------------------------------------------------------------------------------------
 ------------------------------------------------------------------------------------
@@ -1153,7 +1258,7 @@ GO
 -- Location Stored Procedures --
 -- (1) Insert New Location --
 GO
-CREATE PROC usp_Locations_Insert 
+CREATE OR ALTER PROC usp_Locations_Insert 
 	@FreeFormatAddress NVARCHAR(256),
     @City NVARCHAR(32) = NULL,
     @Longitude  NVARCHAR(32) = NULL,
@@ -1202,7 +1307,7 @@ Go
 -- (2) Get All Locations --
 ---------------------------------------- 
 GO
-Create proc usp_Locations_SelectAll
+CREATE OR ALTER proc usp_Locations_SelectAll
 as
 	select * from Locations
 ------------------------------------------
@@ -1212,7 +1317,7 @@ as
 -----------------------------------------
 -- (2.1) Get Locations by city --
 GO
-Create proc usp_Locations_SelectByCity @CityName NVARCHAR(32)
+Create OR ALTER PROC usp_Locations_SelectByCity @CityName NVARCHAR(32)
 as
 	IF (@CityName IS NOT NULL)
 	BEGIN
@@ -1228,7 +1333,7 @@ as
 -----------------------------------------
 -- (2.2) GET Locations by Cooredinates --
 GO
-CREATE PROC usp_Locations_SelectByGPS 
+CREATE OR ALTER PROC usp_Locations_SelectByGPS 
 	@Longitude  NVARCHAR(32),
 	@Latitude  NVARCHAR(32)
 as
@@ -1246,7 +1351,7 @@ as
 -----------------------------------------
 -- (2.3) GET Locations by Street --
 GO
-CREATE PROC usp_Locations_SelectByStreet
+CREATE OR ALTER PROC usp_Locations_SelectByStreet
 	@Street NVARCHAR(32)
 as
 	IF (@Street IS NOT NULL)
@@ -1263,7 +1368,7 @@ as
 -----------------------------------------
 -- (2.4) GET Locations by PostalCode --
 GO
-CREATE PROC usp_Locations_SelectByPostalCode
+CREATE OR ALTER PROC usp_Locations_SelectByPostalCode
 	@PostalCode NVARCHAR(20)
 as
 	IF (@PostalCode IS NOT NULL)
@@ -1280,7 +1385,7 @@ as
 -----------------------------------------
 -- (2.5) GET Locations by PostalZipCode --
 GO
-CREATE PROC usp_Locations_SelectByPostalZipCode
+CREATE OR ALTER PROC usp_Locations_SelectByPostalZipCode
 	@PostalZipCode NVARCHAR(32)
 as
 	IF (@PostalZipCode IS NOT NULL)
@@ -1297,7 +1402,7 @@ as
 -----------------------------------------
 -- (2.6) GET Locations by LocationID --
 GO
-CREATE PROC usp_Locations_SelectByID
+CREATE OR ALTER PROC usp_Locations_SelectByID
 	@LocationID INT
 as
 	IF (@LocationID IS NOT NULL)
@@ -1314,7 +1419,7 @@ as
 -----------------------------------------
 -- (2.7) GET Locations by Location Address --
 GO
-CREATE PROC usp_Locations_SelectByAddress
+CREATE OR ALTER PROC usp_Locations_SelectByAddress
 	@FreeFormatAddress NVARCHAR(256)
 as
 	IF (@FreeFormatAddress IS NOT NULL)
@@ -1325,13 +1430,9 @@ as
 	ELSE
 		RETURN -1
 -----------------------------------------
--- (2.7) GET Locations by Location Address Test --
-GO
-EXEC usp_Locations_SelectByAddress @FreeFormatAddress = 'giza'
------------------------------------------
 -- (3) Delete Location By LocationID --
 GO
-create proc usp_Location_Delete  @LocationID INT
+create OR ALTER PROC usp_Location_Delete  @LocationID INT
 as
 	IF (@LocationID IS NOT NULL)
 	BEGIN
@@ -1348,7 +1449,7 @@ as
 -----------------------------------------
 -- (4) Update Location By LocationID --
 GO
-CREATE PROC usp_Location_Update
+CREATE OR ALTER PROC usp_Location_Update
 	@LocationID INT,
 	@FreeFormatAddress NVARCHAR(256) = NULL,
     @Longitude  NVARCHAR(32) = NULL,
