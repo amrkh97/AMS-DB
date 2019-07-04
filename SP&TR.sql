@@ -1,3 +1,4 @@
+USE KAN_AMO
 ------------------------- Stored  OR ALTER PROCedures ----------------------------
 ------------------------------------------------------------------------
 -- Medicine Stored  OR ALTER PROCedures --
