@@ -1,4 +1,5 @@
 ﻿Use KAN_AMO;
+GO
 
 CREATE TABLE ResponseStatuses
 (
@@ -297,24 +298,24 @@ CREATE TABLE Employee
 );
 
 INSERT INTO Employee
-	(Email,HashPassword,PAN,NationalID,SuperSSN,JobID)
+	(Email,HashPassword,PAN,NationalID,SuperSSN,JobID,Fname,Lname)
 VALUES
 
-	('admin@test.com','12345678',null,null,1,0) ,
-    ('move_manager1@test.com','91234567',null,'',1,1),
-	('move_manager2@test.com','89123456','0123456789012345','',1,1),
-	('move_manager3@test.com','78912345','','01234567890123',1,1),
-	('operator1@test.com','91234567','','29704090101931',2,4),
-	('operator2@test.com','89123456',null,null,3,4),
-	('operator3@test.com','78912345',null,'',4,4),
-	('driver1@test.com','91234567','',null,2,3),
-	('driver2@test.com','89123456','1010101010101010','',3,3),
-	('driver3@test.com','78912345','','11112222333344',4,3),
-	('paramedic1@test.com','91234567',null,'',2,2),
-	('paramedic2@test.com','89123456',null,'',3,2),
-	('paramedic3@test.com','78912345','4017772008280452','',4,2),
-	('paramedic4@test.com','91234567','4918012011072830','',2,2),
-	('paramedic5@test.com','91234567',null,'',2,2)
+	('admin@test.com','12345678',null,null,1,0,'Ahmed','Al-Gohary') ,
+    ('move_manager1@test.com','91234567',null,'',1,1,'Amr','Khaled'),
+	('move_manager2@test.com','89123456','0123456789012345','',1,1,'Mostafa','Mufeed'),
+	('move_manager3@test.com','78912345','','01234567890123',1,1,'Ahmed','Salah'),
+	('operator1@test.com','91234567','','29704090101931',2,4,'Hossam','Hassan'),
+	('operator2@test.com','89123456',null,null,3,4,'Ibrahim','Hassan'),
+	('operator3@test.com','78912345',null,'',4,4,'Mohamed','El-Sokkary'),
+	('driver1@test.com','91234567','',null,2,3,'Anas','Mohamed'),
+	('driver2@test.com','89123456','1010101010101010','',3,3,'Ahmed','Amrawy'),
+	('driver3@test.com','78912345','','11112222333344',4,3,'Kamel','Mohsen'),
+	('paramedic1@test.com','91234567',null,'',2,2,'Mohamed','Salah'),
+	('paramedic2@test.com','89123456',null,'',3,2,'Abdelrahman','Ahmed'),
+	('paramedic3@test.com','78912345','4017772008280452','',4,2,'Omar','Mohamed'),
+	('paramedic4@test.com','91234567','4918012011072830','',2,2,'Hussien','Khaled'),
+	('paramedic5@test.com','91234567',null,'',2,2,'Yahia','Mohamed')
 
 CREATE TABLE Incident
 (
