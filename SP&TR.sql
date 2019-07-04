@@ -784,23 +784,23 @@ END
 ------------------------------------------------------------------------------------
 -- Triggers --
 -- (1) Distribute amount of batch medicine to vehicle --
-GO
-Create  trigger TR_BatchDistributionMap_InsteadOfInsert
-ON BatchDistributionMap
-instead of insert
-as
-	declare @distributed int,@total int, @bID int
-	select @bID = BID from inserted
-	select @distributed = DistributedAmt from inserted
-	select @total = (select Quantity from Batch where BatchID = @bID)
+-- GO
+-- Create  trigger TR_BatchDistributionMap_InsteadOfInsert
+-- ON BatchDistributionMap
+-- instead of insert
+-- as
+-- 	declare @distributed int,@total int, @bID int
+-- 	select @bID = BID from inserted
+-- 	select @distributed = DistributedAmt from inserted
+-- 	select @total = (select Quantity from Batch where BatchID = @bID)
 	
-	if @total > @distributed
-	begin
-		update Batch set Quantity =  Quantity - @distributed 
-		Where BatchID = @bID
-		insert into BatchDistributionMap(DistributedAmt, BID, AmbVIN)
-		select DistributedAmt, BID, AmbVIN
-		from inserted;
-	end
-	else
-		select 'Distributed Amount exceeds available amount'
+-- 	if @total > @distributed
+-- 	begin
+-- 		update Batch set Quantity =  Quantity - @distributed 
+-- 		Where BatchID = @bID
+-- 		insert into BatchDistributionMap(DistributedAmt, BID, AmbVIN)
+-- 		select DistributedAmt, BID, AmbVIN
+-- 		from inserted;
+-- 	end
+-- 	else
+-- 		select 'Distributed Amount exceeds available amount'
