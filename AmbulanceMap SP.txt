@@ -1,0 +1,107 @@
+--TODO: COnfirm that all checks are passed from front end.
+CREATE OR ALTER PROC usp_AmbulanceMap_Insert
+@VIN INT,
+@ParamedicID INT,
+@DriverID INT,
+@YelloPadID INT,
+@HexCode INT OUTPUT
+AS
+BEGIN
+if exists(select * from dbo.AmbulanceMap where VIN = @VIN and StatusMap = '00')
+BEGIN
+-- 1 -> Ambulance was already inserted but not assigned.
+Set @HexCode = 1
+RETURN 1
+END
+ELSE if exists(select * from dbo.AmbulanceMap where VIN = @VIN and StatusMap ='01')
+begin
+-- 2 -> Ambulance is assigned and already in service.
+Set @HexCode = 2
+ RETURN 2
+end 
+else begin
+insert into dbo.AmbulanceMap(VIN,ParamedicID,DriverID,YelloPadID)
+VALUES(
+@VIN,
+@ParamedicID,
+@DriverID,
+@YelloPadID
+)
+
+UPDATE dbo.Yellopad
+SET YelloPadStatus = '01'
+WHERE YelloPadUniqueID = @YelloPadID
+
+UPDATE dbo.Employee
+SET EmployeeStatus = '00'
+WHERE EID = @ParamedicID
+
+UPDATE dbo.Employee
+SET EmployeeStatus = '00'
+WHERE EID = @DriverID
+
+UPDATE dbo.AmbulanceVehicle
+SET VehicleStatus = '00'
+WHERE VIN = @VIN
+
+-- 0 -> Insertion Successful
+Set @HexCode = 0
+RETURN 0
+end
+END
+GO
+------------------------------------------------------
+------------------------------------------------------
+------------------------------------------------------
+
+CREATE OR ALTER PROC usp_getAmbulanceCarMapByCarID
+@CarID INT
+AS
+BEGIN
+SELECT * FROM dbo.AmbulanceMap WHERE VIN = @CarID
+END
+GO
+
+CREATE OR ALTER PROC usp_getAmbulanceCarMapByDriverID
+@DriverID INT
+AS
+BEGIN
+SELECT * FROM dbo.AmbulanceMap WHERE DriverID = @DriverID
+END
+GO
+
+CREATE OR ALTER PROC usp_getAmbulanceCarMapByParamedicID
+@ParamedicID INT
+AS
+BEGIN
+SELECT * FROM dbo.AmbulanceMap WHERE ParamedicID = @ParamedicID
+END
+GO
+
+CREATE OR ALTER PROC usp_getAmbulanceCarMapByYelloPadID
+@YelloPadID INT
+AS
+BEGIN
+SELECT * FROM dbo.AmbulanceMap WHERE YelloPadID = @YelloPadID
+END
+GO
+
+
+CREATE OR ALTER  Proc usp_deleteAmbulanceMap
+@VIN INT
+AS
+BEGIN
+update dbo.AmbulanceMap
+set StatusMap = '04'
+WHERE VIN = @VIN AND StatusMap='00'
+
+update dbo.AmbulanceMap
+set StatusMap = '04'
+WHERE VIN = @VIN AND StatusMap='02'
+END
+
+UPDATE dbo.AmbulanceVehicle
+SET VehicleStatus = '00'
+WHERE VIN = @VIN
+
+GO
