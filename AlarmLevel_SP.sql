@@ -1,3 +1,4 @@
+USE KAN_AMO
 GO
 CREATE OR ALTER proc usp_AlarmLevel_GetAll
 as

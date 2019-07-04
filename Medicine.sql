@@ -1,4 +1,4 @@
-
+use KAN_AMO
 GO
 Create  OR ALTER PROC usp_Medicine_SelectByCompanyName
 @CompanyName NVARCHAR(64)
