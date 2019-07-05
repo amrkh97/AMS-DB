@@ -1,7 +1,7 @@
 ----------------------------------------------------
 use KAN_AMO;
 GO
-create proc usp_Report_By_Full_Time  @ReportIssueTime DATETIME
+CREATE OR ALTER proc usp_Report_By_Full_Time  @ReportIssueTime DATETIME
 as
 	IF (@ReportIssueTime IS NOT NULL)
 		BEGIN	
@@ -12,7 +12,7 @@ end
 		RETURN -1
 -------------------------------------------------------
 GO
-create proc usp_Report_By_Year  @ReportCreationYear int
+CREATE OR ALTER proc usp_Report_By_Year  @ReportCreationYear int
 as
 	IF (@ReportCreationYear IS NOT NULL)
 		BEGIN	
@@ -23,7 +23,7 @@ ELSE
 	RETURN -1
 ------------------------------------------------------
 GO
-create proc usp_Report_By_Year_Month   @ReportCreationYear int, @ReportCreationMonth int
+CREATE OR ALTER proc usp_Report_By_Year_Month   @ReportCreationYear int, @ReportCreationMonth int
 as
 	IF ((@ReportCreationYear IS NOT NULL) and (@ReportCreationMonth is not null))
 		BEGIN	
@@ -35,7 +35,7 @@ end
 		RETURN -1
 ------------------------------------------------
 GO
-create proc usp_Report_By_Year_Month_Day  @ReportCreationYear int, @ReportCreationMonth int,@ReportCreationDay int
+CREATE OR ALTER proc usp_Report_By_Year_Month_Day  @ReportCreationYear int, @ReportCreationMonth int,@ReportCreationDay int
 as
 	IF ((@ReportCreationYear IS NOT NULL) and (@ReportCreationMonth IS NOT NULL) and (@ReportCreationDay IS NOT NULL))
 		BEGIN	
@@ -48,7 +48,7 @@ end
 		RETURN -1
 ------------------------------------------------
 GO
-Create proc usp_Report_By_Year_Month_Day_Hour   @ReportCreationYear int, @ReportCreationMonth int,@ReportCreationDay int,@ReportCreationHour int
+CREATE OR ALTER proc usp_Report_By_Year_Month_Day_Hour   @ReportCreationYear int, @ReportCreationMonth int,@ReportCreationDay int,@ReportCreationHour int
 as
 	IF ((@ReportCreationYear IS NOT NULL) and (@ReportCreationMonth IS NOT NULL) and (@ReportCreationDay IS NOT NULL) and (@ReportCreationHour is not null) )
 		BEGIN	
