@@ -257,8 +257,9 @@ CREATE OR ALTER PROC usp_InsertNewLocation
 			SET @locID = (SELECT LocationID FROM dbo.Locations WHERE (Longitude = @Longitude AND Latitude = @Latitude AND FreeFormatAddress = @FreeFormatAddress))
 			IF(@locID IS NOT NULL)
 			BEGIN
+				SET @LocationID = @locID
 				SET @responseMessage = 'LOCATION ALREADY EXIST'
-				SELECT @return_Hex_value = 'FF'
+				SELECT @return_Hex_value = 'EF'
 				RETURN -1
 			END
 			ELSE
