@@ -30,6 +30,7 @@ BEGIN
 						-- Wrong Password
 						SET @responseMessage='Incorrect password'
 						SELECT @return_Hex_value = '02'
+						RETURN -1;
 					END
 					
 					ELSE
