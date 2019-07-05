@@ -97,7 +97,7 @@ CREATE TABLE AlarmLevels
 (
 	AlarmLevelID INT,
 	AlarmLevelName NVARCHAR(32),
-	AlarmLevelote NVARCHAR(256)
+	AlarmLevelNote NVARCHAR(256)
 
 	PRIMARY KEY (AlarmLevelID)
 );
