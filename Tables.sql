@@ -272,7 +272,7 @@ CREATE TABLE Employee
 	BDate Date,
 	Email NVARCHAR(128) NOT NULL UNIQUE,
 	HashPassword NVARCHAR(128) NOT NULL,
-	Gender NVARCHAR(1),
+	Gender NVARCHAR(00),
 	ContactNumber NVARCHAR(64),
 	Country NVARCHAR(32),
 	City NVARCHAR(32),
@@ -375,7 +375,7 @@ CREATE TABLE MedicineUsedPerResponse
 
 CREATE TABLE Receipt
 (
-	ReceiptID INT,
+	ReceiptID INT IDENTITY,
 	RespSQN INT NOT NULL,
 	CasheirSSN INT,
 	ReceiptCreationTime DATETIME DEFAULT (GETDATE()),
@@ -464,12 +464,12 @@ CREATE TABLE PatientLocations
 
 CREATE TABLE Reports
 (
-	ReportID INT,
+	ReportID INT IDENTITY,
 	ReportTitle VARCHAR(64) NOT NULL,
 	ReportIssueTime DATETIME DEFAULT(GETDATE()),
 	PatientID INT,
 	ReportDestination NVARCHAR(64),
-	--ReportStatus NVARCHAR(32) DEFAULT (1),
+	ReportStatus NVARCHAR(32) DEFAULT (00),
 
 	FOREIGN KEY (PatientID) REFERENCES Patient(PatientID),
 	PRIMARY KEY (ReportID)

@@ -3,6 +3,7 @@ USE KAN_AMO
 ------------------------------------------------------------------------
 -- Medicine Stored  OR ALTER PROCedures --
 -- (1) Get All Medicines --
+Use KAN_AMO
 GO
 Create  OR ALTER PROC usp_Medicines_SelectAll 
 as
