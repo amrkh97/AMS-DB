@@ -2890,8 +2890,7 @@ END
 GO
 CREATE OR ALTER PROC usp_getAndroidIncident
 @VIN INT,
-@paramedicID INT,
-@driverID INT,
+
 @startLocID INT,
 @destLocID INT,
 @alarmLevelID INT,
@@ -2928,11 +2927,15 @@ BEGIN
 
 SELECT @driverFName = Fname,
        @driverLName=Lname
-       FROM dbo.Employee WHERE EID = @driverID
+       FROM dbo.Employee 
+	   INNER  JOIN dbo.AmbulanceMap ON AmbulanceMap.DriverID = Employee.EID 
+	   WHERE VIN = @VIN AND StatusMap = '01'
 
 SELECT @paramedicFName = Fname,
        @paramedicLName = Lname
-       FROM dbo.Employee WHERE EID = @paramedicID
+	   FROM dbo.Employee
+       INNER  JOIN dbo.AmbulanceMap ON AmbulanceMap.ParamedicID = Employee.EID 
+	   WHERE VIN = @VIN AND StatusMap = '01'
 
 SELECT @CarModel = Model,
        @CarBrand = Brand,
