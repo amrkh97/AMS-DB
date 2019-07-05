@@ -272,7 +272,7 @@ CREATE TABLE Employee
 	BDate Date,
 	Email NVARCHAR(128) NOT NULL UNIQUE,
 	HashPassword NVARCHAR(128) NOT NULL,
-	Gender NVARCHAR(00),
+	Gender NVARCHAR(1),
 	ContactNumber NVARCHAR(64),
 	Country NVARCHAR(32),
 	City NVARCHAR(32),
@@ -469,7 +469,7 @@ CREATE TABLE Reports
 	ReportIssueTime DATETIME DEFAULT(GETDATE()),
 	PatientID INT,
 	ReportDestination NVARCHAR(64),
-	ReportStatus NVARCHAR(32) DEFAULT (00),
+	ReportStatus NVARCHAR(32) DEFAULT '00',
 
 	FOREIGN KEY (PatientID) REFERENCES Patient(PatientID),
 	PRIMARY KEY (ReportID)
