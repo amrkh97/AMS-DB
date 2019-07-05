@@ -1,23 +1,34 @@
-USE KAN_AMO
+
 -----------------------------------------------------------------------
 -- (1) Get All YelloPads --
 ---------------------------------------- 
 GO
-Create proc usp_YelloPads_SelectAll
+CREATE OR ALTER proc usp_YelloPads_SelectAll
 as
-	select YelloPadUniqueID, EntityStatus.StatusName,EntityStatus.StatusNote, Yellopad.YellopadNetworkcardNo, Yellopad.YelloPadPicture from Yellopad
-		INNER JOIN EntityStatus  ON YelloPad.YelloPadStatus=EntityStatus.EntityStatusID
+	select * from Yellopad
 
+GO
+
+CREATE OR ALTER proc usp_YelloPads_selectActive
+AS
+    select * from Yellopad
+	where YelloPadStatus <> '02'
+
+GO
+CREATE OR ALTER proc usp_YelloPads_selectInActive
+AS
+    select * from Yellopad
+	where YelloPadStatus = '02'
  ------------------------------------------
 -- (2) Search Unique ID --
 -----------------------------------------
 GO
-Create proc usp_YelloPads_Search @UniqueID NVARCHAR(16)
+CREATE OR ALTER proc usp_YelloPads_Search @UniqueID NVARCHAR(16)
 as
 IF (@UniqueID IS NOT NULL)
 	BEGIN
-		select YelloPadUniqueID, EntityStatus.StatusName,EntityStatus.StatusNote, Yellopad.YellopadNetworkcardNo, Yellopad.YelloPadPicture from Yellopad
-		INNER JOIN EntityStatus  ON YelloPad.YelloPadStatus=EntityStatus.EntityStatusID
+		select * from Yellopad
+		
 		WHERE  YelloPad.YelloPadUniqueID = @UniqueID
 	END
 	ELSE
@@ -27,13 +38,12 @@ IF (@UniqueID IS NOT NULL)
 -- (3) Get YelloPad Status --
 -----------------------------------------
 GO
-Create proc usp_YelloPads_Status @UniqueID NVARCHAR(16)
+CREATE OR ALTER proc usp_YelloPads_Status @UniqueID NVARCHAR(16)
 as
 	IF (@UniqueID IS NOT NULL)
 	BEGIN
-		select StatusName, StatusNote from EntityStatus
-		INNER JOIN YelloPad  ON YelloPad.YelloPadUniqueID=EntityStatus.EntityStatusID 
-		and YelloPad.YelloPadUniqueID=@UniqueID;
+		select YelloPadStatus from dbo.Yellopad
+		WHERE YelloPad.YelloPadUniqueID=@UniqueID;
 	END
 	ELSE
 		RETURN -1
@@ -42,7 +52,7 @@ as
 -- (4) Get YelloPad Network Info --
 -----------------------------------------
 GO
-Create proc usp_YelloPads_NetworkCard @UniqueID NVARCHAR(16)
+CREATE OR ALTER proc usp_YelloPads_NetworkCard @UniqueID NVARCHAR(16)
 as
 	IF (@UniqueID IS NOT NULL)
 	BEGIN
@@ -51,4 +61,3 @@ as
 	END
 	ELSE
 		RETURN -1
-
