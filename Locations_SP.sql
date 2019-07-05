@@ -308,6 +308,7 @@ CREATE OR ALTER PROC usp_InsertNewLocation
 		BEGIN
 			SET @responseMessage = 'LOCATION ADDED SUCCESFULLY'
 			SELECT @return_Hex_value = '00'
+			SET @LocationID = @locID
 			PRINT @locID
 			RETURN 1
 		END
