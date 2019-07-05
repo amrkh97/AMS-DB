@@ -212,6 +212,22 @@ CREATE TABLE Yellopad
 	PRIMARY KEY (YelloPadID),
 	);
 
+	INSERT INTO dbo.Yellopad
+	(
+	    YelloPadUniqueID,
+	    YellopadNetworkcardNo
+	)
+	VALUES
+	(  	N'1',       -- YelloPadUniqueID - nvarchar(16)
+	    N'1'      -- YellopadNetworkcardNo - nvarchar(64)
+	    ),
+	(  	N'2',       -- YelloPadUniqueID - nvarchar(16)
+	    N'2'      -- YellopadNetworkcardNo - nvarchar(64)
+	    ),
+	(  	N'3',       -- YelloPadUniqueID - nvarchar(16)
+	    N'3'      -- YellopadNetworkcardNo - nvarchar(64)
+	    )
+
 CREATE TABLE AmbulanceVehicle
 (
 	VIN INT,
@@ -233,7 +249,29 @@ CREATE TABLE AmbulanceVehicle
 	AmbulanceVehiclePicture NVARCHAR(500),
 
 	PRIMARY KEY (VIN),
+	CONSTRAINT Negative_VIN CHECK (VIN > 0) 
 	);
+
+	INSERT INTO dbo.AmbulanceVehicle
+	(
+	    VIN,
+	    Make
+	)
+	VALUES
+	(   1,   -- VIN - int
+	    N'Mercedes' -- Make - nvarchar(32)
+
+	    ),
+	(
+		2,
+		N'BMW'
+	),
+	(
+		3,
+		N'Hyundai'
+	)
+
+
 
 CREATE TABLE BatchDistributionMap
 (
