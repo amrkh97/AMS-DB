@@ -2,7 +2,7 @@
 --(0) Insert Report --
 use KAN_AMO;
 GO
-create PROC usp_Report_Insert 
+CREATE OR ALTER PROC usp_Report_Insert 
 	
 	@ReportTitle VARCHAR(64),
 	@PatientID INT,
@@ -35,7 +35,7 @@ create PROC usp_Report_Insert
 
 --(1) Get Report by ReportTitle --
 GO
-create proc usp_Reports_SelectByReportTitle  @ReportTitle NVARCHAR(64)
+CREATE OR ALTER proc usp_Reports_SelectByReportTitle  @ReportTitle NVARCHAR(64)
 as
 	IF (@ReportTitle IS NOT NULL)
 	BEGIN
@@ -48,7 +48,7 @@ as
 
 --(2) Get Report by ReportStatus --
 GO
-create proc usp_Reports_SelectByReportStatus  @ReportStatus NVARCHAR(64)
+CREATE OR ALTER proc usp_Reports_SelectByReportStatus  @ReportStatus NVARCHAR(64)
 as
 	IF (@ReportStatus IS NOT NULL)
 	BEGIN
@@ -63,7 +63,7 @@ GO
 Use KAN_AMO
 GO
 
-create proc usp_Reports_SelectByReportIssueTime  @ReportIssueTime DATETIME
+CREATE OR ALTER proc usp_Reports_SelectByReportIssueTime  @ReportIssueTime DATETIME
 as
 	IF (@ReportIssueTime IS NOT NULL)
 		BEGIN
@@ -129,7 +129,7 @@ as
 
 --(4) Get Report by ReportStatus --
 GO
-create proc usp_Reports_SelectByPatientID  @PatientID INT
+CREATE OR ALTER proc usp_Reports_SelectByPatientID  @PatientID INT
 as
 	IF (@PatientID IS NOT NULL)
 	BEGIN
@@ -140,7 +140,7 @@ as
 		RETURN -1
 --(5) Get Report by ReportTitleAndStatus --
 GO
-create proc usp_Reports_SelectByReportTitleAndStatus  @ReportTitle NVARCHAR(64),
+CREATE OR ALTER proc usp_Reports_SelectByReportTitleAndStatus  @ReportTitle NVARCHAR(64),
  @ReportStatus NVARCHAR(64)
 as
 	IF (@ReportTitle IS NOT NULL AND @ReportStatus IS NOT NULL)
@@ -151,7 +151,7 @@ as
 	ELSE
 		RETURN -1
 GO
-create proc usp_Reports_Delete 
+CREATE OR ALTER proc usp_Reports_Delete 
  @ReportID INT,
   @responseCode NVARCHAR(2)='FF' OUTPUT,
 	@responseMessage NVARCHAR(128)='' OUTPUT

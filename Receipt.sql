@@ -1,6 +1,6 @@
 use KAN_AMO;
 GO
-create PROC usp_Receipt_Insert 
+CREATE OR ALTER PROC usp_Receipt_Insert 
 	
 	@RespSQN NVARCHAR(64),
 	@CasheirSSN INT,
@@ -34,7 +34,7 @@ create PROC usp_Receipt_Insert
 		return -1
 ------------------------------------------------------------------------
 GO
-create proc usp_Receipt_Delete 
+CREATE OR ALTER proc usp_Receipt_Delete 
  @ReceiptID INT,
   @responseCode NVARCHAR(2)='FF' OUTPUT,
 	@responseMessage NVARCHAR(128)='' OUTPUT
@@ -65,7 +65,7 @@ BEGIN TRY
 		return -1	
 ---------------------------------------------------------------------------
 GO
-create proc usp_Receipt_SelectByRespSQN  @RespSQN NVARCHAR(64),
+CREATE OR ALTER proc usp_Receipt_SelectByRespSQN  @RespSQN NVARCHAR(64),
     @responseCode NVARCHAR(2)='FF' OUTPUT,
 	@responseMessage NVARCHAR(128)='' OUTPUT
 
@@ -94,7 +94,7 @@ BEGIN CATCH
 
 		
 GO
-create proc usp_Receipt_SelectByCasheirSSN  @CasheirSSN INT,
+CREATE OR ALTER proc usp_Receipt_SelectByCasheirSSN  @CasheirSSN INT,
    @responseCode NVARCHAR(2)='FF' OUTPUT,
 	@responseMessage NVARCHAR(128)='' OUTPUT
 
@@ -124,7 +124,7 @@ BEGIN CATCH
 
 		
 GO
-create proc usp_Receipt_SelectByFTPFileLocation  @FTPFileLocation NVARCHAR(128),
+CREATE OR ALTER proc usp_Receipt_SelectByFTPFileLocation  @FTPFileLocation NVARCHAR(128),
  @responseCode NVARCHAR(2)='FF' OUTPUT,
 	@responseMessage NVARCHAR(128)='' OUTPUT
 
@@ -153,7 +153,7 @@ BEGIN CATCH
 
 		
 GO
-create proc usp_Receipt_SelectByReceiptStatus  @ReceiptStatus NVARCHAR(64),
+CREATE OR ALTER proc usp_Receipt_SelectByReceiptStatus  @ReceiptStatus NVARCHAR(64),
  @responseCode NVARCHAR(2)='FF' OUTPUT,
 	@responseMessage NVARCHAR(128)='' OUTPUT
 
@@ -182,7 +182,7 @@ BEGIN CATCH
 
 		
 GO
-create proc usp_Receipt_SelectByCost  @Cost NVARCHAR(64),
+CREATE OR ALTER proc usp_Receipt_SelectByCost  @Cost NVARCHAR(64),
  @responseCode NVARCHAR(2)='FF' OUTPUT,
 	@responseMessage NVARCHAR(128)='' OUTPUT
 
@@ -211,7 +211,7 @@ BEGIN CATCH
 
 		
 GO
-create proc usp_Receipt_SelectByPaymentMethod  @PaymentMethod NVARCHAR(64),
+CREATE OR ALTER proc usp_Receipt_SelectByPaymentMethod  @PaymentMethod NVARCHAR(64),
  @responseCode NVARCHAR(2)='FF' OUTPUT,
 	@responseMessage NVARCHAR(128)='' OUTPUT
 
@@ -240,7 +240,7 @@ BEGIN CATCH
 
 		
 GO
-create proc usp_Receipt_SelectByReceiptCreationTime  @ReceiptCreationTime DATETIME
+CREATE OR ALTER proc usp_Receipt_SelectByReceiptCreationTime  @ReceiptCreationTime DATETIME
 as
 	IF (@ReceiptCreationTime IS NOT NULL)
 		BEGIN
