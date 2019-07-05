@@ -95,12 +95,20 @@ VALUES
 
 CREATE TABLE AlarmLevels
 (
-	AlarmLevelID INT,
+	AlarmLevelID INT IDENTITY,
 	AlarmLevelName NVARCHAR(32),
 	AlarmLevelote NVARCHAR(256)
 
 	PRIMARY KEY (AlarmLevelID)
 );
+
+INSERT INTO AlarmLevels
+	(AlarmLevelName, AlarmLevelote)
+VALUES
+	('1','Dummy Danger Alarm'),
+	('2','Dummy Quick Alarm'),
+	('3','Dummy Instant Alarm'),
+	('4','Dummy Fire Alarm')
 
 CREATE TABLE Jobs
 (
