@@ -740,15 +740,26 @@ as
 		select 'Distributed Amount exceeds available amount'
 
 
-		-----------------------------------------------------------------------
+-----------------------------------------------------------------------
 -- (1) Get All YelloPads --
 ---------------------------------------- 
 GO
 CREATE OR ALTER proc usp_YelloPads_SelectAll
 as
-	select YelloPadUniqueID, YelloPadStatus, Yellopad.YellopadNetworkcardNo, Yellopad.YelloPadPicture from Yellopad
+	select * from Yellopad
+
+GO
+
+CREATE OR ALTER proc usp_YelloPads_selectActive
+AS
+    select * from Yellopad
 	where YelloPadStatus <> '02'
-		
+
+GO
+CREATE OR ALTER proc usp_YelloPads_selectInActive
+AS
+    select * from Yellopad
+	where YelloPadStatus = '02'
  ------------------------------------------
 -- (2) Search Unique ID --
 -----------------------------------------
@@ -757,7 +768,7 @@ CREATE OR ALTER proc usp_YelloPads_Search @UniqueID NVARCHAR(16)
 as
 IF (@UniqueID IS NOT NULL)
 	BEGIN
-		select YelloPadUniqueID, YelloPadStatus, Yellopad.YellopadNetworkcardNo, Yellopad.YelloPadPicture from Yellopad
+		select * from Yellopad
 		
 		WHERE  YelloPad.YelloPadUniqueID = @UniqueID
 	END
@@ -791,7 +802,9 @@ as
 	END
 	ELSE
 		RETURN -1
-
+---------------------------------------------------------------------------------------
+--End OF YelloPad SP
+---------------------------------------------------------------------------------------
 GO
 CREATE OR ALTER proc usp_IncidentType_GetAll
 as
@@ -1320,8 +1333,8 @@ as
 	select * from Locations
 ------------------------------------------
 -- (2) Get Get All Locations Test --
-//-------------------------------------------------------------------
-O
+-------------------------------------------------------------------
+GO
 create PROC usp_Receipt_Insert 
 	
 	@RespSQN NVARCHAR(64),
