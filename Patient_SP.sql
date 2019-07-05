@@ -1,7 +1,7 @@
 USE KAN_AMO
 GO
 
-Create proc usp_Patient_getAllLocations
+CREATE OR ALTER PROC usp_Patient_getAllLocations
 @UserID INT
 AS
 BEGIN
@@ -13,7 +13,7 @@ END
 GO
 
 
-Create proc usp_Patient_Locations
+CREATE OR ALTER PROC  usp_Patient_Locations
 @UserID INT,
 @LocationUser NVARCHAR(100),
 @Lat NVARCHAR(32),

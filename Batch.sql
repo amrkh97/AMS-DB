@@ -1,7 +1,7 @@
 USE kAN_AMO;
 GO
 
-CREATE proc usp_BatchMedicine_Insert
+CREATE OR ALTER PROC usp_BatchMedicine_Insert
 @BatchID BIGINT,
 --@MedicineName NVARCHAR(64),
 @MedicineBarcode NVARCHAR(64),

@@ -4,7 +4,7 @@ USE KAN_AMO
 -- Location Stored Procedures --
 -- (1) Insert New Location --
 GO
-CREATE PROC usp_Locations_Insert 
+CREATE OR ALTER PROC usp_Locations_Insert 
 	@FreeFormatAddress NVARCHAR(256),
     @City NVARCHAR(32) = NULL,
     @Longitude  NVARCHAR(32) = NULL,
@@ -53,7 +53,7 @@ Go
 -- (2) Get All Locations --
 ---------------------------------------- 
 GO
-Create proc usp_Locations_SelectAll
+CREATE OR ALTER proc usp_Locations_SelectAll
 as
 	select * from Locations
 ------------------------------------------
@@ -63,7 +63,7 @@ as
 -----------------------------------------
 -- (2.1) Get Locations by city --
 GO
-Create proc usp_Locations_SelectByCity @CityName NVARCHAR(32)
+CREATE OR ALTER proc usp_Locations_SelectByCity @CityName NVARCHAR(32)
 as
 	IF (@CityName IS NOT NULL)
 	BEGIN
@@ -79,7 +79,7 @@ as
 -----------------------------------------
 -- (2.2) GET Locations by Cooredinates --
 GO
-CREATE PROC usp_Locations_SelectByGPS 
+CREATE OR ALTER PROC usp_Locations_SelectByGPS 
 	@Longitude  NVARCHAR(32),
 	@Latitude  NVARCHAR(32)
 as
@@ -97,7 +97,7 @@ as
 -----------------------------------------
 -- (2.3) GET Locations by Street --
 GO
-CREATE PROC usp_Locations_SelectByStreet
+CREATE OR ALTER PROC usp_Locations_SelectByStreet
 	@Street NVARCHAR(32)
 as
 	IF (@Street IS NOT NULL)
@@ -114,7 +114,7 @@ as
 -----------------------------------------
 -- (2.4) GET Locations by PostalCode --
 GO
-CREATE PROC usp_Locations_SelectByPostalCode
+CREATE OR ALTER PROC usp_Locations_SelectByPostalCode
 	@PostalCode NVARCHAR(20)
 as
 	IF (@PostalCode IS NOT NULL)
@@ -131,7 +131,7 @@ as
 -----------------------------------------
 -- (2.5) GET Locations by PostalZipCode --
 GO
-CREATE PROC usp_Locations_SelectByPostalZipCode
+CREATE OR ALTER PROC usp_Locations_SelectByPostalZipCode
 	@PostalZipCode NVARCHAR(32)
 as
 	IF (@PostalZipCode IS NOT NULL)
@@ -148,7 +148,7 @@ as
 -----------------------------------------
 -- (2.6) GET Locations by LocationID --
 GO
-CREATE PROC usp_Locations_SelectByID
+CREATE OR ALTER PROC usp_Locations_SelectByID
 	@LocationID INT
 as
 	IF (@LocationID IS NOT NULL)
@@ -165,7 +165,7 @@ as
 -----------------------------------------
 -- (2.7) GET Locations by Location Address --
 GO
-CREATE PROC usp_Locations_SelectByAddress
+CREATE OR ALTER PROC usp_Locations_SelectByAddress
 	@FreeFormatAddress NVARCHAR(256)
 as
 	IF (@FreeFormatAddress IS NOT NULL)
@@ -182,7 +182,7 @@ EXEC usp_Locations_SelectByAddress @FreeFormatAddress = 'giza'
 -----------------------------------------
 -- (3) Delete Location By LocationID --
 GO
-create proc usp_Location_Delete  @LocationID INT
+CREATE OR ALTER proc usp_Location_Delete  @LocationID INT
 as
 	IF (@LocationID IS NOT NULL)
 	BEGIN
@@ -199,7 +199,7 @@ as
 -----------------------------------------
 -- (4) Update Location By LocationID --
 GO
-CREATE PROC usp_Location_Update
+CREATE OR ALTER PROC usp_Location_Update
 	@LocationID INT,
 	@FreeFormatAddress NVARCHAR(256) = NULL,
     @Longitude  NVARCHAR(32) = NULL,
