@@ -233,7 +233,6 @@ CREATE TABLE AmbulanceVehicle
 	AmbulanceVehiclePicture NVARCHAR(500),
 
 	PRIMARY KEY (VIN),
-	CONSTRAINT VIN CHECK (VIN > 0)
 	);
 
 CREATE TABLE BatchDistributionMap
