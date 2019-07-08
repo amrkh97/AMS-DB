@@ -40,14 +40,14 @@ BEGIN
 SELECT @driverFName = Fname,
        @driverLName=Lname
        FROM dbo.Employee 
-	   INNER  JOIN dbo.AmbulanceMap ON AmbulanceMap.DriverID = Employee.EID 
-	   WHERE VIN = @VIN AND StatusMap = '01'
+          INNER  JOIN dbo.AmbulanceMap ON AmbulanceMap.DriverID = Employee.EID 
+          WHERE VIN = @VIN AND StatusMap = '01'
 
 SELECT @paramedicFName = Fname,
        @paramedicLName = Lname
-	   FROM dbo.Employee
+          FROM dbo.Employee
        INNER  JOIN dbo.AmbulanceMap ON AmbulanceMap.ParamedicID = Employee.EID 
-	   WHERE VIN = @VIN AND StatusMap = '01'
+          WHERE VIN = @VIN AND StatusMap = '01'
 
 SELECT @CarModel = Model,
        @CarBrand = Brand,
@@ -74,7 +74,7 @@ INNER JOIN dbo.Priorities ON Priorities.PrioritYID = Incident.IncidentPriority
 WHERE  IncidentSequenceNumber = @incidentSQN
 
 SELECT @alarmLevelName = AlarmLevelName,
-       @alarmLevelNote = AlarmLevelote 
+       @alarmLevelNote = AlarmLevelNote 
        FROM  dbo.AlarmLevels WHERE AlarmLevelID = @alarmLevelID
 
 
