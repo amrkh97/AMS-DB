@@ -1408,7 +1408,7 @@ as
 -- (2) Get Get All Locations Test --
 -------------------------------------------------------------------
 GO
-create PROC usp_Receipt_Insert 
+CREATE OR ALTER PROC usp_Receipt_Insert 
 	
 	@RespSQN NVARCHAR(64),
 	@CasheirSSN INT,
@@ -1442,7 +1442,7 @@ create PROC usp_Receipt_Insert
 		return -1
 ------------------------------------------------------------------------
 GO
-create proc usp_Receipt_Delete 
+CREATE OR ALTER PROC usp_Receipt_Delete 
  @ReceiptID INT,
   @responseCode NVARCHAR(2)='FF' OUTPUT,
 	@responseMessage NVARCHAR(128)='' OUTPUT
@@ -1473,7 +1473,7 @@ BEGIN TRY
 		return -1	
 ---------------------------------------------------------------------------
 GO
-create proc usp_Receipt_SelectByRespSQN  @RespSQN NVARCHAR(64),
+CREATE OR ALTER PROC usp_Receipt_SelectByRespSQN  @RespSQN NVARCHAR(64),
     @responseCode NVARCHAR(2)='FF' OUTPUT,
 	@responseMessage NVARCHAR(128)='' OUTPUT
 
@@ -1502,7 +1502,7 @@ BEGIN CATCH
 
 		
 GO
-create proc usp_Receipt_SelectByCasheirSSN  @CasheirSSN INT,
+CREATE OR ALTER PROC usp_Receipt_SelectByCasheirSSN  @CasheirSSN INT,
    @responseCode NVARCHAR(2)='FF' OUTPUT,
 	@responseMessage NVARCHAR(128)='' OUTPUT
 
@@ -1532,7 +1532,7 @@ BEGIN CATCH
 
 		
 GO
-create proc usp_Receipt_SelectByFTPFileLocation  @FTPFileLocation NVARCHAR(128),
+CREATE OR ALTER PROC usp_Receipt_SelectByFTPFileLocation  @FTPFileLocation NVARCHAR(128),
  @responseCode NVARCHAR(2)='FF' OUTPUT,
 	@responseMessage NVARCHAR(128)='' OUTPUT
 
@@ -1561,7 +1561,7 @@ BEGIN CATCH
 
 		
 GO
-create proc usp_Receipt_SelectByReceiptStatus  @ReceiptStatus NVARCHAR(64),
+CREATE OR ALTER PROC usp_Receipt_SelectByReceiptStatus  @ReceiptStatus NVARCHAR(64),
  @responseCode NVARCHAR(2)='FF' OUTPUT,
 	@responseMessage NVARCHAR(128)='' OUTPUT
 
@@ -1590,7 +1590,7 @@ BEGIN CATCH
 
 		
 GO
-create proc usp_Receipt_SelectByCost  @Cost NVARCHAR(64),
+CREATE OR ALTER PROC usp_Receipt_SelectByCost  @Cost NVARCHAR(64),
  @responseCode NVARCHAR(2)='FF' OUTPUT,
 	@responseMessage NVARCHAR(128)='' OUTPUT
 
@@ -1619,7 +1619,7 @@ BEGIN CATCH
 
 		
 GO
-create proc usp_Receipt_SelectByPaymentMethod  @PaymentMethod NVARCHAR(64),
+CREATE OR ALTER PROC usp_Receipt_SelectByPaymentMethod  @PaymentMethod NVARCHAR(64),
  @responseCode NVARCHAR(2)='FF' OUTPUT,
 	@responseMessage NVARCHAR(128)='' OUTPUT
 
@@ -1648,7 +1648,7 @@ BEGIN CATCH
 
 		
 GO
-create proc usp_Receipt_SelectByReceiptCreationTime  @ReceiptCreationTime DATETIME
+CREATE OR ALTER PROC usp_Receipt_SelectByReceiptCreationTime  @ReceiptCreationTime DATETIME
 as
 	IF (@ReceiptCreationTime IS NOT NULL)
 		BEGIN
@@ -1712,7 +1712,7 @@ as
 		RETURN -1
 -----------------------------------------------------------------------------
 	GO
-create proc usp_Receipt_By_Full_Time  @ReceiptCreationTime DATETIME
+CREATE OR ALTER PROC usp_Receipt_By_Full_Time  @ReceiptCreationTime DATETIME
 as
 	IF (@ReceiptCreationTime IS NOT NULL)
 		BEGIN	
@@ -1723,7 +1723,7 @@ end
 		RETURN -1
 -------------------------------------------------------
 GO
-create proc usp_Receipt_By_Year  @ReceiptCreationYear int
+CREATE OR ALTER PROC usp_Receipt_By_Year  @ReceiptCreationYear int
 as
 	IF (@ReceiptCreationYear IS NOT NULL)
 		BEGIN	
@@ -1734,7 +1734,7 @@ ELSE
 	RETURN -1
 ------------------------------------------------------
 GO
-create proc usp_Receipt_By_Year_Month   @ReceiptCreationYear int, @ReceiptCreationMonth int
+CREATE OR ALTER PROC usp_Receipt_By_Year_Month   @ReceiptCreationYear int, @ReceiptCreationMonth int
 as
 	IF ((@ReceiptCreationYear IS NOT NULL) and (@ReceiptCreationMonth is not null))
 		BEGIN	
@@ -1746,7 +1746,7 @@ end
 		RETURN -1
 ------------------------------------------------
 GO
-create proc usp_Receipt_By_Year_Month_Day  @ReceiptCreationYear int, @ReceiptCreationMonth int,@ReceiptCreationDay int
+CREATE OR ALTER PROC usp_Receipt_By_Year_Month_Day  @ReceiptCreationYear int, @ReceiptCreationMonth int,@ReceiptCreationDay int
 as
 	IF ((@ReceiptCreationYear IS NOT NULL) and (@ReceiptCreationMonth IS NOT NULL) and (@ReceiptCreationDay IS NOT NULL))
 		BEGIN	
@@ -1759,7 +1759,7 @@ end
 		RETURN -1
 ------------------------------------------------
 GO
-create proc usp_Receipt_By_Year_Month_Day_Hour   @ReceiptCreationYear int, @ReceiptCreationMonth int,@ReceiptCreationDay int,@ReceiptCreationHour int
+CREATE OR ALTER PROC usp_Receipt_By_Year_Month_Day_Hour   @ReceiptCreationYear int, @ReceiptCreationMonth int,@ReceiptCreationDay int,@ReceiptCreationHour int
 as
 	IF ((@ReceiptCreationYear IS NOT NULL) and (@ReceiptCreationMonth IS NOT NULL) and (@ReceiptCreationDay IS NOT NULL) and (@ReceiptCreationHour is not null) )
 		BEGIN	
@@ -1774,7 +1774,7 @@ end
 --------------------------------------------------
 -----------------------------------------------------------
 GO
-CREATE PROC usp_Report_Insert 
+CREATE OR ALTER PROC usp_Report_Insert 
 	
 	@ReportTitle VARCHAR(64),
 	@PatientID INT,
@@ -1807,7 +1807,7 @@ CREATE PROC usp_Report_Insert
 
 --(1) Get Report by ReportTitle --
 GO
-create proc usp_Reports_SelectByReportTitle  @ReportTitle NVARCHAR(64)
+CREATE OR ALTER PROC usp_Reports_SelectByReportTitle  @ReportTitle NVARCHAR(64)
 as
 	IF (@ReportTitle IS NOT NULL)
 	BEGIN
@@ -1820,7 +1820,7 @@ as
 
 --(2) Get Report by ReportStatus --
 GO
-create proc usp_Reports_SelectByReportStatus  @ReportStatus NVARCHAR(64)
+CREATE OR ALTER PROC usp_Reports_SelectByReportStatus  @ReportStatus NVARCHAR(64)
 as
 	IF (@ReportStatus IS NOT NULL)
 	BEGIN
@@ -1835,7 +1835,7 @@ GO
 Use KAN_AMO
 GO
 
-create proc usp_Reports_SelectByReportIssueTime  @ReportIssueTime DATETIME
+CREATE OR ALTER PROC usp_Reports_SelectByReportIssueTime  @ReportIssueTime DATETIME
 as
 	IF (@ReportIssueTime IS NOT NULL)
 		BEGIN
@@ -1901,7 +1901,7 @@ as
 
 --(4) Get Report by ReportStatus --
 GO
-create proc usp_Reports_SelectByPatientID  @PatientID INT
+CREATE OR ALTER PROC usp_Reports_SelectByPatientID  @PatientID INT
 as
 	IF (@PatientID IS NOT NULL)
 	BEGIN
@@ -1912,7 +1912,7 @@ as
 		RETURN -1
 --(5) Get Report by ReportTitleAndStatus --
 GO
-create proc usp_Reports_SelectByReportTitleAndStatus  @ReportTitle NVARCHAR(64),
+CREATE OR ALTER PROC usp_Reports_SelectByReportTitleAndStatus  @ReportTitle NVARCHAR(64),
  @ReportStatus NVARCHAR(64)
 as
 	IF (@ReportTitle IS NOT NULL AND @ReportStatus IS NOT NULL)
@@ -1923,7 +1923,7 @@ as
 	ELSE
 		RETURN -1
 GO
-create proc usp_Reports_Delete 
+CREATE OR ALTER PROC usp_Reports_Delete 
  @ReportID INT,
   @responseCode NVARCHAR(2)='FF' OUTPUT,
 	@responseMessage NVARCHAR(128)='' OUTPUT
@@ -1957,7 +1957,7 @@ BEGIN TRY
 -- END of Reports SP --
 ------------------------------------------------------------------------------
 GO
-create proc usp_Report_By_Full_Time  @ReportIssueTime DATETIME
+CREATE OR ALTER PROC usp_Report_By_Full_Time  @ReportIssueTime DATETIME
 as
 	IF (@ReportIssueTime IS NOT NULL)
 		BEGIN	
@@ -1968,7 +1968,7 @@ end
 		RETURN -1
 -------------------------------------------------------
 GO
-create proc usp_Report_By_Year  @ReportCreationYear int
+CREATE OR ALTER PROC usp_Report_By_Year  @ReportCreationYear int
 as
 	IF (@ReportCreationYear IS NOT NULL)
 		BEGIN	
@@ -1979,7 +1979,7 @@ ELSE
 	RETURN -1
 ------------------------------------------------------
 GO
-create proc usp_Report_By_Year_Month   @ReportCreationYear int, @ReportCreationMonth int
+CREATE OR ALTER PROC usp_Report_By_Year_Month   @ReportCreationYear int, @ReportCreationMonth int
 as
 	IF ((@ReportCreationYear IS NOT NULL) and (@ReportCreationMonth is not null))
 		BEGIN	
@@ -1991,7 +1991,7 @@ end
 		RETURN -1
 ------------------------------------------------
 GO
-create proc usp_Report_By_Year_Month_Day  @ReportCreationYear int, @ReportCreationMonth int,@ReportCreationDay int
+CREATE OR ALTER PROC usp_Report_By_Year_Month_Day  @ReportCreationYear int, @ReportCreationMonth int,@ReportCreationDay int
 as
 	IF ((@ReportCreationYear IS NOT NULL) and (@ReportCreationMonth IS NOT NULL) and (@ReportCreationDay IS NOT NULL))
 		BEGIN	
@@ -2004,7 +2004,7 @@ end
 		RETURN -1
 ------------------------------------------------
 GO
-create proc usp_Report_By_Year_Month_Day_Hour   @ReportCreationYear int, @ReportCreationMonth int,@ReportCreationDay int,@ReportCreationHour int
+CREATE OR ALTER PROC usp_Report_By_Year_Month_Day_Hour   @ReportCreationYear int, @ReportCreationMonth int,@ReportCreationDay int,@ReportCreationHour int
 as
 	IF ((@ReportCreationYear IS NOT NULL) and (@ReportCreationMonth IS NOT NULL) and (@ReportCreationDay IS NOT NULL) and (@ReportCreationHour is not null) )
 		BEGIN	
@@ -3037,7 +3037,7 @@ INNER JOIN dbo.Priorities ON Priorities.PrioritYID = Incident.IncidentPriority
 WHERE  IncidentSequenceNumber = @incidentSQN
 
 SELECT @alarmLevelName = AlarmLevelName,
-       @alarmLevelNote = AlarmLevelote 
+       @alarmLevelNote = AlarmLevelNote 
        FROM  dbo.AlarmLevels WHERE AlarmLevelID = @alarmLevelID
 
 
