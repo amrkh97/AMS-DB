@@ -4,10 +4,13 @@ GO
 CREATE OR ALTER PROC usp_Employee_Login 
 	@EmailOrPAN NVARCHAR(128),
 	@HashPassword NVARCHAR(128),
+	
 	@return_Hex_value NVARCHAR(2)='FF' OUTPUT,
 	@responseMessage NVARCHAR(128)='' OUTPUT,
-	@JobID INTEGER = -1 OUTPUT,
-	@employeeID Integer = -1 OUTPUT
+	@jobID INTEGER = -1 OUTPUT,
+	@jobDescription NVARCHAR(256) = '' OUTPUT,
+	@employeeID Integer = -1 OUTPUT,
+	@userPhoto NVARCHAR(MAX) = '' OUTPUT
 WITH ENCRYPTION
 AS
 BEGIN
@@ -37,15 +40,17 @@ BEGIN
 					BEGIN
 						-- @userID IS NOT NULL
 						-- Correct password, so check if he's already logged in
-						SET @status=(SELECT LogInStatus from Employee WHERE EID=@userID)				
+						SET @status=(SELECT LogInStatus FROM Employee WHERE EID=@userID)				
 						IF(@status = '00')
 						BEGIN
 							-- Not logged in, so login successful, send his type to backend and jobID
 							-- And set status to 1
 							SET @responseMessage='User logged in successfully'
 							SELECT @return_Hex_value = '00'
-							SET @JobID = (SELECT JobID from Employee where EID = @userID)
+							SET @jobID = (SELECT JobID FROM Employee WHERE EID = @userID)
+							SET @jobDescription = (SELECT JobDescription FROM Jobs WHERE JobID = @jobID)
 							SET @employeeID = @userID
+							SET @userPhoto = (SELECT Photo FROM Employee WHERE EID = @userID)
 							UPDATE Employee SET LogInStatus = '01' WHERE EID = @userID
 							UPDATE Employee SET LogInTStamp = GETDATE() WHERE EID = @userID
 							RETURN 0
@@ -122,8 +127,8 @@ BEGIN
 			IF EXISTS (SELECT TOP 1 Email FROM Employee WHERE (Email=@dummyToken OR PAN=@dummyToken OR NationalID=@dummyToken))
 			BEGIN
 				-- Found the user using userID
-				-- SET @status=(SELECT EmployeeStatus from Employee WHERE EID=@userID)
-				SET @status=(SELECT LogInStatus from Employee WHERE Email=@dummyToken OR PAN=@dummyToken OR NationalID=@dummyToken)
+				-- SET @status=(SELECT EmployeeStatus FROM Employee WHERE EID=@userID)
+				SET @status=(SELECT LogInStatus FROM Employee WHERE Email=@dummyToken OR PAN=@dummyToken OR NationalID=@dummyToken)
 				IF(@status='01')
 				BEGIN
 					-- Right Status
@@ -242,17 +247,17 @@ END
 --GO
 --DECLARE @return_Hex_value NVARCHAR(2),
 --        @responseMessage NVARCHAR(128),
---        @JobID NVARCHAR(64),
+--        @jobID NVARCHAR(64),
 --        @employeeID NVARCHAR(64);
 --EXEC dbo.usp_Employee_Login @EmailOrPAN = N'07810798770078',                            -- nvarchar(128)
 --                            @HashPassword = N'Z8Y8IXV7AO8CAI77J1U380ITRONV2SY21MEJW9VFZN0U1I2I',                          -- nvarchar(128)
 --                            @return_Hex_value = @return_Hex_value OUTPUT, -- nvarchar(2)
 --                            @responseMessage = @responseMessage OUTPUT,   -- nvarchar(128)
---                            @JobID = @JobID OUTPUT,                       -- nvarchar(64)
+--                            @jobID = @jobID OUTPUT,                       -- nvarchar(64)
 --                            @employeeID = @employeeID OUTPUT              -- nvarchar(64)
 --							PRINT @responseMessage
 --							PRINT @return_Hex_value
---							PRINT @JobID
+--							PRINT @jobID
 --							PRINT @employeeID
 
 --GO
