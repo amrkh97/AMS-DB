@@ -103,7 +103,7 @@ CREATE TABLE AlarmLevels
 );
 
 INSERT INTO AlarmLevels
-	(AlarmLevelName, AlarmLevelote)
+	(AlarmLevelName, AlarmLevelNote)
 VALUES
 	('1','Dummy Danger Alarm'),
 	('2','Dummy Quick Alarm'),
