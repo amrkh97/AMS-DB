@@ -28,6 +28,7 @@ CREATE OR ALTER PROC usp_Incident_Insert
 			BEGIN
 				SET @responseMessage = 'INCIDENT ALREADY EXIST'
 				SELECT @return_Hex_value = 'FF'
+				SET @IncidentSequenceNumber = @ISN
 				RETURN -1
 			END
 			ELSE
@@ -55,6 +56,7 @@ CREATE OR ALTER PROC usp_Incident_Insert
 				BEGIN
 					SET @responseMessage = 'IINCIDENT ADDED SUCCESFULLY'
 					SELECT @return_Hex_value = '00'
+					SET @IncidentSequenceNumber = @ISN
 					PRINT @IncidentSequenceNumber
 					RETURN 1
 				END
