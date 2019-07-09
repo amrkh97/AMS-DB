@@ -11,7 +11,7 @@ GO
 --EXEC usp_AlarmLevel_GetAll
 ----------------------------------------NEW SET OF STORED PROCEDURES--------------------------------------------------------------
 --TODO: COnfirm that all checks are passed from front end.
-ALTER   PROC [dbo].[usp_AmbulanceMap_Insert]
+CREATE OR ALTER PROC [dbo].[usp_AmbulanceMap_Insert]
 @VIN INT,
 @ParamedicID INT,
 @DriverID INT,
