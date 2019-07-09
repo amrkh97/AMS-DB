@@ -508,6 +508,7 @@ CREATE TABLE PatientLocations
 (
 	PatientID INT,
 	LocationID INT,
+	StatusLocation NVARCHAR(2) DEFAULT '00',
 
 	FOREIGN KEY (PatientID) REFERENCES Patient(PatientID),
 	FOREIGN KEY (LocationID) REFERENCES Locations(LocationID),
