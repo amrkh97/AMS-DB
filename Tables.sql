@@ -143,15 +143,16 @@ CREATE TABLE Medicine
 	BarCode NVARCHAR(64),
 	MedicineName NVARCHAR(64) NOT NULL UNIQUE,
 	CountInStock Integer,
-	Price NVARCHAR(32),
+	Price decimal(5,2),
 	Implications NVARCHAR(MAX),
 	MedicineUsage NVARCHAR(MAX),
 	SideEffects NVARCHAR(MAX),
 	ActiveComponent NVARCHAR(MAX),
 	MedicineStatus NVARCHAR(32) DEFAULT '00',
+	ExpirationDate date,
 
-	PRIMARY KEY(BarCode)
-	--CHECK (Price > 0)
+	PRIMARY KEY(BarCode),
+	CHECK (Price > 0)
 
 );
 
