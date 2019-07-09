@@ -182,8 +182,8 @@ CREATE TABLE CompanyMedicineMap
 CREATE TABLE Batch
 (
 	BatchID BIGINT,
-	BatchMedBCode NVARCHAR(64) NOT NULL,
-	Quantity INT,
+	--BatchMedBCode NVARCHAR(64) NOT NULL,
+	--Quantity INT,
 	ExpiryDate DATE,
 	OrderDate DATETIME DEFAULT getdate(),
 	BatchStatus NVARCHAR(32) DEFAULT '00',
