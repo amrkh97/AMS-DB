@@ -24,7 +24,7 @@ BEGIN
 		BEGIN
 			BEGIN TRY
 				
-				IF EXISTS (SELECT TOP 1 EID FROM Employee WHERE (Email=@EmailOrPAN OR PAN = @EmailOrPAN OR NationalID=@EmailOrPAN))
+				IF EXISTS (SELECT * FROM Employee WHERE (Email=@EmailOrPAN OR PAN = @EmailOrPAN OR NationalID=@EmailOrPAN))
 				BEGIN
 					-- Found the user using email or PAN or National ID
 					SET @userID = (SELECT EID FROM Employee WHERE (Email=@EmailOrPAN OR PAN = @EmailOrPAN OR NationalID=@EmailOrPAN) AND (HashPassword=@HashPassword))
@@ -128,12 +128,12 @@ BEGIN
 			IF EXISTS (SELECT * FROM Employee WHERE (Email=@dummyToken OR PAN=@dummyToken OR NationalID=@dummyToken))
 			BEGIN
 				-- Found the user using userID
-				-- SET @status=(SELECT EmployeeStatus FROM Employee WHERE EID=@userID)
+				-- SET @status=(SELECT LogInStatus FROM Employee WHERE EID=@userID)
 				SET @status=(SELECT LogInStatus FROM Employee WHERE Email=@dummyToken OR PAN=@dummyToken OR NationalID=@dummyToken)
 				IF(@status='01')
 				BEGIN
 					-- Right Status
-					-- UPDATE Employee SET EmployeeStatus = '00' WHERE EID = @userID
+					-- UPDATE Employee SET LogInStatus = '00' WHERE EID = @userID
 					UPDATE dbo.Employee SET LogInStatus = '00' WHERE (Email=@dummyToken OR PAN=@dummyToken OR NationalID=@dummyToken)
 					SET @responseMessage='Logged out successfully'
 					SELECT @return_Hex_value = '00'
@@ -224,7 +224,7 @@ BEGIN
 				END
 				ELSE
 				BEGIN
-					IF EXISTS (SELECT EID FROM Employee WHERE PAN=@pan)
+					IF EXISTS (SELECT * FROM Employee WHERE PAN=@pan)
 					BEGIN
 						-- Found a user using this PAN
 						SET @responseMessage='A registered user is using this PAN'
@@ -244,7 +244,7 @@ BEGIN
 				END
 				ELSE
 				BEGIN
-					IF EXISTS (SELECT EID FROM Employee WHERE NationalID=@nationalID)
+					IF EXISTS (SELECT * FROM Employee WHERE NationalID=@nationalID)
 					BEGIN
 						-- Found a user using this National ID
 						SET @responseMessage='A registered user is using this National ID'
@@ -254,7 +254,7 @@ BEGIN
 				END
 			END
 			
-			IF EXISTS (SELECT EID FROM Employee WHERE Email=@email)
+			IF EXISTS (SELECT * FROM Employee WHERE Email=@email)
 			BEGIN
 				-- Found a user using this Email
 				-- ERROR: Already signed up
