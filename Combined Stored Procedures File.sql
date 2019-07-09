@@ -1710,18 +1710,14 @@ GO
 
 CREATE OR ALTER PROC usp_BatchMedicine_Insert
 @BatchID BIGINT,
---@MedicineName NVARCHAR(64),
 @MedicineBarcode NVARCHAR(64),
-@MedicineQuantity NVARCHAR(64)
+@MedicineQuantity INT
 AS
 BEGIN
-
-if not exists(select * from dbo.Batch  where dbo.Batch.BatchID=@BatchID)
+DECLARE @QuantityDifference INT
+set @QuantityDifference = (select CountInStock from Medicine where BarCode = @MedicineBarcode) - @MedicineQuantity
+if(@QuantityDifference > 0)
 begin
-insert into dbo.Batch(BatchID,BatchMedBCode,Quantity)
-VALUES(@BatchID,@MedicineBarcode,@MedicineQuantity)
-end
-
 INSERT INTO dbo.BatchMedicine
 (
     BatchID,
@@ -1735,6 +1731,7 @@ VALUES
     )
 
 END
+end
 go
 
 ----------------------------------------NEW SET OF STORED PROCEDURES--------------------------------------------------------------

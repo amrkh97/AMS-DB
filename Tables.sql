@@ -537,11 +537,13 @@ CREATE TABLE AmbulanceMap
 	DriverID INT NOT NULL,
 	YelloPadID INT NOT NULL,
 	StatusMap NVARCHAR(32) DEFAULT '00',
+	BatchID  BIGINT NOT NULL,
 	
 	FOREIGN KEY (VIN) REFERENCES dbo.AmbulanceVehicle(VIN),
 	FOREIGN KEY (ParamedicID) REFERENCES dbo.Employee(EID),
 	FOREIGN KEY (DriverID) REFERENCES dbo.Employee(EID),
-	FOREIGN KEY (YelloPadID) REFERENCES dbo.Yellopad(YelloPadID)
+	FOREIGN KEY (YelloPadID) REFERENCES dbo.Yellopad(YelloPadID),
+	FOREIGN KEY (BatchID) REFERENCES dbo.Batch(BatchID)
 );
 ------------------------------------------------------------------------
 -- Creating Indecies --
