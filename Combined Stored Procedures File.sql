@@ -1573,6 +1573,9 @@ CREATE OR ALTER PROC usp_Incident_Insert
 				SET @responseMessage = 'INCIDENT ALREADY EXIST'
 				SELECT @return_Hex_value = 'FF'
 				SET @IncidentSequenceNumber = @ISN
+				UPDATE dbo.Incident 
+				SET CreationTime = GETDATE()
+				WHERE (IncidentLocationID=@IncidentLocationID AND IncidentPriority=@IncidentPriority AND IncidentType=@IncidentType)
 				RETURN -1
 			END
 			ELSE
