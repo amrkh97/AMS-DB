@@ -143,15 +143,17 @@ CREATE TABLE Medicine
 	BarCode NVARCHAR(64),
 	MedicineName NVARCHAR(64) NOT NULL UNIQUE,
 	CountInStock Integer,
-	Price NVARCHAR(32),
+	Price decimal(5,2),
 	Implications NVARCHAR(MAX),
 	MedicineUsage NVARCHAR(MAX),
 	SideEffects NVARCHAR(MAX),
 	ActiveComponent NVARCHAR(MAX),
 	MedicineStatus NVARCHAR(32) DEFAULT '00',
+	ExpirationDate date,
 
-	PRIMARY KEY(BarCode)
-	--CHECK (Price > 0)
+	PRIMARY KEY(BarCode),
+	CHECK (Price > 0),
+	CHECK (CountInStock > 0)
 
 );
 
@@ -314,6 +316,7 @@ CREATE TABLE Locations
 	PRIMARY KEY (LocationID)
 );
 
+--TODO: Change LogInStatus -> 02 after providing verification mail service.
 CREATE TABLE Employee
 (
 	EID INT IDENTITY,
@@ -454,9 +457,9 @@ CREATE TABLE Patient
 	NextOfKenPhone NVARCHAR(24),
 	NextOfKenAddress NVARCHAR(256),
 	PatientStatus NVARCHAR(32) DEFAULT '00',
-	PatientNationalID INT
+	PatientNationalID NVARCHAR(14),
 
-	PRIMARY KEY (PatientID),
+	PRIMARY KEY (PatientID)
 
 );
 
