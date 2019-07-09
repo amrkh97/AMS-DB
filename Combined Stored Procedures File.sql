@@ -1739,7 +1739,7 @@ go
 
 ----------------------------------------NEW SET OF STORED PROCEDURES--------------------------------------------------------------
 -- Employee SP --
-
+-- Login --
 GO
 CREATE OR ALTER PROC usp_Employee_Login 
 	@EmailOrPAN NVARCHAR(128),
@@ -1848,6 +1848,7 @@ BEGIN
 	END
 END
 
+-- Logout --
 GO
 CREATE OR ALTER PROC usp_Employee_Logout
 	-- @userID INT,
@@ -1863,8 +1864,8 @@ BEGIN
 	IF (@dummyToken IS NOT NULL)
 	BEGIN
 		BEGIN TRY
-			-- IF EXISTS (SELECT TOP 1 EID FROM Employee WHERE EID=@userID)
-			IF EXISTS (SELECT TOP 1 Email FROM Employee WHERE (Email=@dummyToken OR PAN=@dummyToken OR NationalID=@dummyToken))
+			-- IF EXISTS (SELECT * FROM Employee WHERE EID=@userID)
+			IF EXISTS (SELECT * FROM Employee WHERE (Email=@dummyToken OR PAN=@dummyToken OR NationalID=@dummyToken))
 			BEGIN
 				-- Found the user using userID
 				-- SET @status=(SELECT EmployeeStatus FROM Employee WHERE EID=@userID)
@@ -1872,8 +1873,7 @@ BEGIN
 				IF(@status='01')
 				BEGIN
 					-- Right Status
-					-- UPDATE Employee SET EmployeeStatus = 0 WHERE EID = @userID
-					-- UPDATE Employee SET EmployeeStatus = '00' WHERE (Email=@dummyToken OR PAN=@dummyToken OR NationalID=@dummyToken)
+					-- UPDATE Employee SET EmployeeStatus = '00' WHERE EID = @userID
 					UPDATE dbo.Employee SET LogInStatus = '00' WHERE (Email=@dummyToken OR PAN=@dummyToken OR NationalID=@dummyToken)
 					SET @responseMessage='Logged out successfully'
 					SELECT @return_Hex_value = '00'
@@ -1922,6 +1922,7 @@ BEGIN
 	END
 END
 
+-- SignUp --
 GO
 CREATE OR ALTER PROC usp_Employee_Signup
 	@firstName NVARCHAR(32),
