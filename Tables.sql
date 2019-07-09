@@ -152,7 +152,8 @@ CREATE TABLE Medicine
 	ExpirationDate date,
 
 	PRIMARY KEY(BarCode),
-	CHECK (Price > 0)
+	CHECK (Price > 0),
+	CHECK (CountInStock > 0)
 
 );
 
