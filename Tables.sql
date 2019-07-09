@@ -364,7 +364,6 @@ VALUES
 	('driver1@test.com','91234567','',null,2,3,'Anas','Mohamed'),
 	('driver2@test.com','89123456','1010101010101010','',3,3,'Ahmed','Amrawy'),
 	('driver3@test.com','78912345','','11112222333344',4,3,'Kamel','Mohsen'),
-	('driver4test.com','12345678','4017772008280452','55556666777788',4,3,'Ahmed','Zaki'),
 	('paramedic1@test.com','91234567',null,'',2,2,'Mohamed','Salah'),
 	('paramedic2@test.com','89123456',null,'',3,2,'Abdelrahman','Ahmed'),
 	('paramedic3@test.com','78912345','4017772008280452','',4,2,'Omar','Mohamed'),
