@@ -236,7 +236,7 @@ BEGIN
 			
 			IF (@nationalID IS NOT NULL)
 			BEGIN
-				IF ( (SELECT(LEN(@nationalID))) != 14)
+				IF ( (SELECT(LEN(@nationalID))) <> 14)
 				BEGIN
 					SET @responseMessage='National ID length is not 14 numbers'
 					SELECT @return_Hex_value = 'FA'
