@@ -8,7 +8,7 @@ CREATE OR ALTER PROC usp_Employee_Login
 	@return_Hex_value NVARCHAR(2)='FF' OUTPUT,
 	@responseMessage NVARCHAR(128)='' OUTPUT,
 	@jobID INTEGER = -1 OUTPUT,
-	@jobDescription NVARCHAR(256) = '' OUTPUT,
+	@title NVARCHAR(256) = '' OUTPUT,
 	@employeeID Integer = -1 OUTPUT,
 	@userPhoto NVARCHAR(MAX) = '' OUTPUT
 WITH ENCRYPTION
@@ -48,7 +48,7 @@ BEGIN
 							SET @responseMessage='User logged in successfully'
 							SELECT @return_Hex_value = '00'
 							SET @jobID = (SELECT JobID FROM Employee WHERE EID = @userID)
-							SET @jobDescription = (SELECT JobDescription FROM Jobs WHERE JobID = @jobID)
+							SET @title = (SELECT Title FROM Jobs WHERE JobID = @jobID)
 							SET @employeeID = @userID
 							SET @userPhoto = (SELECT Photo FROM Employee WHERE EID = @userID)
 							UPDATE Employee SET LogInStatus = '01' WHERE EID = @userID
@@ -198,8 +198,9 @@ CREATE OR ALTER PROC usp_Employee_Signup
 	@postalCode VARCHAR(20),
 	@pan NVARCHAR(20) = NULL,
 	@nationalID NVARCHAR(14) = NULL,
-	@job INT,
-	@image NVARCHAR(MAX) = NULL,
+	@jobID INT,
+	@photo NVARCHAR(MAX) = NULL,
+	
 	@return_Hex_value NVARCHAR(2)='FF' OUTPUT,
 	@responseMessage NVARCHAR(128)='' OUTPUT
 WITH ENCRYPTION
@@ -212,11 +213,51 @@ BEGIN
 	BEGIN
 		-- Check email is not already used
 		BEGIN TRY
-			IF EXISTS (SELECT * FROM Employee WHERE Email=@email OR PAN=@pan OR NationalID=@nationalID)
+			IF (@pan IS NOT NULL)
 			BEGIN
-				-- Found a user using this Email or PAN or National ID
+				IF ( (SELECT(LEN(@pan))) < 16 OR  (SELECT(LEN(@pan))) > 20)
+				BEGIN
+					SET @responseMessage='PAN length is not between 16 and 20 numbers'
+					SELECT @return_Hex_value = 'F8'
+					RETURN -1
+				END
+				ELSE
+				BEGIN
+					IF EXISTS (SELECT EID FROM Employee WHERE PAN=@pan)
+					BEGIN
+						-- Found a user using this PAN
+						SET @responseMessage='A registered user is using this PAN'
+						SELECT @return_Hex_value = 'F9'
+						RETURN -1
+					END
+				END
+			END
+			
+			IF (@nationalID IS NOT NULL)
+			BEGIN
+				IF ( (SELECT(LEN(@nationalID))) != 14)
+				BEGIN
+					SET @responseMessage='National ID length is not 14 numbers'
+					SELECT @return_Hex_value = 'FA'
+					RETURN -1
+				END
+				ELSE
+				BEGIN
+					IF EXISTS (SELECT EID FROM Employee WHERE NationalID=@nationalID)
+					BEGIN
+						-- Found a user using this National ID
+						SET @responseMessage='A registered user is using this National ID'
+						SELECT @return_Hex_value = 'FB'
+						RETURN -1
+					END
+				END
+			END
+			
+			IF EXISTS (SELECT EID FROM Employee WHERE Email=@email)
+			BEGIN
+				-- Found a user using this Email
 				-- ERROR: Already signed up
-				SET @responseMessage='User already registered. Try signing in'
+				SET @responseMessage='User already registered with this email. Try signing in'
 				SELECT @return_Hex_value = 'FF'
 				RETURN -1
 			END
@@ -225,7 +266,7 @@ BEGIN
 				-- Email was not used before
 				-- Insert into DB
 				INSERT INTO Employee (Fname,Lname,BDate,Email,HashPassword,Gender,ContactNumber,Country,City,AddressState,AddressStreet,AddressPcode,PAN,NationalID,JobID,Photo)
-				values (@firstName,@lastName,@dateOfBirth,@email,@password,@gender,@contactNumber,@country,@city,@state,@street,@postalCode,@pan,@nationalID,@job,@image)
+				values (@firstName,@lastName,@dateOfBirth,@email,@password,@gender,@contactNumber,@country,@city,@state,@street,@postalCode,@pan,@nationalID,@jobID,@photo)
 				SET @responseMessage='Signed Up. Check Email for Verification'
 				SELECT @return_Hex_value = '00'
 				RETURN 0
@@ -258,6 +299,32 @@ END
 --							PRINT @responseMessage
 --							PRINT @return_Hex_value
 --							PRINT @jobID
+--							PRINT @employeeID
+
+--GO
+--DECLARE @return_Hex_value NVARCHAR(2),
+--        @responseMessage NVARCHAR(128);
+--EXEC dbo.usp_Employee_Logout @dummyToken = N'91008004917121647682',                            -- nvarchar(128)
+--                             @return_Hex_value = @return_Hex_value OUTPUT, -- nvarchar(2)
+--                             @responseMessage = @responseMessage OUTPUT    -- nvarchar(128)
+--							 PRINT @responseMessage
+--							 PRINT @return_Hex_value
+-- END of Employee SP --
+
+--GO
+--DECLARE @return_Hex_value NVARCHAR(2),
+--        @responseMessage NVARCHAR(128),
+--        @JobID NVARCHAR(64),
+--        @employeeID NVARCHAR(64);
+--EXEC dbo.usp_Employee_Login @EmailOrPAN = N'07810798770078',                            -- nvarchar(128)
+--                            @HashPassword = N'Z8Y8IXV7AO8CAI77J1U380ITRONV2SY21MEJW9VFZN0U1I2I',                          -- nvarchar(128)
+--                            @return_Hex_value = @return_Hex_value OUTPUT, -- nvarchar(2)
+--                            @responseMessage = @responseMessage OUTPUT,   -- nvarchar(128)
+--                            @JobID = @JobID OUTPUT,                       -- nvarchar(64)
+--                            @employeeID = @employeeID OUTPUT              -- nvarchar(64)
+--							PRINT @responseMessage
+--							PRINT @return_Hex_value
+--							PRINT @JobID
 --							PRINT @employeeID
 
 --GO
