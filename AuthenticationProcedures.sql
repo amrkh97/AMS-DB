@@ -1,5 +1,5 @@
 -- Employee SP --
-
+-- Login --
 GO
 CREATE OR ALTER PROC usp_Employee_Login 
 	@EmailOrPAN NVARCHAR(128),
@@ -24,7 +24,7 @@ BEGIN
 		BEGIN
 			BEGIN TRY
 				
-				IF EXISTS (SELECT TOP 1 EID FROM Employee WHERE (Email=@EmailOrPAN OR PAN = @EmailOrPAN OR NationalID=@EmailOrPAN))
+				IF EXISTS (SELECT * FROM Employee WHERE (Email=@EmailOrPAN OR PAN = @EmailOrPAN OR NationalID=@EmailOrPAN))
 				BEGIN
 					-- Found the user using email or PAN or National ID
 					SET @userID = (SELECT EID FROM Employee WHERE (Email=@EmailOrPAN OR PAN = @EmailOrPAN OR NationalID=@EmailOrPAN) AND (HashPassword=@HashPassword))
@@ -108,6 +108,7 @@ BEGIN
 	END
 END
 
+-- Logout --
 GO
 CREATE OR ALTER PROC usp_Employee_Logout
 	-- @userID INT,
@@ -123,17 +124,16 @@ BEGIN
 	IF (@dummyToken IS NOT NULL)
 	BEGIN
 		BEGIN TRY
-			-- IF EXISTS (SELECT TOP 1 EID FROM Employee WHERE EID=@userID)
-			IF EXISTS (SELECT TOP 1 Email FROM Employee WHERE (Email=@dummyToken OR PAN=@dummyToken OR NationalID=@dummyToken))
+			-- IF EXISTS (SELECT * FROM Employee WHERE EID=@userID)
+			IF EXISTS (SELECT * FROM Employee WHERE (Email=@dummyToken OR PAN=@dummyToken OR NationalID=@dummyToken))
 			BEGIN
 				-- Found the user using userID
-				-- SET @status=(SELECT EmployeeStatus FROM Employee WHERE EID=@userID)
+				-- SET @status=(SELECT LogInStatus FROM Employee WHERE EID=@userID)
 				SET @status=(SELECT LogInStatus FROM Employee WHERE Email=@dummyToken OR PAN=@dummyToken OR NationalID=@dummyToken)
 				IF(@status='01')
 				BEGIN
 					-- Right Status
-					-- UPDATE Employee SET EmployeeStatus = 0 WHERE EID = @userID
-					-- UPDATE Employee SET EmployeeStatus = '00' WHERE (Email=@dummyToken OR PAN=@dummyToken OR NationalID=@dummyToken)
+					-- UPDATE Employee SET LogInStatus = '00' WHERE EID = @userID
 					UPDATE dbo.Employee SET LogInStatus = '00' WHERE (Email=@dummyToken OR PAN=@dummyToken OR NationalID=@dummyToken)
 					SET @responseMessage='Logged out successfully'
 					SELECT @return_Hex_value = '00'
@@ -182,6 +182,7 @@ BEGIN
 	END
 END
 
+-- SignUp --
 GO
 CREATE OR ALTER PROC usp_Employee_Signup
 	@firstName NVARCHAR(32),
@@ -223,7 +224,7 @@ BEGIN
 				END
 				ELSE
 				BEGIN
-					IF EXISTS (SELECT EID FROM Employee WHERE PAN=@pan)
+					IF EXISTS (SELECT * FROM Employee WHERE PAN=@pan)
 					BEGIN
 						-- Found a user using this PAN
 						SET @responseMessage='A registered user is using this PAN'
@@ -235,7 +236,7 @@ BEGIN
 			
 			IF (@nationalID IS NOT NULL)
 			BEGIN
-				IF ( (SELECT(LEN(@nationalID))) != 14)
+				IF ( (SELECT(LEN(@nationalID))) <> 14)
 				BEGIN
 					SET @responseMessage='National ID length is not 14 numbers'
 					SELECT @return_Hex_value = 'FA'
@@ -243,7 +244,7 @@ BEGIN
 				END
 				ELSE
 				BEGIN
-					IF EXISTS (SELECT EID FROM Employee WHERE NationalID=@nationalID)
+					IF EXISTS (SELECT * FROM Employee WHERE NationalID=@nationalID)
 					BEGIN
 						-- Found a user using this National ID
 						SET @responseMessage='A registered user is using this National ID'
@@ -253,7 +254,7 @@ BEGIN
 				END
 			END
 			
-			IF EXISTS (SELECT EID FROM Employee WHERE Email=@email)
+			IF EXISTS (SELECT * FROM Employee WHERE Email=@email)
 			BEGIN
 				-- Found a user using this Email
 				-- ERROR: Already signed up
