@@ -62,11 +62,13 @@ GO
 
 CREATE OR ALTER PROC usp_AmbulanceMap_Insert_Batch
 @VIN INT,
-@batchID BIGINT
+@batchID BIGINT,
+@HexCode NVARCHAR(2) OUTPUT
 AS
 BEGIN
 UPDATE dbo.AmbulanceMap
 SET BatchID = @batchID
 where VIN = @VIN and StatusMap = '00'
+SET @HexCode = '00'
 
 END
