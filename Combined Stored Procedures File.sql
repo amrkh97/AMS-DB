@@ -2483,7 +2483,7 @@ VALUES(
 
 UPDATE dbo.Yellopad
 SET YelloPadStatus = '01'
-WHERE YelloPadUniqueID = @YelloPadID
+WHERE YelloPadID = @YelloPadID
 
 UPDATE dbo.Employee
 SET EmployeeStatus = '05'
