@@ -1713,16 +1713,21 @@ GO
 
 CREATE OR ALTER PROC usp_BatchMedicine_Insert
 @BatchID BIGINT,
---@MedicineName NVARCHAR(64),
 @MedicineBarcode NVARCHAR(64),
 @MedicineQuantity NVARCHAR(64)
 AS
 BEGIN
 
+DECLARE @QuantityDifference INT
+set @QuantityDifference = (select CountInStock from Medicine where BarCode = @MedicineBarcode) - @MedicineQuantity
+
+if(@QuantityDifference > 0)
+begin
+
 if not exists(select * from dbo.Batch  where dbo.Batch.BatchID=@BatchID)
 begin
-insert into dbo.Batch(BatchID,BatchMedBCode,Quantity)
-VALUES(@BatchID,@MedicineBarcode,@MedicineQuantity)
+insert into dbo.Batch(BatchID)
+VALUES(@BatchID)
 end
 
 INSERT INTO dbo.BatchMedicine
@@ -1733,9 +1738,11 @@ INSERT INTO dbo.BatchMedicine
 )
 VALUES
 (   @BatchID ,
-    @MedicineBarcode, -- MedicineBCode - nvarchar(64)
-    @MedicineQuantity  -- Quantity - nvarchar(64)
+    @MedicineBarcode,
+    @MedicineQuantity
     )
+
+END
 
 END
 go
@@ -2506,6 +2513,22 @@ RETURN 0
 end
 END
 GO
+
+CREATE OR ALTER PROC usp_AmbulanceMap_Insert_Batch
+@VIN INT,
+@batchID BIGINT,
+@HexCode NVARCHAR(2) OUTPUT
+AS
+BEGIN
+UPDATE dbo.AmbulanceMap
+SET BatchID = @batchID
+where VIN = @VIN and StatusMap = '00'
+SET @HexCode = '00'
+
+END
+
+GO
+
 ------------------------------------------------------
 ------------------------------------------------------
 ------------------------------------------------------
