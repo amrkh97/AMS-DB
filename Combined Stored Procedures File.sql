@@ -2257,7 +2257,7 @@ BEGIN CATCH
 	END CATCH
 		return -1
 		 
--- (3) Insert Patient --
+-- (3) Insert Ambulance Vehicle --
 GO
 Create OR ALTER PROC usp_AmbulanceVehicle_Insert 
 	
@@ -2487,15 +2487,15 @@ SET YelloPadStatus = '01'
 WHERE YelloPadUniqueID = @YelloPadID
 
 UPDATE dbo.Employee
-SET EmployeeStatus = '00'
+SET EmployeeStatus = '05'
 WHERE EID = @ParamedicID
 
 UPDATE dbo.Employee
-SET EmployeeStatus = '00'
+SET EmployeeStatus = '05'
 WHERE EID = @DriverID
 
 UPDATE dbo.AmbulanceVehicle
-SET VehicleStatus = '00'
+SET VehicleStatus = '05'
 WHERE VIN = @VIN
 
 -- 0 -> Insertion Successful

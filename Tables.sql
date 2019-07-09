@@ -456,9 +456,9 @@ CREATE TABLE Patient
 	NextOfKenPhone NVARCHAR(24),
 	NextOfKenAddress NVARCHAR(256),
 	PatientStatus NVARCHAR(32) DEFAULT '00',
-	PatientNationalID INT
+	PatientNationalID NVARCHAR(14),
 
-	PRIMARY KEY (PatientID),
+	PRIMARY KEY (PatientID)
 
 );
 
