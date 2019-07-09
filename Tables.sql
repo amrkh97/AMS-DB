@@ -537,7 +537,7 @@ CREATE TABLE AmbulanceMap
 	DriverID INT NOT NULL,
 	YelloPadID INT NOT NULL,
 	StatusMap NVARCHAR(32) DEFAULT '00',
-	BatchID  BIGINT NOT NULL,
+	BatchID  BIGINT,
 	
 	FOREIGN KEY (VIN) REFERENCES dbo.AmbulanceVehicle(VIN),
 	FOREIGN KEY (ParamedicID) REFERENCES dbo.Employee(EID),

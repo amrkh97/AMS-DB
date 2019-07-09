@@ -2510,6 +2510,20 @@ RETURN 0
 end
 END
 GO
+
+CREATE OR ALTER PROC usp_AmbulanceMap_Insert_Batch
+@VIN INT,
+@batchID BIGINT
+AS
+BEGIN
+UPDATE dbo.AmbulanceMap
+SET BatchID = @batchID
+where VIN = @VIN and StatusMap = '00'
+
+END
+
+GO
+
 ------------------------------------------------------
 ------------------------------------------------------
 ------------------------------------------------------
