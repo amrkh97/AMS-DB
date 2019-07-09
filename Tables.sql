@@ -315,6 +315,7 @@ CREATE TABLE Locations
 	PRIMARY KEY (LocationID)
 );
 
+--TODO: Change LogInStatus -> 02 after providing verification mail service.
 CREATE TABLE Employee
 (
 	EID INT IDENTITY,
