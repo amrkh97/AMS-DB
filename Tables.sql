@@ -1,4 +1,4 @@
-Use KAN_AMO;
+﻿USE KAN_AMO;
 GO
 
 CREATE TABLE ResponseStatuses
