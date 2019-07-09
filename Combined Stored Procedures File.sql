@@ -1600,7 +1600,6 @@ CREATE OR ALTER PROC usp_Incident_Insert
 				BEGIN
 					SET @responseMessage = 'IINCIDENT ADDED SUCCESFULLY'
 					SELECT @return_Hex_value = '00'
-					SET @IncidentSequenceNumber = @ISN
 					PRINT @IncidentSequenceNumber
 					RETURN 1
 				END
