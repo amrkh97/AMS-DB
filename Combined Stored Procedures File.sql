@@ -1751,7 +1751,8 @@ GO
 CREATE OR ALTER PROC usp_BatchMedicine_Insert
 @BatchID BIGINT,
 @MedicineBarcode NVARCHAR(64),
-@MedicineQuantity NVARCHAR(64)
+@MedicineQuantity NVARCHAR(64),
+@HexCode NVARCHAR(2) OUTPUT
 AS
 BEGIN
 
@@ -1778,11 +1779,17 @@ VALUES
     @MedicineBarcode,
     @MedicineQuantity
     )
-
+-- '00' -> Addition Successful    
+SET @HexCode = '00'
 END
-
+ELSE
+BEGIN
+-- '01' -> Addition Failed
+SET @HexCode = '01'
+END
 END
 go
+
 
 ----------------------------------------NEW SET OF STORED PROCEDURES--------------------------------------------------------------
 -- Employee SP --
@@ -2558,11 +2565,19 @@ CREATE OR ALTER PROC usp_AmbulanceMap_Insert_Batch
 @HexCode NVARCHAR(2) OUTPUT
 AS
 BEGIN
+if exists(select * from dbo.AmbulanceMap where  VIN = @VIN and StatusMap = '00')
+begin
 UPDATE dbo.AmbulanceMap
 SET BatchID = @batchID
 where VIN = @VIN and StatusMap = '00'
+-- '00' -> updated succesfully
 SET @HexCode = '00'
-
+end
+else
+BEGIN
+-- '01' -> Failure to add because a vehicle with these conditions doesn't exist
+SET @HexCode = '01'
+END
 END
 
 GO
