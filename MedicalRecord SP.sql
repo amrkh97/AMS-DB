@@ -29,7 +29,7 @@ as
 		RETURN -1
 
 GO
-create proc usp_MedicalRecord_SelectByStatus  @MRStatus NVARCHAR(32)
+CREATE OR ALTER proc usp_MedicalRecord_SelectByStatus  @MRStatus NVARCHAR(32)
 as
 	IF (@MRStatus IS NOT NULL)
 	BEGIN
@@ -68,8 +68,8 @@ CREATE OR ALTER PROC usp_MedicalRecord_Insert
 	@RecommendedProcedure NVARCHAR(MAX),
 	@MRStatus NVARCHAR(32),
 	@responseCode NVARCHAR(2)='FF' OUTPUT,
-	@responseMessage NVARCHAR(128)='' OUTPUT
-
+	@responseMessage NVARCHAR(128)='' OUTPUT,
+	@mrID INT = 0  OUTPUT
 	
 	as 
 	BEGIN TRY
@@ -79,6 +79,7 @@ CREATE OR ALTER PROC usp_MedicalRecord_Insert
 			values(@RespSQN,@PatientID,@BloodType,@BloodPressure,@Diabetes,@RespiratoryDiseases,@Cancer,@CardiovascularDiseases,@COPD,@Pregnancy,@Other,@Dead,@Consciousness,@Breathing,@Capillaries,@Pulse,@BloodPressureLevel,@DiabetesLevel,@BodyTemp,@BreathingRate,@CapillariesLevel,@Injury,@PhysicalExaminationImage,@MedicineApplied,@ProcedureDoneInCar,@RecommendedProcedure,@MRStatus)
 		    SELECT @responseCode = '00'
 		    SELECT @responseMessage = 'Successfully Added Medical Record'
+	        SELECT @mrID = (SELECT MedicalRecordID FROM MedicalRecord WHERE RespSQN = @RespSQN AND PatientID=@PatientID )
 			END
 			
 	ELSE
@@ -94,6 +95,11 @@ CREATE OR ALTER PROC usp_MedicalRecord_Insert
 			return -1;
 	END CATCH
 		return -1
+
+
+		-- (4) Update MedicalRecord --
+
+
 
 
 		-- (4) Update MedicalRecord --
@@ -194,7 +200,7 @@ Begin TRY
 
 		-- (5) Delete MedicalRecord By ID --
 GO
-create proc usp_MedicalRecord_Delete  @MedicalRecordID  INT,@responseCode NVARCHAR(2)='FF' OUTPUT,
+CREATE OR ALTER proc usp_MedicalRecord_Delete  @MedicalRecordID  INT,@responseCode NVARCHAR(2)='FF' OUTPUT,
 	@responseMessage NVARCHAR(128)='' OUTPUT
 as
 Begin TRY
