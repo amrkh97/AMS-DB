@@ -4,7 +4,7 @@ GO
 CREATE OR ALTER PROC usp_BatchMedicine_Insert
 @BatchID BIGINT,
 @MedicineBarcode NVARCHAR(64),
-@MedicineQuantity NVARCHAR(64),
+@MedicineQuantity INTEGER,
 @HexCode NVARCHAR(2) OUTPUT
 AS
 BEGIN

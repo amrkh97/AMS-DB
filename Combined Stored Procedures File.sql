@@ -1001,10 +1001,6 @@ BEGIN CATCH
 
 -- (2) Search Unique ID --
 
-----------------------------------------MEDICAL RECORD STORED PROCEDURES --------------------------------------------------------------
-
-USE KAN_AMO
-
 GO
 CREATE OR ALTER proc usp_MedicalRecord_SelectAll 
 as
@@ -1751,7 +1747,7 @@ GO
 CREATE OR ALTER PROC usp_BatchMedicine_Insert
 @BatchID BIGINT,
 @MedicineBarcode NVARCHAR(64),
-@MedicineQuantity NVARCHAR(64),
+@MedicineQuantity INTEGER,
 @HexCode NVARCHAR(2) OUTPUT
 AS
 BEGIN
