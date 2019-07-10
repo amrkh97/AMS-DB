@@ -466,7 +466,7 @@ CREATE TABLE Patient
 CREATE TABLE MedicalRecord
 (
 	MedicalRecordID INT IDENTITY,
-	RespSQN INT UNIQUE,
+	RespSQN INT ,
 	PatientID INT,
 	BloodType NVARCHAR(12),
 	
