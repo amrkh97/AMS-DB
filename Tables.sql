@@ -368,7 +368,8 @@ VALUES
 	('paramedic2@test.com','89123456',null,'',3,2,'Abdelrahman','Ahmed'),
 	('paramedic3@test.com','78912345','4017772008280452','',4,2,'Omar','Mohamed'),
 	('paramedic4@test.com','91234567','4918012011072830','',2,2,'Hussien','Khaled'),
-	('paramedic5@test.com','91234567','4325885600298917','',2,2,'Ahmed','Al-Gohary')
+	('paramedic5@test.com','91234567','4325885600298917','',2,2,'Ahmed','Al-Gohary'),
+	('m@m.com','12345678','4444444444444444','29410242104097',2,2,'Mohamed','Sherif')
 
 CREATE TABLE Incident
 (
