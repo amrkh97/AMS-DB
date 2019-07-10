@@ -234,7 +234,7 @@ CREATE TABLE Yellopad
 	(  	N'1d11c1d4ea9b8e5b',       -- YelloPadUniqueID - nvarchar(16)
 	    N'1'      -- YellopadNetworkcardNo - nvarchar(64)
 	    ),
-	(  	N'2',       -- YelloPadUniqueID - nvarchar(16)
+	(  	N'1c05a1d4ea9b8e5b',       -- YelloPadUniqueID - nvarchar(16)
 	    N'2'      -- YellopadNetworkcardNo - nvarchar(64)
 	    ),
 	(  	N'3',       -- YelloPadUniqueID - nvarchar(16)
