@@ -188,8 +188,8 @@ CREATE TABLE Batch
 	OrderDate DATETIME DEFAULT getdate(),
 	BatchStatus NVARCHAR(32) DEFAULT '00',
 	PRIMARY KEY(BatchID),
-	FOREIGN KEY (BatchMedBCode) REFERENCES Medicine(BarCode),
-	CONSTRAINT chk_Batch_QuantityPositive CHECK(Quantity > 0 )
+	--FOREIGN KEY (BatchMedBCode) REFERENCES Medicine(BarCode),
+	--CONSTRAINT chk_Batch_QuantityPositive CHECK(Quantity > 0 )
 
 );
 
