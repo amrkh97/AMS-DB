@@ -176,12 +176,12 @@ VALUES
 	('0123456748795','Flagyl',30,13.6,'For treatment of gastric','For treatment of doudenal ulcer','Digestive Manifestations','H2O','2026-06-19'),
 	('5879811144556','Profen',50,22.5,'For treatment of gastric','For treatment of doudenal ulcer','Digestive Manifestations','H2O','2024-05-29'),
 	('8899205597136','Cataflam',29,15.00,'For treatment of gastric','For treatment of doudenal ulcer','Digestive Manifestations','H2O','2023-12-25'),
-	('7700289996335','Zithrokan',13,18.00,'For treatment of gastric','For treatment of doudenal ulcer','Digestive Manifestations','H2O','2022-04-07'),
 	('4548777410003','Ganaton',10,80,'For treatment of gastric','For treatment of doudenal ulcer','Digestive Manifestations','H2O','2021-03-04'),
 	('1249878710832','Curam',22,22.5,'For treatment of gastric','For treatment of doudenal ulcer','Digestive Manifestations','H2O','2020-06-08'),
 	('1147845215499','VITAMIN E 400mg',15,12.00,'For treatment of gastric','For treatment of doudenal ulcer','Digestive Manifestations','H2O','2029-12-25'),
 	('4815687500000','Antinal 200mg',7,15.00,'For treatment of gastric','For treatment of doudenal ulcer','Digestive Manifestations','H2O','2026-09-11')
 
+	('7700289996335','Zithrokan',13,18.00,'For treatment of gastric','For treatment of doudenal ulcer','Digestive Manifestations','H2O','2022-04-07'),
 CREATE TABLE PharmaCompany
 (
 	CompanyID INT IDENTITY,
