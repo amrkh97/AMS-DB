@@ -3111,6 +3111,172 @@ as
 		return -1
 ----------------------------------------NEW SET OF STORED PROCEDURES--------------------------------------------------------------
 
+GO 
+CREATE OR ALTER PROC  usp_add_New_Patient
+	@PatientFName VARCHAR(32),
+	@PatientLName VARCHAR(32),
+	@Gender NVARCHAR(1),
+	@Age NVARCHAR(32),
+	@Phone NVARCHAR(24),
+	@LastBenifitedTime DATETIME  ,
+	@FirstBenifitedTime DATETIME ,
+	@NextOfKenName NVARCHAR(32),
+	@NextOfKenPhone NVARCHAR(24),
+	@NextOfKenAddress NVARCHAR(256),
+	@PatientStatus NVARCHAR(32) ,
+	@PatientNationalID INT,
+
+	@responseCode NVARCHAR(2)='FF' OUTPUT,
+	@responseMessage NVARCHAR(128)='' OUTPUT
+AS
+	BEGIN TRY
+INSERT INTO Patient ( PatientFName, PatientLName, Gender, Age, Phone, LastBenifitedTime, FirstBenifitedTime, NextOfKenName, NextOfKenPhone, NextOfKenAddress, PatientStatus, PatientNationalID)
+			  VALUES  (@PatientFName,@PatientLName,@Gender,@Age,@Phone,@LastBenifitedTime,@FirstBenifitedTime,@NextOfKenName,@NextOfKenPhone,@NextOfKenAddress,@PatientStatus,@PatientNationalID)
+			    SELECT @responseCode = '00'
+		        SELECT @responseMessage = 'Success'
+
+	END TRY
+BEGIN CATCH
+			SELECT @responseCode = 'FF',
+		@responseMessage=ERROR_MESSAGE()
+			return -1;
+	END CATCH
+		return -1
+
+GO
+CREATE OR ALTER PROC usp_Update_Patient
+    @PatientID INT,
+	@PatientFName VARCHAR(32),
+	@PatientLName VARCHAR(32),
+	@Gender NVARCHAR(1),
+	@Age NVARCHAR(32),
+	@Phone NVARCHAR(24),
+	@LastBenifitedTime DATETIME  ,
+	@FirstBenifitedTime DATETIME ,
+	@NextOfKenName NVARCHAR(32),
+	@NextOfKenPhone NVARCHAR(24),
+	@NextOfKenAddress NVARCHAR(256),
+	@PatientStatus NVARCHAR(32) ,
+	@PatientNationalID INT,
+
+	@responseCode NVARCHAR(2)='FF' OUTPUT,
+	@responseMessage NVARCHAR(128)='' OUTPUT
+as
+	BEGIN TRY
+	
+	IF (@PatientID IS NOT NULL)
+		Begin
+		UPDATE Patient
+		SET PatientFName = ISNULL (@PatientFName,PatientFName),
+		PatientLName = ISNULL (@PatientLName,PatientLName),
+		Gender = ISNULL (@Gender,Gender),
+		Age = ISNULL (@Age,Age),
+		Phone = ISNULL (@Phone,Phone),
+		LastBenifitedTime = ISNULL (@LastBenifitedTime,LastBenifitedTime),
+		FirstBenifitedTime = ISNULL (@FirstBenifitedTime,FirstBenifitedTime),
+		NextOfKenName = ISNULL (@NextOfKenName,NextOfKenName),
+	    NextOfKenPhone = ISNULL (@NextOfKenPhone,NextOfKenPhone),
+		NextOfKenAddress = ISNULL (@NextOfKenAddress,NextOfKenAddress),
+		PatientStatus = ISNULL (@PatientStatus,PatientStatus),
+		PatientNationalID = ISNULL (@PatientNationalID,PatientNationalID)		 
+		WHERE PatientID = @PatientID
+		   
+		 SELECT @responseCode = '00'
+		 SELECT @responseMessage = 'Success'
+	END
+	ELSE
+	BEGIN 
+	return -1
+				SELECT @responseCode = 'FF'
+				SELECT @responseMessage = 'nO PARAMETER'
+	END
+	END TRY
+BEGIN CATCH
+			SELECT @responseCode = 'FF',
+		@responseMessage=ERROR_MESSAGE()
+			return -1;
+	END CATCH
+		return -1
+GO
+create OR ALTER PROC usp_Delete_Patient 
+ @PatientID INT,
+ @responseCode NVARCHAR(2)='FF' OUTPUT,
+ @responseMessage NVARCHAR(128)='' OUTPUT
+as
+BEGIN TRY
+	IF (@PatientID IS NOT NULL)
+	BEGIN
+		UPDATE Patient
+		SET PatientStatus = 'FF'
+		where PatientID = @PatientID
+		SELECT @responseCode = '00'
+		SELECT @responseMessage = 'Success'
+	END
+		ELSE
+	BEGIN 
+	return -1
+				SELECT @responseCode = 'FF'
+				SELECT @responseMessage = 'nO PARAMETER'
+	END
+	END TRY
+BEGIN CATCH
+			SELECT @responseCode = 'FF',
+		@responseMessage=ERROR_MESSAGE()
+			return -1;
+	END CATCH
+		return -1
+
+			GO
+
+CREATE OR ALTER PROC usp_Patient_getAll
+AS
+BEGIN
+SELECT * FROM Patient
+
+
+END
+
+
+GO
+CREATE OR ALTER PROC usp_Patient_getByNID
+@NID NVARCHAR(14)
+AS
+BEGIN
+SELECT * FROM Patient
+WHERE PatientNationalID  = @NID 
+
+END
+--------------------------------------------------------------------
+
+GO
+create OR ALTER PROC usp_Delete_PatientLoc 
+ @PatientID INT,
+ @responseCode NVARCHAR(2)='FF' OUTPUT,
+ @responseMessage NVARCHAR(128)='' OUTPUT
+as
+BEGIN TRY
+	IF (@PatientID IS NOT NULL)
+	BEGIN
+		UPDATE PatientLocations
+		SET StatusLocation = 'FF'
+		where PatientID = @PatientID
+		SELECT @responseCode = '00'
+		SELECT @responseMessage = 'Success'
+	END
+		ELSE
+	BEGIN 
+	return -1
+				SELECT @responseCode = 'FF'
+				SELECT @responseMessage = 'nO PARAMETER'
+	END
+	END TRY
+BEGIN CATCH
+			SELECT @responseCode = 'FF',
+		@responseMessage=ERROR_MESSAGE()
+			return -1;
+	END CATCH
+		return -1
+
 ----------------------------------------NEW SET OF STORED PROCEDURES--------------------------------------------------------------
 
 ----------------------------------------NEW SET OF STORED PROCEDURES--------------------------------------------------------------
