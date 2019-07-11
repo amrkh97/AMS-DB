@@ -3077,8 +3077,8 @@ CREATE  OR ALTER PROC usp_Batch_Insert
     @OrderDate DATETIME = NULL
 as
 	BEGIN
-		INSERT INTO Batch (BatchID,BatchMedBCode,Quantity,ExpiryDate,OrderDate)
-		VALUES (@BatchID,@BatchMedBCode,@Quantity,@ExpiryDate,ISNULL(@OrderDate,getdate()))
+		INSERT INTO Batch (BatchID,ExpiryDate,OrderDate)
+		VALUES (@BatchID,@ExpiryDate,ISNULL(@OrderDate,getdate()))
 	END
 -- (4) Update Batch --
 GO
@@ -3092,8 +3092,6 @@ as
 	BEGIN
 		UPDATE Batch
 		SET BatchID = ISNULL (@BatchID,BatchID),
-		BatchMedBCode = ISNULL (@BatchMedBCode,BatchMedBCode),
-		Quantity = ISNULL (@Quantity,Quantity),
 		ExpiryDate = ISNULL (@ExpiryDate,ExpiryDate),
 		OrderDate = ISNULL (@OrderDate,OrderDate),
 		BatchStatus = 2
