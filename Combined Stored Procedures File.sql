@@ -1776,7 +1776,11 @@ VALUES
 (   @BatchID ,
     @MedicineBarcode,
     @MedicineQuantity
-    )
+)
+
+UPDATE dbo.Medicine
+SET CountInStock = @QuantityDifference WHERE BarCode = @MedicineBarcode;
+
 -- '00' -> Addition Successful    
 SET @HexCode = '00'
 END

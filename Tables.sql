@@ -157,6 +157,16 @@ CREATE TABLE Medicine
 
 );
 
+INSERT INTO Medicine
+	(BarCode, MedicineName, CountInStock)
+VALUES 
+	("hamada1", "Antenal", 100),
+	("hamada2", "Profieen", 120),
+	("hamada3", "Cirilac", 50),
+	("hamada4", "Panadol", 200),
+	("hamada5", "Contaflue", 300)
+
+
 CREATE TABLE PharmaCompany
 (
 	CompanyID INT IDENTITY,
