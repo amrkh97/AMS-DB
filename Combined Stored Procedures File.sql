@@ -3111,6 +3111,7 @@ as
 		return -1
 ----------------------------------------NEW SET OF STORED PROCEDURES--------------------------------------------------------------
 
+
 GO 
 CREATE OR ALTER PROC  usp_add_New_Patient
 	@PatientFName VARCHAR(32),
@@ -3126,6 +3127,7 @@ CREATE OR ALTER PROC  usp_add_New_Patient
 	@PatientStatus NVARCHAR(32) ,
 	@PatientNationalID INT,
 
+	@PatientID INT OUTPUT,
 	@responseCode NVARCHAR(2)='FF' OUTPUT,
 	@responseMessage NVARCHAR(128)='' OUTPUT
 AS
@@ -3134,8 +3136,15 @@ INSERT INTO Patient ( PatientFName, PatientLName, Gender, Age, Phone, LastBenifi
 			  VALUES  (@PatientFName,@PatientLName,@Gender,@Age,@Phone,@LastBenifitedTime,@FirstBenifitedTime,@NextOfKenName,@NextOfKenPhone,@NextOfKenAddress,@PatientStatus,@PatientNationalID)
 			    SELECT @responseCode = '00'
 		        SELECT @responseMessage = 'Success'
-
-	END TRY
+		      SET 	@PatientID = (SELECT PatientID 
+				       FROM Patient		
+					WHERE PatientNationalID  =@PatientNationalID
+					AND  PatientFName = @PatientFName  AND  PatientLName = @PatientLName  AND Gender = @Gender AND Age =@Age  AND  Phone = @Phone 
+					 AND LastBenifitedTime  = @LastBenifitedTime   AND FirstBenifitedTime  = @FirstBenifitedTime  AND  NextOfKenName = @NextOfKenName 
+					AND  NextOfKenPhone = @NextOfKenPhone AND NextOfKenAddress= @NextOfKenAddress AND PatientStatus = @PatientStatus)
+ 
+ 
+				END TRY
 BEGIN CATCH
 			SELECT @responseCode = 'FF',
 		@responseMessage=ERROR_MESSAGE()
