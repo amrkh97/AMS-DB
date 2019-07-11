@@ -268,22 +268,95 @@ CREATE TABLE AmbulanceVehicle
 	INSERT INTO dbo.AmbulanceVehicle
 	(
 	    VIN,
-	    Make
+	    Make,
+		Brand,
+		LicencePlate,
+		Model,
+		OwnerName
 	)
 	VALUES
 	(   1,   -- VIN - int
-	    N'Mercedes' -- Make - nvarchar(32)
+	    N'Mercedes', -- Make - nvarchar(32)
+		N'Mercedes',--Brand - nvarchar(32)
+		N'3D0979',--LicencePlate - NVARCHAR(32)
+		N'BENZ', -- MODEL - NVARCHAR(32)
+		N'Mohamed Hamed Madkor' --OwnerName - NVARCHAR(32)
+
 
 	    ),
 	(
 		2,
-		N'BMW'
+		N'BMW',-- Make - nvarchar(32)
+		N'BMW',--Brand - nvarchar(32)
+		N'3D0587',--LicencePlate - NVARCHAR(32)
+		N'6 Series Coupe', -- MODEL - NVARCHAR(32)
+		N'Samer Mohamed Kabel' --OwnerName - NVARCHAR(32)
 	),
 	(
 		3,
-		N'Hyundai'
-	)
+		N'renault',-- Make - nvarchar(32)
+		N'renault',--Brand - nvarchar(32)
+		N'7588',--LicencePlate - NVARCHAR(32)
+		N'Megane', -- MODEL - NVARCHAR(32)
+		N'Kabel Nael Makdor' --OwnerName - NVARCHAR(32)
+	),
+	(
+		4,
+		N'Fiat',-- Make - nvarchar(32)
+		N'Fiat',--Brand - nvarchar(32)
+		N'41286L',--LicencePlate - NVARCHAR(32)
+		N'124 Spider', -- MODEL - NVARCHAR(32)
+		N'Amgad Amit Caren' --OwnerName - NVARCHAR(32)
+	),
+	(
+		5,
+		N'Nissan',-- Make - nvarchar(32)
+		N'Nissan',--Brand - nvarchar(32)
+		N'53298L',--LicencePlate - NVARCHAR(32)
+		N'Armada', -- MODEL - NVARCHAR(32)
+		N'poe poeingham Mcpoe' --OwnerName - NVARCHAR(32)
+	),
+	(   6,   -- VIN - int
+	    N'Mercedes', -- Make - nvarchar(32)
+		N'Mercedes',--Brand - nvarchar(32)
+		N'307BBD',--LicencePlate - NVARCHAR(32)
+		N'BENZ', -- MODEL - NVARCHAR(32)
+		N'Samer Hamed Mohamed' --OwnerName - NVARCHAR(32)
 
+
+	    ),
+	(
+		7,
+		N'BMW',-- Make - nvarchar(32)
+		N'BMW',--Brand - nvarchar(32)
+		N'6FGR999',--LicencePlate - NVARCHAR(32)
+		N'6 Series Coupe', -- MODEL - NVARCHAR(32)
+		N'Kabel Mohamed Madkor' --OwnerName - NVARCHAR(32)
+	),
+	(
+		8,
+		N'renault',-- Make - nvarchar(32)
+		N'renault',--Brand - nvarchar(32)
+		N'904AFL',--LicencePlate - NVARCHAR(32)
+		N'Megane', -- MODEL - NVARCHAR(32)
+		N'Mohamed Nael Samer' --OwnerName - NVARCHAR(32)
+	),
+	(
+		9,
+		N'Fiat',-- Make - nvarchar(32)
+		N'Fiat',--Brand - nvarchar(32)
+		N'6FGR987',--LicencePlate - NVARCHAR(32)
+		N'124 Spider', -- MODEL - NVARCHAR(32)
+		N'Emma Takin Tomenger' --OwnerName - NVARCHAR(32)
+	),
+	(
+		10,
+		N'Nissan',-- Make - nvarchar(32)
+		N'Nissan',--Brand - nvarchar(32)
+		N'86315L',--LicencePlate - NVARCHAR(32)
+		N'Armada', -- MODEL - NVARCHAR(32)
+		N'Alin Alingham Mcalin' --OwnerName - NVARCHAR(32)
+	)
 
 
 CREATE TABLE BatchDistributionMap
