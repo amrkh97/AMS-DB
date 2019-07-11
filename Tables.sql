@@ -445,7 +445,7 @@ CREATE TABLE Receipt
 );
 CREATE TABLE Patient
 (
-	PatientID INT,
+	PatientID INT IDENTITY,
 	PatientFName VARCHAR(32),
 	PatientLName VARCHAR(32),
 	Gender NVARCHAR(1),
