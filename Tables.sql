@@ -181,7 +181,7 @@ VALUES
 	('1147845215499','VITAMIN E 400mg',15,12.00,'For treatment of gastric','For treatment of doudenal ulcer','Digestive Manifestations','H2O','2029-12-25'),
 	('4815687500000','Antinal 200mg',7,15.00,'For treatment of gastric','For treatment of doudenal ulcer','Digestive Manifestations','H2O','2026-09-11'),
 	('7700289996335','Zithrokan',13,18.00,'For treatment of gastric','For treatment of doudenal ulcer','Digestive Manifestations','H2O','2022-04-07')
-	
+
 CREATE TABLE PharmaCompany
 (
 	CompanyID INT IDENTITY,
@@ -551,15 +551,17 @@ CREATE TABLE Responses
 
 CREATE TABLE MedicineUsedPerResponse
 (
-	RespSQN INT NOT NULL,
-	UsedAmt INT,
+	RespSQN INT,
 	BID BIGINT,
-	AmbVIN INT
-
+	MedBCode NVARCHAR(64),
+	UsedAmt INT,
+	AmbVIN INT,
+	
 	PRIMARY KEY (RespSQN,BID),
 	FOREIGN KEY (BID) REFERENCES Batch(BatchID),
 	FOREIGN KEY (AmbVIN) REFERENCES AmbulanceVehicle(VIN),
 	FOREIGN KEY (RespSQN) REFERENCES Responses(SequenceNumber),
+	FOREIGN KEY (MedBCode) REFERENCES Medicine(BarCode),
 	CONSTRAINT chk_MedicineUsedPerResponse_UsedAmtPositive CHECK(UsedAmt > 0 )
 );
 
