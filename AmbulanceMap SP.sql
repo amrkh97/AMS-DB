@@ -80,3 +80,34 @@ BEGIN
 SET @HexCode = '01'
 END
 END
+
+GO
+
+CREATE OR ALTER PROC usp_AmbulanceMap_getRelevantData
+@VIN INTEGER,
+@License NVARCHAR(64) OUTPUT,
+@Make NVARCHAR(64) OUTPUT,
+@ParamedicFName NVARCHAR(64) OUTPUT,
+@ParamedicLName NVARCHAR(64) OUTPUT,
+@ParamedicID Integer OUTPUT,
+@DriverFName NVARCHAR(64) OUTPUT,
+@DriverLName NVARCHAR(64) OUTPUT,
+@DriverID Integer OUTPUT,
+@YelloPadUniqueID NVARCHAR(64) OUTPUT
+			
+AS
+BEGIN
+select @License = LicencePlate, @Make= Make from dbo.AmbulanceVehicle 
+inner join dbo.AmbulanceMap ON AmbulanceMap.VIN = AmbulanceVehicle.VIN
+where dbo.AmbulanceVehicle.VIN = @VIN
+
+SELECT @ParamedicFName = Fname, @ParamedicLName = Lname,@ParamedicID = EID FROM dbo.Employee
+INNER JOIN dbo.AmbulanceMap ON AmbulanceMap.ParamedicID = Employee.EID
+WHERE dbo.AmbulanceMap.VIN = @VIN
+
+SELECT @DriverFName = Fname, @DriverLName = Lname,@DriverID = EID FROM dbo.Employee
+INNER JOIN dbo.AmbulanceMap ON AmbulanceMap.DriverID = Employee.EID
+WHERE dbo.AmbulanceMap.VIN = @VIN
+
+SELECT @YelloPadUniqueID= YelloPadID FROM dbo.AmbulanceMap WHERE dbo.AmbulanceMap.VIN = @VIN
+END
