@@ -2217,7 +2217,9 @@ CREATE OR ALTER PROC usp_getAndroidIncident
 @incidentPriorityNote NVARCHAR(64) OUTPUT,
 
 @alarmLevelName NVARCHAR(64) OUTPUT,
-@alarmLevelNote NVARCHAR(64) OUTPUT
+@alarmLevelNote NVARCHAR(64) OUTPUT,
+
+@batchID BIGINT OUTPUT
 
 AS
 BEGIN
@@ -2262,6 +2264,7 @@ SELECT @alarmLevelName = AlarmLevelName,
        @alarmLevelNote = AlarmLevelNote 
        FROM  dbo.AlarmLevels WHERE AlarmLevelID = @alarmLevelID
 
+SELECT @BatchID = BatchID FROM dbo.AmbulanceMap WHERE dbo.AmbulanceMap.VIN = @VIN AND StatusMap = '00'
 
 END
 
