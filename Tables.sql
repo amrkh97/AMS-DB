@@ -153,7 +153,7 @@ CREATE TABLE Medicine
 
 	PRIMARY KEY(BarCode),
 	CHECK (Price > 0),
-	CHECK (CountInStock > 0)
+	CHECK (CountInStock >= 0)
 
 );
 
