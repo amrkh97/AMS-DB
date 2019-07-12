@@ -3329,6 +3329,17 @@ BEGIN CATCH
 			return -1;
 	END CATCH
 		return -1
+	
+	
+		GO
+	CREATE PROC usp_Patient_getByID
+	@ID int
+	AS
+	BEGIN
+	SELECT * FROM Patient
+	WHERE PatientID  = @ID 
+
+	END
 
 ----------------------------------------NEW SET OF STORED PROCEDURES--------------------------------------------------------------
 

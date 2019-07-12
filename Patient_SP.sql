@@ -222,6 +222,16 @@ SELECT * FROM Patient
 WHERE PatientNationalID  = @NID 
 
 END
+
+GO
+CREATE PROC usp_Patient_getByID
+@ID int
+AS
+BEGIN
+SELECT * FROM Patient
+WHERE PatientID  = @ID 
+
+END
 --------------------------------------------------------------------
 
 GO
