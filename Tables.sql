@@ -105,10 +105,10 @@ CREATE TABLE AlarmLevels
 INSERT INTO AlarmLevels
 	(AlarmLevelName, AlarmLevelNote)
 VALUES
-	('1','Dummy Danger Alarm'),
-	('2','Dummy Quick Alarm'),
-	('3','Dummy Instant Alarm'),
-	('4','Dummy Fire Alarm')
+	('1','Danger'),
+	('2','Quick'),
+	('3','Instant'),
+	('4','Fire')
 
 CREATE TABLE Jobs
 (
@@ -158,14 +158,29 @@ CREATE TABLE Medicine
 );
 
 INSERT INTO Medicine
-	(BarCode, MedicineName, CountInStock)
-VALUES 
-	("hamada1", "Antenal", 100),
-	("hamada2", "Profieen", 120),
-	("hamada3", "Cirilac", 50),
-	("hamada4", "Panadol", 200),
-	("hamada5", "Contaflue", 300)
+	(BarCode,MedicineName,CountInStock,Price,Implications,MedicineUsage,SideEffects,ActiveComponent,ExpirationDate)
+VALUES
 
+	('6221508010313','Ranitidine',50,22.5,'For treatment of gastric','For treatment of doudenal ulcer','Digestive Manifestations','H2O','2025-08-17'),
+	('3400938341836','Daflon500',36,33.5,'For treatment of gastric','For treatment of Headache','Digestive Manifestations','H2O','2021-12-12'),
+	('6221043012414','VITACID C',78,25.00,'Heart operations','For treatment of cold','Digestive Manifestations','H2O','2020-04-17'),
+	('6221060001507','Candistan',15,33.5,'Beautify the skin','For treatment of skin burning','Digestive Manifestations','H2O','2023-03-01'),
+	('6221180000039','ZITHROMAX',10,55.45,'For treatment of gastric','For treatment of doudenal ulcer','Digestive Manifestations','H2O','2022-02-15'),
+	('6221508121118','Sediproct',13,16.8,'For treatment of haemorrhoids','For treatment of haemorrhoids','Digestive Manifestations','H2O','2025-05-05'),
+	('6221077072316','Lignocaine',40,21.00,'Local anaesthetic','For Analgesia','Digestive Manifestations','H2O','2028-10-24'),
+	('3582910065654','No-SPA 40mg',17,10.5,'For treatment of haemorrhoids','For treatment of haemorrhoids','Digestive Manifestations','H2O','2019-01-01'),
+	('3400926629526','Ketoprofene',45,16.36,'For treatment of gastric','For treatment of doudenal ulcer','Digestive Manifestations','H2O','2030-10-30'),
+	('3400939541778','Omeprazole',25,44.00,'For treatment of gastric','For treatment of doudenal ulcer','Digestive Manifestations','H2O','2029-09-22'),
+	('6224001050381','Remowax',9,7.5,'For treatment of gastric','For treatment of doudenal ulcer','Digestive Manifestations','H2O','2028-08-14'),
+	('6221050130224','Ultracaine',23,25.00,'For treatment of gastric','For treatment of doudenal ulcer','Digestive Manifestations','H2O','2027-07-07'),
+	('0123456748795','Flagyl',30,13.6,'For treatment of gastric','For treatment of doudenal ulcer','Digestive Manifestations','H2O','2026-06-19'),
+	('5879811144556','Profen',50,22.5,'For treatment of gastric','For treatment of doudenal ulcer','Digestive Manifestations','H2O','2024-05-29'),
+	('8899205597136','Cataflam',29,15.00,'For treatment of gastric','For treatment of doudenal ulcer','Digestive Manifestations','H2O','2023-12-25'),
+	('4548777410003','Ganaton',10,80,'For treatment of gastric','For treatment of doudenal ulcer','Digestive Manifestations','H2O','2021-03-04'),
+	('1249878710832','Curam',22,22.5,'For treatment of gastric','For treatment of doudenal ulcer','Digestive Manifestations','H2O','2020-06-08'),
+	('1147845215499','VITAMIN E 400mg',15,12.00,'For treatment of gastric','For treatment of doudenal ulcer','Digestive Manifestations','H2O','2029-12-25'),
+	('4815687500000','Antinal 200mg',7,15.00,'For treatment of gastric','For treatment of doudenal ulcer','Digestive Manifestations','H2O','2026-09-11'),
+	('7700289996335','Zithrokan',13,18.00,'For treatment of gastric','For treatment of doudenal ulcer','Digestive Manifestations','H2O','2022-04-07')
 
 CREATE TABLE PharmaCompany
 (
@@ -247,8 +262,32 @@ CREATE TABLE Yellopad
 	(  	N'1c05a1d4ea9b8e5b',       -- YelloPadUniqueID - nvarchar(16)
 	    N'2'      -- YellopadNetworkcardNo - nvarchar(64)
 	    ),
-	(  	N'3',       -- YelloPadUniqueID - nvarchar(16)
+	(  	N'151ba1d4ea9b8e5b',       -- YelloPadUniqueID - nvarchar(16)
 	    N'3'      -- YellopadNetworkcardNo - nvarchar(64)
+	    ),
+	(  	N'1b06a1d4ea9b8e5b',       -- YelloPadUniqueID - nvarchar(16)
+	    N'4'      -- YellopadNetworkcardNo - nvarchar(64)
+	    ),
+	(  	N'1b18a1d4ea9b8e5b',       -- YelloPadUniqueID - nvarchar(16)
+	    N'5'      -- YellopadNetworkcardNo - nvarchar(64)
+	    ),
+	(  	N'1208a1d4ea9b8e5b',       -- YelloPadUniqueID - nvarchar(16)
+	    N'6'      -- YellopadNetworkcardNo - nvarchar(64)
+	    ),
+	(  	N'1f16a1d4ea9b8e5b',       -- YelloPadUniqueID - nvarchar(16)
+	    N'7'      -- YellopadNetworkcardNo - nvarchar(64)
+	    ),
+	(  	N'190209d4e3167aba',       -- YelloPadUniqueID - nvarchar(16)
+	    N'8'      -- YellopadNetworkcardNo - nvarchar(64)
+	    ),
+	(  	N'0a0d11d4e3167aba',       -- YelloPadUniqueID - nvarchar(16)
+	    N'9'      -- YellopadNetworkcardNo - nvarchar(64)
+	    ),
+	(  	N'1702c1d4ea9b8e5b',       -- YelloPadUniqueID - nvarchar(16)
+	    N'10'      -- YellopadNetworkcardNo - nvarchar(64)
+	    ),
+	(  	N'240d11d4e3167aba',       -- YelloPadUniqueID - nvarchar(16)
+	    N'11'      -- YellopadNetworkcardNo - nvarchar(64)
 	    )
 
 CREATE TABLE AmbulanceVehicle
@@ -440,18 +479,32 @@ VALUES
 	('admin@test.com','12345678',null,null,1,0,'Ahmed','Al-Gohary') ,
     ('move_manager1@test.com','91234567',null,'',1,1,'Amr','Khaled'),
 	('move_manager2@test.com','89123456','0123456789012345','',1,1,'Mostafa','Mufeed'),
-	('move_manager3@test.com','78912345','','01234567890123',1,1,'Ahmed','Salah'),
+	('move_manager3@test.com','78912345','01234567890123','',1,1,'Ahmed','Salah'),
+	('move_manager4@test.com','67891234','9876543210987654','01234567890123',1,1,'Mohamed','Sherif'),
 	('operator1@test.com','91234567','','29704090101931',2,4,'Hossam','Hassan'),
 	('operator2@test.com','89123456',null,null,3,4,'Ibrahim','Hassan'),
 	('operator3@test.com','78912345',null,'',4,4,'Mohamed','El-Sokkary'),
+	('operator4@test.com','67891234',null,'',4,4,'Mohamed','Said'),
 	('driver1@test.com','91234567','',null,2,3,'Anas','Mohamed'),
-	('driver2@test.com','89123456','1010101010101010','',3,3,'Ahmed','Amrawy'),
+	('driver2@test.com','12588888','1010101010101010','',3,3,'Ahmed','Amrawy'),
 	('driver3@test.com','78912345','','11112222333344',4,3,'Kamel','Mohsen'),
+	('driver4@test.com','67891234','','12345678978945',2,3,'Ahmed','Elgohary'),
+	('driver5@test.com','56789123','','55555669933214',3,3,'Ahmed','Zaki'),
+	('driver6@test.com','45678912','','77715892541359',4,3,'Mohamed','Abdelhady'),
+	('driver7@test.com','34567891','','01258963271408',2,3,'Mahmoud','Rashad'),
+	('driver8@test.com','23456789','','40489305967281',5,3,'Eman','Mohamed'),
+	('driver9@test.com','12345678','','12302020363699',5,3,'Aya','Mohamed'),
+	('driver10@test.com','01234567','','89887744252664',5,3,'Noha','Ezzat'),
 	('paramedic1@test.com','91234567',null,'',2,2,'Mohamed','Salah'),
 	('paramedic2@test.com','89123456',null,'',3,2,'Abdelrahman','Ahmed'),
 	('paramedic3@test.com','78912345','4017772008280452','',4,2,'Omar','Mohamed'),
-	('paramedic4@test.com','91234567','4918012011072830','',2,2,'Hussien','Khaled'),
-	('paramedic5@test.com','91234567','4325885600298917','',2,2,'Ahmed','Al-Gohary'),
+	('paramedic4@test.com','67891234','4918012011072830','',2,2,'Hussien','Khaled'),
+	('paramedic5@test.com','56789123','4325885600298917','',3,2,'Ahmed','Al-Gohary'),
+	('paramedic6@test.com','45678912','1233555889966004','',4,2,'Mohamed','Dwidar'),
+	('paramedic7@test.com','34567891','3366998855001258','',5,2,'Dina','Jouda'),
+	('paramedic8@test.com','23456789','6699874890125969','',2,2,'Nehal','Hegazy'),
+	('paramedic9@test.com','12345678','0189720283374105','',3,2,'Khalid','Abdalla'),
+	('paramedic10@test.com','01234567','9874502983497779','',2,2,'Walid','Mohamd'),
 	('m@m.com','12345678','4444444444444444','29410242104097',2,2,'Mohamed','Sherif')
 
 CREATE TABLE Incident
@@ -498,15 +551,17 @@ CREATE TABLE Responses
 
 CREATE TABLE MedicineUsedPerResponse
 (
-	RespSQN INT NOT NULL,
-	UsedAmt INT,
+	RespSQN INT,
 	BID BIGINT,
-	AmbVIN INT
-
+	MedBCode NVARCHAR(64),
+	UsedAmt INT,
+	AmbVIN INT,
+	
 	PRIMARY KEY (RespSQN,BID),
 	FOREIGN KEY (BID) REFERENCES Batch(BatchID),
 	FOREIGN KEY (AmbVIN) REFERENCES AmbulanceVehicle(VIN),
 	FOREIGN KEY (RespSQN) REFERENCES Responses(SequenceNumber),
+	FOREIGN KEY (MedBCode) REFERENCES Medicine(BarCode),
 	CONSTRAINT chk_MedicineUsedPerResponse_UsedAmtPositive CHECK(UsedAmt > 0 )
 );
 
