@@ -105,10 +105,10 @@ CREATE TABLE AlarmLevels
 INSERT INTO AlarmLevels
 	(AlarmLevelName, AlarmLevelNote)
 VALUES
-	('1','Dummy Danger Alarm'),
-	('2','Dummy Quick Alarm'),
-	('3','Dummy Instant Alarm'),
-	('4','Dummy Fire Alarm')
+	('1','Danger'),
+	('2','Quick'),
+	('3','Instant'),
+	('4','Fire')
 
 CREATE TABLE Jobs
 (
@@ -153,7 +153,7 @@ CREATE TABLE Medicine
 
 	PRIMARY KEY(BarCode),
 	CHECK (Price > 0),
-	CHECK (CountInStock > 0)
+	CHECK (CountInStock >= 0)
 
 );
 
