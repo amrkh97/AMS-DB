@@ -1757,7 +1757,7 @@ BEGIN
 DECLARE @QuantityDifference INT
 set @QuantityDifference = (select CountInStock from Medicine where BarCode = @MedicineBarcode) - @MedicineQuantity
 
-if(@QuantityDifference > 0)
+if(@QuantityDifference >= 0)
 begin
 
 if not exists(select * from dbo.Batch  where dbo.Batch.BatchID=@BatchID)
@@ -1803,7 +1803,7 @@ BEGIN
 DECLARE @QuantityDifference INT
 set @QuantityDifference = (select CountInStock from Medicine where BarCode = @barcode) - @usedAmt
 
-if(@QuantityDifference > 0)
+if(@QuantityDifference >= 0)
 BEGIN
 Update dbo.BatchMedicine
 set Quantity = @QuantityDifference
