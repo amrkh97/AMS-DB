@@ -1,3 +1,5 @@
+USE KAN_AMO
+
 GO
 
 CREATE OR ALTER PROC usp_BatchMedicine_Insert
@@ -11,7 +13,7 @@ BEGIN
 DECLARE @QuantityDifference INT
 set @QuantityDifference = (select CountInStock from Medicine where BarCode = @MedicineBarcode) - @MedicineQuantity
 
-if(@QuantityDifference > 0)
+if(@QuantityDifference >= 0)
 begin
 
 if not exists(select * from dbo.Batch  where dbo.Batch.BatchID=@BatchID)
@@ -33,7 +35,7 @@ VALUES
 )
 
 UPDATE dbo.Medicine
-SET CountInStock = @QuantityDifference WHERE MedicineBarcode = @MedicineBarcode;
+SET CountInStock = @QuantityDifference WHERE BarCode = @MedicineBarcode;
 -- '00' -> Addition Successful    
 SET @HexCode = '00'
 END
@@ -55,9 +57,9 @@ CREATE OR ALTER PROC usp_Batch_UsedMedicine
 AS
 BEGIN
 DECLARE @QuantityDifference INT
-set @QuantityDifference = (select CountInStock from Medicine where BarCode = @MedicineBarcode) - @MedicineQuantity
+set @QuantityDifference = (select CountInStock from Medicine where BarCode = @barcode) - @usedAmt
 
-if(@QuantityDifference > 0)
+if(@QuantityDifference >= 0)
 BEGIN
 Update dbo.BatchMedicine
 set Quantity = @QuantityDifference

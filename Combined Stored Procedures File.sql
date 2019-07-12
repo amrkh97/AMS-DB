@@ -1779,7 +1779,7 @@ VALUES
 )
 
 UPDATE dbo.Medicine
-SET CountInStock = @QuantityDifference WHERE Barcode = @MedicineBarcode;
+SET CountInStock = @QuantityDifference WHERE BarCode = @MedicineBarcode;
 -- '00' -> Addition Successful    
 SET @HexCode = '00'
 END
@@ -1830,6 +1830,7 @@ set @HexCode = '01'
 END
 END
 GO
+
 
 
 
@@ -2255,6 +2256,18 @@ SELECT @alarmLevelName = AlarmLevelName,
 
 
 END
+
+GO
+
+CREATE OR ALTER PROC usp_IncidentResponse_GetYelloPad
+@VIN INTEGER,
+@UniqueID NVARCHAR(64) OUTPUT
+AS
+BEGIN
+SELECT @UniqueID = YelloPadUniqueID FROM dbo.Yellopad
+INNER JOIN dbo.AmbulanceMap ON AmbulanceMap.YelloPadID = Yellopad.YelloPadID
+WHERE dbo.AmbulanceMap.VIN = @VIN AND dbo.AmbulanceMap.StatusMap = '00'
+END
 ----------------------------------------NEW SET OF STORED PROCEDURES--------------------------------------------------------------
 GO
 Create OR ALTER proc usp_AmbulanceVehicle_SelectAll 
@@ -2679,6 +2692,36 @@ SET VehicleStatus = '00'
 WHERE VIN = @VIN
 
 GO
+
+CREATE OR ALTER PROC usp_AmbulanceMap_getRelevantData
+@VIN INTEGER,
+@License NVARCHAR(64) OUTPUT,
+@Make NVARCHAR(64) OUTPUT,
+@ParamedicFName NVARCHAR(64) OUTPUT,
+@ParamedicLName NVARCHAR(64) OUTPUT,
+@ParamedicID Integer OUTPUT,
+@DriverFName NVARCHAR(64) OUTPUT,
+@DriverLName NVARCHAR(64) OUTPUT,
+@DriverID Integer OUTPUT,
+@YelloPadUniqueID NVARCHAR(64) OUTPUT
+			
+AS
+BEGIN
+SELECT @License = LicencePlate, @Make= Make from dbo.AmbulanceVehicle 
+inner join dbo.AmbulanceMap ON AmbulanceMap.VIN = AmbulanceVehicle.VIN
+where dbo.AmbulanceVehicle.VIN = @VIN
+
+SELECT @ParamedicFName = Fname, @ParamedicLName = Lname,@ParamedicID = EID FROM dbo.Employee
+INNER JOIN dbo.AmbulanceMap ON AmbulanceMap.ParamedicID = Employee.EID
+WHERE dbo.AmbulanceMap.VIN = @VIN
+
+SELECT @DriverFName = Fname, @DriverLName = Lname,@DriverID = EID FROM dbo.Employee
+INNER JOIN dbo.AmbulanceMap ON AmbulanceMap.DriverID = Employee.EID
+WHERE dbo.AmbulanceMap.VIN = @VIN
+
+SELECT @YelloPadUniqueID= YelloPadID FROM dbo.AmbulanceMap WHERE dbo.AmbulanceMap.VIN = @VIN
+END
+go
 ----------------------------------------NEW SET OF STORED PROCEDURES--------------------------------------------------------------
 -- Medicine Stored Procedures --
 -- (1) Get All Medicines --

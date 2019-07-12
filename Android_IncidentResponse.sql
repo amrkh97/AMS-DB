@@ -83,3 +83,16 @@ SELECT @alarmLevelName = AlarmLevelName,
 SELECT @batchID = BatchID from Batch where BatchID = @batchID
 
 END
+
+GO
+
+CREATE OR ALTER PROC usp_IncidentResponse_GetYelloPad
+@VIN INTEGER,
+@UniqueID NVARCHAR(64) OUTPUT
+AS
+BEGIN
+SELECT @UniqueID = YelloPadUniqueID FROM dbo.Yellopad
+INNER JOIN dbo.AmbulanceMap ON AmbulanceMap.YelloPadID = Yellopad.YelloPadID
+WHERE dbo.AmbulanceMap.VIN = @VIN AND dbo.AmbulanceMap.StatusMap = '00'
+END
+GO
