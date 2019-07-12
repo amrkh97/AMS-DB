@@ -2687,6 +2687,7 @@ Create  OR ALTER PROC usp_Medicines_SelectAll
 as
 	select * from Medicine
 	WHERE  MedicineStatus <>'FF'
+	OR CountInStock <> 0
 -- (2.1) Get Medicine By Name --
 GO
 create  OR ALTER PROC usp_Medicine_SelectByName  @MedName NVARCHAR(64)
