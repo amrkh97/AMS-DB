@@ -684,6 +684,18 @@ CREATE TABLE AmbulanceMap
 	FOREIGN KEY (YelloPadID) REFERENCES dbo.Yellopad(YelloPadID),
 	FOREIGN KEY (BatchID) REFERENCES dbo.Batch(BatchID)
 );
+CREATE TABLE Feedback
+(
+	FeedbackID INT IDENTITY,
+	SequenceNumber INT,
+	CreationTime DATETIME DEFAULT (getdate()),
+	Rating float,
+	DriverNote NVARCHAR(500),
+	ParamedicNote NVARCHAR(500),
+	FeedbackStatus NVARCHAR(32),
+	FOREIGN KEY (SequenceNumber) REFERENCES Responses(SequenceNumber), 
+	PRIMARY KEY (FeedbackID)
+);
 ------------------------------------------------------------------------
 -- Creating Indecies --
 -- (1) Medicine BarCode Unique Index -- 
