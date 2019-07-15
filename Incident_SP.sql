@@ -97,3 +97,28 @@ Begin
 	delete from dbo.IncidentTypes
 	where TypeName = @TypeName
 End
+
+GO
+CREATE OR ALTER PROC usp_Incident_InsertCallData
+@ISQN INT,
+@FName NVARCHAR(64),
+@LName NVARCHAR(64),
+@MobileNumber NVARCHAR(64),
+@HexCode NVARCHAR(2) OUTPUT
+AS
+BEGIN
+INSERT INTO  IncidentCallers(
+	IncidentSQN ,
+	CallerFName ,
+	CallerLName ,
+	CallerMobile
+	)
+VALUES
+(
+	@ISQN,
+	ISNULL(@FName,'UnKnown'),
+	ISNULL(@LName,'UnKnown'),
+	@MobileNumber	
+)
+SET @HexCode = '00'
+END

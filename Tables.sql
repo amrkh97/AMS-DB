@@ -692,21 +692,22 @@ CREATE TABLE AmbulanceMap
 --(
 --	RespSQN INT NOT NULL,
 --	RespStatusMap NVARCHAR(64),
---	RespStatusTime DATETIME DEFAULT (GETDATE())
---
---	FOREIGN KEY (RespStatusMap) REFERENCES dbo.Responses(PrimaryResponseSQN)
+--		RespStatusTime DATETIME DEFAULT (GETDATE())
+
+--	FOREIGN KEY (RespSQN) REFERENCES dbo.Responses(PrimaryResponseSQN)
 --);
 
 
---CREATE TABLE IncidentCallers
---(
---	IncidentSQN INT NOT NULL,
---	CallerFName NVARCHAR(64),
---	CallerLName NVARCHAR(64),
---	CallTime DATETIME DEFAULT (GETDATE()),
---	PRIMARY KEY(IncidentSQN),
---	FOREIGN KEY(IncidentSQN) REFERENCES dbo.Incident(IncidentSequenceNumber)
---);
+CREATE TABLE IncidentCallers
+(
+	IncidentSQN INT NOT NULL,
+	CallerFName NVARCHAR(64),
+	CallerLName NVARCHAR(64),
+	CallerMobile NVARCHAR(11),
+	CallTime DATETIME DEFAULT (GETDATE()),
+	PRIMARY KEY(IncidentSQN),
+	FOREIGN KEY(IncidentSQN) REFERENCES dbo.Incident(IncidentSequenceNumber)
+);
 ------------------------------------------------------------------------
 -- Creating Indecies --
 -- (1) Medicine BarCode Unique Index -- 
