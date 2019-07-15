@@ -2218,6 +2218,8 @@ END
 -- END of Employee SP --
 ----------------------------------------NEW SET OF STORED PROCEDURES--------------------------------------------------------------
 
+--TODO: Add the PatientID select query to set values.
+GO
 GO
 CREATE OR ALTER PROC usp_getAndroidIncident
 @VIN INT,
@@ -2253,7 +2255,13 @@ CREATE OR ALTER PROC usp_getAndroidIncident
 @alarmLevelName NVARCHAR(64) OUTPUT,
 @alarmLevelNote NVARCHAR(64) OUTPUT,
 
-@batchID BIGINT OUTPUT
+@batchID BIGINT OUTPUT,
+
+@patientID INT = -1 OUTPUT,
+
+@callerFName NVARCHAR(64) OUTPUT,
+@callerLName NVARCHAR(64) OUTPUT,
+@callerMobileNumber NVARCHAR(11) OUTPUT 
 
 AS
 BEGIN
@@ -2299,6 +2307,9 @@ SELECT @alarmLevelName = AlarmLevelName,
        FROM  dbo.AlarmLevels WHERE AlarmLevelID = @alarmLevelID
 
 SELECT @BatchID = BatchID FROM dbo.AmbulanceMap WHERE dbo.AmbulanceMap.VIN = @VIN AND StatusMap = '00'
+
+SELECT @FName = CallerFName,@LName = CallerFName, @callerMobileNumber = CallerMobile
+FROM dbo.IncidentCallers WHERE dbo.IncidentSQN = @incidentSQN
 
 END
 
@@ -3444,7 +3455,7 @@ BEGIN CATCH
 	END
 
 ----------------------------------------NEW SET OF STORED PROCEDURES--------------------------------------------------------------
-
+GO
 CREATE  OR ALTER PROC usp_Feedback_Insert 
 	@SequenceNumber INT,
 	@Rating float,
