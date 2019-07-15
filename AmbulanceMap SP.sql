@@ -109,5 +109,7 @@ SELECT @DriverFName = Fname, @DriverLName = Lname,@DriverID = EID FROM dbo.Emplo
 INNER JOIN dbo.AmbulanceMap ON AmbulanceMap.DriverID = Employee.EID
 WHERE dbo.AmbulanceMap.VIN = @VIN
 
-SELECT @YelloPadUniqueID= YelloPadID FROM dbo.AmbulanceMap WHERE dbo.AmbulanceMap.VIN = @VIN
+SELECT @YelloPadUniqueID= YelloPadUniqueID FROM dbo.Yellopad
+INNER JOIN dbo.AmbulanceMap ON AmbulanceMap.YelloPadID = Yellopad.YelloPadID
+WHERE dbo.AmbulanceMap.VIN = @VIN
 END

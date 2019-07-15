@@ -2714,6 +2714,7 @@ END
 END
 GO
 
+
 CREATE OR ALTER PROC usp_AmbulanceMap_getRelevantData
 @VIN INTEGER,
 @License NVARCHAR(64) OUTPUT,
@@ -2728,7 +2729,7 @@ CREATE OR ALTER PROC usp_AmbulanceMap_getRelevantData
 			
 AS
 BEGIN
-SELECT @License = LicencePlate, @Make= Make from dbo.AmbulanceVehicle 
+select @License = LicencePlate, @Make= Make from dbo.AmbulanceVehicle 
 inner join dbo.AmbulanceMap ON AmbulanceMap.VIN = AmbulanceVehicle.VIN
 where dbo.AmbulanceVehicle.VIN = @VIN
 
@@ -2740,7 +2741,9 @@ SELECT @DriverFName = Fname, @DriverLName = Lname,@DriverID = EID FROM dbo.Emplo
 INNER JOIN dbo.AmbulanceMap ON AmbulanceMap.DriverID = Employee.EID
 WHERE dbo.AmbulanceMap.VIN = @VIN
 
-SELECT @YelloPadUniqueID= YelloPadID FROM dbo.AmbulanceMap WHERE dbo.AmbulanceMap.VIN = @VIN
+SELECT @YelloPadUniqueID= YelloPadUniqueID FROM dbo.Yellopad
+INNER JOIN dbo.AmbulanceMap ON AmbulanceMap.YelloPadID = Yellopad.YelloPadID
+WHERE dbo.AmbulanceMap.VIN = @VIN
 END
 go
 ----------------------------------------NEW SET OF STORED PROCEDURES--------------------------------------------------------------
