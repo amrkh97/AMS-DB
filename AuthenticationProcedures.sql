@@ -7,6 +7,9 @@ CREATE OR ALTER PROC usp_Employee_Login
 	
 	@return_Hex_value NVARCHAR(2)='FF' OUTPUT,
 	@responseMessage NVARCHAR(128)='' OUTPUT,
+	@firstName NVARCHAR(32)='' OUTPUT,
+	@lastName NVARCHAR(32)='' OUTPUT,
+	@logInTStamp DATETIME='' OUTPUT,
 	@jobID INTEGER = -1 OUTPUT,
 	@title NVARCHAR(256) = '' OUTPUT,
 	@employeeID Integer = -1 OUTPUT,
@@ -47,6 +50,9 @@ BEGIN
 							-- And set status to 1
 							SET @responseMessage='User logged in successfully'
 							SELECT @return_Hex_value = '00'
+							SET @firstName = (SELECT Fname FROM Employee WHERE EID = @userID)
+							SET @lastName = (SELECT Lname FROM Employee WHERE EID = @userID)
+							SET @logInTStamp = (SELECT LogInTStamp FROM Employee WHERE EID = @userID)
 							SET @jobID = (SELECT JobID FROM Employee WHERE EID = @userID)
 							SET @title = (SELECT Title FROM Jobs WHERE JobID = @jobID)
 							SET @employeeID = @userID
