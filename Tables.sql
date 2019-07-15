@@ -1,14 +1,14 @@
 ﻿USE KAN_AMO;
 GO
 
-CREATE TABLE ResponseStatuses
-(
-	ResponseStatusID NVARCHAR(32),
-	StatusName NVARCHAR(64),
-	StatusNote NVARCHAR(256)
+--CREATE TABLE ResponseStatuses
+--(
+--	ResponseStatusID NVARCHAR(32),
+--	StatusName NVARCHAR(64),
+--	StatusNote NVARCHAR(256)
 
-		PRIMARY KEY (ResponseStatusID)
-);
+--	PRIMARY KEY (ResponseStatusID)
+--);
 
 CREATE TABLE IncidentTypes
 (
@@ -683,6 +683,26 @@ CREATE TABLE AmbulanceMap
 	FOREIGN KEY (DriverID) REFERENCES dbo.Employee(EID),
 	FOREIGN KEY (YelloPadID) REFERENCES dbo.Yellopad(YelloPadID),
 	FOREIGN KEY (BatchID) REFERENCES dbo.Batch(BatchID)
+);
+
+CREATE TABLE ResponseUpdateLog
+(
+	RespSQN INT NOT NULL,
+	RespStatusMap NVARCHAR(64),
+	RespStatusTime DATETIME DEFAULT (GETDATE())
+
+	FOREIGN KEY (RespStatusMap) REFERENCES dbo.Responses(PrimaryResponseSQN)
+);
+
+
+CREATE TABLE IncidentCallers
+(
+	IncidentSQN INT NOT NULL,
+	CallerFName NVARCHAR(64),
+	CallerLName NVARCHAR(64),
+	CallTime DATETIME DEFAULT (GETDATE()),
+	PRIMARY KEY(IncidentSQN),
+	FOREIGN KEY(IncidentSQN) REFERENCES dbo.Incident(IncidentSequenceNumber)
 );
 ------------------------------------------------------------------------
 -- Creating Indecies --
