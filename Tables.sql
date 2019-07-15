@@ -688,25 +688,25 @@ CREATE TABLE AmbulanceMap
 	FOREIGN KEY (BatchID) REFERENCES dbo.Batch(BatchID)
 );
 
-CREATE TABLE ResponseUpdateLog
-(
-	RespSQN INT NOT NULL,
-	RespStatusMap NVARCHAR(64),
-	RespStatusTime DATETIME DEFAULT (GETDATE())
+--CREATE TABLE ResponseUpdateLog
+--(
+--	RespSQN INT NOT NULL,
+--	RespStatusMap NVARCHAR(64),
+--	RespStatusTime DATETIME DEFAULT (GETDATE())
+--
+--	FOREIGN KEY (RespStatusMap) REFERENCES dbo.Responses(PrimaryResponseSQN)
+--);
 
-	FOREIGN KEY (RespStatusMap) REFERENCES dbo.Responses(PrimaryResponseSQN)
-);
 
-
-CREATE TABLE IncidentCallers
-(
-	IncidentSQN INT NOT NULL,
-	CallerFName NVARCHAR(64),
-	CallerLName NVARCHAR(64),
-	CallTime DATETIME DEFAULT (GETDATE()),
-	PRIMARY KEY(IncidentSQN),
-	FOREIGN KEY(IncidentSQN) REFERENCES dbo.Incident(IncidentSequenceNumber)
-);
+--CREATE TABLE IncidentCallers
+--(
+--	IncidentSQN INT NOT NULL,
+--	CallerFName NVARCHAR(64),
+--	CallerLName NVARCHAR(64),
+--	CallTime DATETIME DEFAULT (GETDATE()),
+--	PRIMARY KEY(IncidentSQN),
+--	FOREIGN KEY(IncidentSQN) REFERENCES dbo.Incident(IncidentSequenceNumber)
+--);
 ------------------------------------------------------------------------
 -- Creating Indecies --
 -- (1) Medicine BarCode Unique Index -- 
