@@ -1,14 +1,14 @@
 ﻿USE KAN_AMO;
 GO
 
-CREATE TABLE ResponseStatuses
-(
-	ResponseStatusID NVARCHAR(32),
-	StatusName NVARCHAR(64),
-	StatusNote NVARCHAR(256)
+--CREATE TABLE ResponseStatuses
+--(
+--	ResponseStatusID NVARCHAR(32),
+--	StatusName NVARCHAR(64),
+--	StatusNote NVARCHAR(256)
 
-		PRIMARY KEY (ResponseStatusID)
-);
+--	PRIMARY KEY (ResponseStatusID)
+--);
 
 CREATE TABLE IncidentTypes
 (
@@ -290,6 +290,7 @@ CREATE TABLE Yellopad
 	    N'11'      -- YellopadNetworkcardNo - nvarchar(64)
 	    )
 
+--TODO: Discuss the Vehicle Location Entry
 CREATE TABLE AmbulanceVehicle
 (
 	VIN INT,
@@ -309,8 +310,10 @@ CREATE TABLE AmbulanceVehicle
 	DriverPhoneNumber NVARCHAR(32),
 	VehicleStatus NVARCHAR(32) DEFAULT '00',
 	AmbulanceVehiclePicture NVARCHAR(500),
+	--VehicleLocation INT,
 
 	PRIMARY KEY (VIN),
+	--FOREIGN KEY (VehicleLocation) REFERENCES dbo.Locations(LocationID),
 	CONSTRAINT Negative_VIN CHECK (VIN > 0) 
 	);
 
@@ -684,6 +687,26 @@ CREATE TABLE AmbulanceMap
 	FOREIGN KEY (YelloPadID) REFERENCES dbo.Yellopad(YelloPadID),
 	FOREIGN KEY (BatchID) REFERENCES dbo.Batch(BatchID)
 );
+
+--CREATE TABLE ResponseUpdateLog
+--(
+--	RespSQN INT NOT NULL,
+--	RespStatusMap NVARCHAR(64),
+--	RespStatusTime DATETIME DEFAULT (GETDATE())
+--
+--	FOREIGN KEY (RespStatusMap) REFERENCES dbo.Responses(PrimaryResponseSQN)
+--);
+
+
+--CREATE TABLE IncidentCallers
+--(
+--	IncidentSQN INT NOT NULL,
+--	CallerFName NVARCHAR(64),
+--	CallerLName NVARCHAR(64),
+--	CallTime DATETIME DEFAULT (GETDATE()),
+--	PRIMARY KEY(IncidentSQN),
+--	FOREIGN KEY(IncidentSQN) REFERENCES dbo.Incident(IncidentSequenceNumber)
+--);
 ------------------------------------------------------------------------
 -- Creating Indecies --
 -- (1) Medicine BarCode Unique Index -- 
