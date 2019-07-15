@@ -1829,6 +1829,7 @@ BEGIN
 set @HexCode = '01'
 END
 END
+
 GO
 
 CREATE OR ALTER PROC usp_Batch_getMedicines
@@ -1840,7 +1841,6 @@ inner join dbo.BatchMedicine
 ON BatchMedicine.MedicineBCode = Medicine.BarCode
 WHERE dbo.BatchMedicine.BatchID = @BatchID
 END
-
 
 ----------------------------------------NEW SET OF STORED PROCEDURES--------------------------------------------------------------
 -- Employee SP --
@@ -2217,7 +2217,9 @@ CREATE OR ALTER PROC usp_getAndroidIncident
 @incidentPriorityNote NVARCHAR(64) OUTPUT,
 
 @alarmLevelName NVARCHAR(64) OUTPUT,
-@alarmLevelNote NVARCHAR(64) OUTPUT
+@alarmLevelNote NVARCHAR(64) OUTPUT,
+
+@batchID BIGINT OUTPUT
 
 AS
 BEGIN
@@ -2262,6 +2264,7 @@ SELECT @alarmLevelName = AlarmLevelName,
        @alarmLevelNote = AlarmLevelNote 
        FROM  dbo.AlarmLevels WHERE AlarmLevelID = @alarmLevelID
 
+SELECT @BatchID = BatchID FROM dbo.AmbulanceMap WHERE dbo.AmbulanceMap.VIN = @VIN AND StatusMap = '00'
 
 END
 
@@ -2683,8 +2686,12 @@ GO
 
 
 CREATE OR ALTER  Proc usp_deleteAmbulanceMap
-@VIN INT
+@VIN INT,
+@HexCode NVARCHAR(2) OUTPUT
 AS
+BEGIN
+
+if exists (select * from AmbulanceMap where VIN = @VIN AND (StatusMap='00' OR StatusMap='02'))
 BEGIN
 update dbo.AmbulanceMap
 set StatusMap = '04'
@@ -2693,13 +2700,20 @@ WHERE VIN = @VIN AND StatusMap='00'
 update dbo.AmbulanceMap
 set StatusMap = '04'
 WHERE VIN = @VIN AND StatusMap='02'
-END
 
 UPDATE dbo.AmbulanceVehicle
 SET VehicleStatus = '00'
 WHERE VIN = @VIN
 
+SET @HexCode = '00'
+END
+ELSE
+BEGIN
+SET @HexCode = '01'
+END
+END
 GO
+
 
 CREATE OR ALTER PROC usp_AmbulanceMap_getRelevantData
 @VIN INTEGER,
@@ -2715,7 +2729,7 @@ CREATE OR ALTER PROC usp_AmbulanceMap_getRelevantData
 			
 AS
 BEGIN
-SELECT @License = LicencePlate, @Make= Make from dbo.AmbulanceVehicle 
+select @License = LicencePlate, @Make= Make from dbo.AmbulanceVehicle 
 inner join dbo.AmbulanceMap ON AmbulanceMap.VIN = AmbulanceVehicle.VIN
 where dbo.AmbulanceVehicle.VIN = @VIN
 
@@ -2727,7 +2741,9 @@ SELECT @DriverFName = Fname, @DriverLName = Lname,@DriverID = EID FROM dbo.Emplo
 INNER JOIN dbo.AmbulanceMap ON AmbulanceMap.DriverID = Employee.EID
 WHERE dbo.AmbulanceMap.VIN = @VIN
 
-SELECT @YelloPadUniqueID= YelloPadID FROM dbo.AmbulanceMap WHERE dbo.AmbulanceMap.VIN = @VIN
+SELECT @YelloPadUniqueID= YelloPadUniqueID FROM dbo.Yellopad
+INNER JOIN dbo.AmbulanceMap ON AmbulanceMap.YelloPadID = Yellopad.YelloPadID
+WHERE dbo.AmbulanceMap.VIN = @VIN
 END
 go
 ----------------------------------------NEW SET OF STORED PROCEDURES--------------------------------------------------------------
