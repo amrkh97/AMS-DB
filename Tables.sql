@@ -290,6 +290,7 @@ CREATE TABLE Yellopad
 	    N'11'      -- YellopadNetworkcardNo - nvarchar(64)
 	    )
 
+--TODO: Discuss the Vehicle Location Entry
 CREATE TABLE AmbulanceVehicle
 (
 	VIN INT,
@@ -309,8 +310,10 @@ CREATE TABLE AmbulanceVehicle
 	DriverPhoneNumber NVARCHAR(32),
 	VehicleStatus NVARCHAR(32) DEFAULT '00',
 	AmbulanceVehiclePicture NVARCHAR(500),
+	--VehicleLocation INT,
 
 	PRIMARY KEY (VIN),
+	--FOREIGN KEY (VehicleLocation) REFERENCES dbo.Locations(LocationID),
 	CONSTRAINT Negative_VIN CHECK (VIN > 0) 
 	);
 

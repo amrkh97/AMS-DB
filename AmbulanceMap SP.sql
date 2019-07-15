@@ -113,3 +113,34 @@ SELECT @YelloPadUniqueID= YelloPadUniqueID FROM dbo.Yellopad
 INNER JOIN dbo.AmbulanceMap ON AmbulanceMap.YelloPadID = Yellopad.YelloPadID
 WHERE dbo.AmbulanceMap.VIN = @VIN
 END
+
+GO
+
+CREATE OR ALTER  Proc usp_deleteAmbulanceMap
+@VIN INT,
+@HexCode NVARCHAR(2) OUTPUT
+AS
+BEGIN
+
+if exists (select * from AmbulanceMap where VIN = @VIN AND (StatusMap='00' OR StatusMap='02'))
+BEGIN
+update dbo.AmbulanceMap
+set StatusMap = '04'
+WHERE VIN = @VIN AND StatusMap='00'
+
+update dbo.AmbulanceMap
+set StatusMap = '04'
+WHERE VIN = @VIN AND StatusMap='02'
+
+UPDATE dbo.AmbulanceVehicle
+SET VehicleStatus = '00'
+WHERE VIN = @VIN
+
+SET @HexCode = '00'
+END
+ELSE
+BEGIN
+SET @HexCode = '01'
+END
+END
+GO
