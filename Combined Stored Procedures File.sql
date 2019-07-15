@@ -1842,16 +1842,6 @@ ON BatchMedicine.MedicineBCode = Medicine.BarCode
 WHERE dbo.BatchMedicine.BatchID = @BatchID
 END
 
-CREATE OR ALTER PROC usp_Batch_getMedicines
-@BatchID BIGINT
-AS
-BEGIN
-select BarCode,MedicineName,Price,CountInStock,Implications,MedicineUsage,SideEffects,ActiveComponent,MedicineStatus from dbo.medicine
-inner join dbo.BatchMedicine
-ON BatchMedicine.MedicineBCode = Medicine.BarCode
-WHERE dbo.BatchMedicine.BatchID = @BatchID
-END
-
 ----------------------------------------NEW SET OF STORED PROCEDURES--------------------------------------------------------------
 -- Employee SP --
 -- Login --
