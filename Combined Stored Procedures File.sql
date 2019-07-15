@@ -3237,7 +3237,7 @@ CREATE OR ALTER PROC  usp_add_New_Patient
 	@NextOfKenPhone NVARCHAR(24),
 	@NextOfKenAddress NVARCHAR(256),
 	@PatientStatus NVARCHAR(32) ,
-	@PatientNationalID INT,
+	@PatientNationalID NVARCHAR(14),
 
 	@PatientID INT OUTPUT,
 	@responseCode NVARCHAR(2)='FF' OUTPUT,
