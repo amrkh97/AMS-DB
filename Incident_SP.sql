@@ -122,3 +122,12 @@ VALUES
 )
 SET @HexCode = '00'
 END
+
+GO 
+CREATE OR ALTER PROC usp_Incident_getCallers
+@iSQN INTEGER
+AS
+BEGIN
+SELECT CallerFName, CallerLName, CallerMobile, CallTime FROM IncidentCallers
+WHERE IncidentSQN = @iSQN
+END
