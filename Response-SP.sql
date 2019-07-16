@@ -179,3 +179,42 @@ BEGIN
 		END
 	END
 END
+
+GO
+
+CREATE OR ALTER PROC usp_Response_TableData
+
+AS
+BEGIN
+
+SELECT
+dbo.Responses.IncidentSQN, dbo.IncidentTypes.TypeName, dbo.Responses.SequenceNumber,
+dbo.Priorities.PriorityName,dbo.Responses.RespStatus,
+dbo.AmbulanceMap.VIN,dbo.AmbulanceMap.ParamedicID,ParamedicTable.Fname,ParamedicTable.Lname,ParamedicTable.ContactNumber,
+dbo.AmbulanceMap.DriverID,DriverTable.Fname,DriverTable.Lname,DriverTable.ContactNumber,
+dbo.AmbulanceVehicle.LicencePlate,dbo.AmbulanceVehicle.Model,
+PatientLoc.FreeFormatAddress
+FROM dbo.AmbulanceMap
+INNER JOIN dbo.AmbulanceVehicle 
+ON AmbulanceVehicle.VIN = AmbulanceMap.VIN
+INNER JOIN dbo.Employee AS ParamedicTable
+ON ParamedicTable.EID = AmbulanceMap.ParamedicID
+INNER JOIN dbo.Employee AS DriverTable
+ON DriverTable.EID = AmbulanceMap.DriverID
+INNER JOIN dbo.Responses
+ON Responses.AssociatedVehicleVIN = AmbulanceVehicle.VIN
+INNER JOIN dbo.Incident
+ON Incident.IncidentSequenceNumber = Responses.IncidentSQN
+INNER JOIN dbo.IncidentTypes
+ON IncidentTypes.IncidentTypeID = Incident.IncidentType
+INNER JOIN dbo.Priorities
+ON Priorities.PrioritYID = Incident.IncidentPriority
+INNER JOIN dbo.Locations AS PatientLoc
+ON PatientLoc.LocationID = Responses.PickLocationID
+
+
+END
+
+--1	هبوط	1	Urgent	00	1	1	Ahmed	Al-Gohary	NULL	2	Amr	Khaled	NULL	3D0979	BENZ	Cairo
+
+
