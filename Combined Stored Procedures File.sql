@@ -1826,7 +1826,7 @@ AS
 BEGIN
 SELECT
 EID,Fname,Lname,Email,ContactNumber,PAN,NationalID,EmployeeStatus,Photo,
-Age,Gender,BDate,Country,City,SubscriptionDate,LogInTStamp,LogInGPS,SuperSSN,JobID FROM dbo.Employee
+Age,Gender,BDate,Country,City,SubscriptionDate,LogInTStamp,LogInGPS,SuperSSN,JobID,LogOutStamp,LogInStatus FROM dbo.Employee
 WHERE EID = @eid
 END
 ----------------------------------------NEW SET OF STORED PROCEDURES--------------------------------------------------------------

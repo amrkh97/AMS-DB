@@ -65,7 +65,6 @@ SELECT EID,Fname,Lname,Email,ContactNumber,PAN,NationalID,EmployeeStatus,Photo,A
 WHERE JobID = 3 AND SuperSSN = @SuperSSN AND (EmployeeStatus = '02' OR EmployeeStatus = '03'  OR EmployeeStatus = '04' )
 
 END
-
 GO
 
 CREATE OR ALTER PROC get_Employee_getDatabyEmployeeID
@@ -74,6 +73,6 @@ AS
 BEGIN
 SELECT
 EID,Fname,Lname,Email,ContactNumber,PAN,NationalID,EmployeeStatus,Photo,
-Age,Gender,BDate,Country,City,SubscriptionDate,LogInTStamp,LogInGPS,SuperSSN,JobID FROM dbo.Employee
+Age,Gender,BDate,Country,City,SubscriptionDate,LogInTStamp,LogInGPS,SuperSSN,JobID,LogOutStamp,LogInStatus FROM dbo.Employee
 WHERE EID = @eid
 END
