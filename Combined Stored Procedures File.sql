@@ -2243,7 +2243,7 @@ CREATE OR ALTER PROC usp_getAndroidIncident
 @startLocID INT,
 @destLocID INT,
 @alarmLevelID INT,
-@incidentSQN INT,
+@iSQN INT,
 
 @driverFName NVARCHAR(64) OUTPUT,
 @driverLName NVARCHAR(64) OUTPUT,
@@ -2316,7 +2316,7 @@ SELECT @incidentTypeName = TypeName,
 
 INNER JOIN dbo.IncidentTypes ON IncidentTypes.IncidentTypeID = Incident.IncidentType
 INNER JOIN dbo.Priorities ON Priorities.PrioritYID = Incident.IncidentPriority
-WHERE  IncidentSequenceNumber = @incidentSQN
+WHERE  IncidentSequenceNumber = @iSQN
 
 SELECT @alarmLevelName = AlarmLevelName,
        @alarmLevelNote = AlarmLevelNote 
@@ -2324,8 +2324,8 @@ SELECT @alarmLevelName = AlarmLevelName,
 
 SELECT @BatchID = BatchID FROM dbo.AmbulanceMap WHERE dbo.AmbulanceMap.VIN = @VIN AND StatusMap = '00'
 
-SELECT @FName = CallerFName,@LName = CallerFName, @callerMobileNumber = CallerMobile
-FROM dbo.IncidentCallers WHERE dbo.IncidentSQN = @incidentSQN
+SELECT @callerFName = CallerFName,@callerLName = CallerFName, @callerMobileNumber = CallerMobile
+FROM dbo.IncidentCallers WHERE IncidentSQN = @iSQN
 
 END
 
@@ -3461,7 +3461,7 @@ BEGIN CATCH
 	
 	
 		GO
-	CREATE PROC usp_Patient_getByID
+	CREATE OR ALTER PROC usp_Patient_getByID
 	@ID int
 	AS
 	BEGIN
