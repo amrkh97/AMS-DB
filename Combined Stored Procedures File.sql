@@ -1826,7 +1826,7 @@ AS
 BEGIN
 SELECT
 EID,Fname,Lname,Email,ContactNumber,PAN,NationalID,EmployeeStatus,Photo,
-Age,Gender,BDate,Country,City,SubscriptionDate,LogInTStamp,LogInGPS,SuperSSN,JobID FROM dbo.Employee
+Age,Gender,BDate,Country,City,SubscriptionDate,LogInTStamp,LogInGPS,SuperSSN,JobID,LogOutStamp,LogInStatus FROM dbo.Employee
 WHERE EID = @eid
 END
 ----------------------------------------NEW SET OF STORED PROCEDURES--------------------------------------------------------------
@@ -2065,7 +2065,9 @@ BEGIN
 				BEGIN
 					-- Right Status
 					-- UPDATE Employee SET LogInStatus = '00' WHERE EID = @userID
+					-- UPDATE Employee SET LogOutStamp = GETDATE() WHERE EID = @userID
 					UPDATE dbo.Employee SET LogInStatus = '00' WHERE (Email=@dummyToken OR PAN=@dummyToken OR NationalID=@dummyToken)
+					UPDATE dbo.Employee SET LogOutStamp = GETDATE() WHERE (Email=@dummyToken OR PAN=@dummyToken OR NationalID=@dummyToken)
 					SET @responseMessage='Logged out successfully'
 					SELECT @return_Hex_value = '00'
 					RETURN 0
