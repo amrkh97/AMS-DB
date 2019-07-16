@@ -2677,19 +2677,19 @@ CREATE OR ALTER PROC usp_AmbulanceMap_Insert
 @ParamedicID INT,
 @DriverID INT,
 @YelloPadID INT,
-@HexCode INT OUTPUT
+@HexCode NVARCHAR(2) OUTPUT
 AS
 BEGIN
 if exists(select * from dbo.AmbulanceMap where VIN = @VIN and StatusMap = '00')
 BEGIN
 -- 1 -> Ambulance was already inserted but not assigned.
-Set @HexCode = 1
+Set @HexCode = '01'
 RETURN 1
 END
 ELSE if exists(select * from dbo.AmbulanceMap where VIN = @VIN and StatusMap ='01')
 begin
 -- 2 -> Ambulance is assigned and already in service.
-Set @HexCode = 2
+Set @HexCode = '02'
  RETURN 2
 end 
 else begin
@@ -2718,7 +2718,7 @@ SET VehicleStatus = '05'
 WHERE VIN = @VIN
 
 -- 0 -> Insertion Successful
-Set @HexCode = 0
+Set @HexCode = '00'
 RETURN 0
 end
 END
