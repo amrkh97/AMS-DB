@@ -1824,7 +1824,9 @@ CREATE OR ALTER PROC get_Employee_getDatabyEmployeeID
 @eid INT
 AS
 BEGIN
-SELECT EID,Fname,Lname,Email,ContactNumber,PAN,NationalID,EmployeeStatus,Photo,Age FROM dbo.Employee
+SELECT
+EID,Fname,Lname,Email,ContactNumber,PAN,NationalID,EmployeeStatus,Photo,
+Age,Gender,BDate,Country,City,SubscriptionDate,LogInTStamp,LogInGPS,SuperSSN,JobID FROM dbo.Employee
 WHERE EID = @eid
 END
 ----------------------------------------NEW SET OF STORED PROCEDURES--------------------------------------------------------------
