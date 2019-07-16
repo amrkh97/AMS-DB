@@ -107,6 +107,8 @@ CREATE OR ALTER PROC usp_Incident_InsertCallData
 @HexCode NVARCHAR(2) OUTPUT
 AS
 BEGIN
+if not exists(Select * from IncidentCallers where CallerMobile = @MobileNumber)
+BEGIN
 INSERT INTO  IncidentCallers(
 	IncidentSQN ,
 	CallerFName ,
@@ -121,4 +123,18 @@ VALUES
 	@MobileNumber	
 )
 SET @HexCode = '00'
+END
+ELSE
+BEGIN
+SET @HexCode = '01' --Number is already in database.
+END
+END
+
+GO 
+CREATE OR ALTER PROC usp_Incident_getCallers
+@iSQN INTEGER
+AS
+BEGIN
+SELECT CallerFName, CallerLName, CallerMobile, CallTime FROM IncidentCallers
+WHERE IncidentSQN = @iSQN
 END
