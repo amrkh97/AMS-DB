@@ -94,7 +94,7 @@ CREATE PROC  usp_add_New_Patient
 	@PatientStatus NVARCHAR(32) ,
 	@PatientNationalID INT,
 
-	@PatientID INT OUTPUT,
+	@PatientID INT = -1 OUTPUT,
 	@responseCode NVARCHAR(2)='FF' OUTPUT,
 	@responseMessage NVARCHAR(128)='' OUTPUT
 AS
@@ -114,7 +114,7 @@ INSERT INTO Patient ( PatientFName, PatientLName, Gender, Age, Phone, LastBenifi
 				END TRY
 BEGIN CATCH
 			SELECT @responseCode = 'FF',
-		@responseMessage=ERROR_MESSAGE()
+			@responseMessage=ERROR_MESSAGE()
 			return -1;
 	END CATCH
 		return -1
