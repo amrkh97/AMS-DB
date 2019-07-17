@@ -497,7 +497,7 @@ VALUES
 	('driver6@test.com','45678912','','77715892541359',4,3,'Mohamed','Abdelhady'),
 	('driver7@test.com','34567891','','01258963271408',2,3,'Mahmoud','Rashad'),
 	('driver8@test.com','23456789','','40489305967281',5,3,'Eman','Mohamed'),
-	('driver9@test.com','12345678','','12302020363699',5,3,'Aya','Mohamed'),
+	('driver9@test.com','12345678','','12302020363699',2,3,'Aya','Mohamed'),
 	('driver10@test.com','01234567','','89887744252664',5,3,'Noha','Ezzat'),
 	('paramedic1@test.com','91234567',null,'',2,2,'Mohamed','Salah'),
 	('paramedic2@test.com','89123456',null,'',3,2,'Abdelrahman','Ahmed'),
