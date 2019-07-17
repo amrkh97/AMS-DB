@@ -721,6 +721,15 @@ CREATE TABLE IncidentCallers
 	PRIMARY KEY(IncidentSQN),
 	FOREIGN KEY(IncidentSQN) REFERENCES dbo.Incident(IncidentSequenceNumber)
 );
+CREATE TABLE LoginTime 
+(
+	LoginID INT IDENTITY,
+	LoginTime DATETIME DEFAULT (GETDATE()),
+	LogoutTime DATETIME DEFAULT (GETDATE()),
+	EmployeeID INT NOT NULL,
+	PRIMARY KEY (LoginID),
+	FOREIGN KEY(EmployeeID) REFERENCES dbo.Employee(EID)
+);
 ------------------------------------------------------------------------
 -- Creating Indecies --
 -- (1) Medicine BarCode Unique Index -- 
