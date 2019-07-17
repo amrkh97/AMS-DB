@@ -511,6 +511,13 @@ VALUES
 	('paramedic10@test.com','01234567','9874502983497779','',2,2,'Walid','Mohamd'),
 	('m@m.com','12345678','4444444444444444','29410242104097',2,2,'Mohamed','Sherif')
 
+
+	('mradmin@test.com','53513676',null,null,1,0,'Mahmoud','Rashad'),
+   	('mrmanager@test.com','53513676',null,'',1,1,'Mahmoud','Rashad'),
+	('mroperator@test.com','53513676','','29704090101931',2,4,'Mahmoud','Rashad'),
+        ('mrdriver@test.com','53513676','',null,2,3,'Mahmoud','Rashad'),
+	('mrparamedic@test.com','53513676',null,'',2,2,'Mahmoud','Rashad')
+
 CREATE TABLE Incident
 (
 	IncidentSequenceNumber INT IDENTITY NOT NULL,
