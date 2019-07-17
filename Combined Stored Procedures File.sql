@@ -1856,6 +1856,16 @@ EID,Fname,Lname,Email,ContactNumber,PAN,NationalID,EmployeeStatus,Photo,
 Age,Gender,BDate,Country,City,SubscriptionDate,LogInTStamp,LogInGPS,SuperSSN,JobID,LogOutStamp,LogInStatus FROM dbo.Employee
 WHERE EID = @eid
 END
+
+
+GO
+CREATE OR ALTER PROC get_Employee_getLogTimes
+@EID
+AS
+BEGIN
+SELECT LoginTime,LogoutTime,DATEDIFF(MINUTE,LoginTime,ISNULL(LogoutTime,LoginTime)) FROM dbo.LoginTime
+WHERE EmployeeID = @EID
+END
 ----------------------------------------NEW SET OF STORED PROCEDURES--------------------------------------------------------------
 GO
 
