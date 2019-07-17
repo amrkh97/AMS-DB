@@ -1747,6 +1747,33 @@ Begin
 End
 ----------------------------------------NEW SET OF STORED PROCEDURES--------------------------------------------------------------
 GO
+GO
+
+CREATE OR ALTER PROC get_Employee_getAll
+@SuperSSN INT,
+@jobID INT
+AS
+BEGIN
+
+IF(@jobID = -1)
+BEGIN
+SELECT Emp.EID,Emp.Fname,Emp.Lname,Emp.Email,Emp.ContactNumber,
+	   Emp.PAN,Emp.NationalID,Emp.EmployeeStatus,Emp.Photo,Emp.Age,
+	   Emp.Gender,Emp.City,Emp.JobID,J.Title FROM dbo.Employee AS Emp
+INNER JOIN dbo.Jobs AS J ON J.JobID = Emp.JobID
+WHERE Emp.SuperSSN = @SuperSSN
+END
+ELSE
+BEGIN
+
+SELECT Emp.EID,Emp.Fname,Emp.Lname,Emp.Email,Emp.ContactNumber,
+	   Emp.PAN,Emp.NationalID,Emp.EmployeeStatus,Emp.Photo,Emp.Age,
+	   Emp.Gender,Emp.City,Emp.JobID,J.Title FROM dbo.Employee AS Emp
+INNER JOIN dbo.Jobs AS J ON J.JobID = Emp.JobID
+WHERE Emp.JobID = @jobID AND Emp.SuperSSN = @SuperSSN
+END
+END
+GO
 
 CREATE OR ALTER PROC get_Employee_AllParamedics
 @SuperSSN INT
@@ -1822,6 +1849,16 @@ SELECT
 EID,Fname,Lname,Email,ContactNumber,PAN,NationalID,EmployeeStatus,Photo,
 Age,Gender,BDate,Country,City,SubscriptionDate,LogInTStamp,LogInGPS,SuperSSN,JobID,LogOutStamp,LogInStatus FROM dbo.Employee
 WHERE EID = @eid
+END
+
+
+GO
+CREATE OR ALTER PROC get_Employee_getLogTimes
+@EID INTEGER
+AS
+BEGIN
+SELECT LogInTime,LogOutTime,DATEDIFF(MINUTE,LogInTime,ISNULL(LogOutTime,LogInTime)) FROM dbo.EmployeeLogs
+WHERE EmployeeID = @EID
 END
 ----------------------------------------NEW SET OF STORED PROCEDURES--------------------------------------------------------------
 GO
@@ -1925,6 +1962,9 @@ END
 ----------------------------------------NEW SET OF STORED PROCEDURES--------------------------------------------------------------
 -- Employee SP --
 -- Login --
+
+-- Employee SP --
+-- Login --
 GO
 CREATE OR ALTER PROC usp_Employee_Login 
 	@EmailOrPAN NVARCHAR(128),
@@ -1942,7 +1982,8 @@ BEGIN
 	SET NOCOUNT on
 	DECLARE @userID INT
 	DECLARE @status NVARCHAR(32)
-	
+	Declare @inStamp DATETIME
+
 	IF (@EmailOrPAN IS NOT NULL AND @HashPassword IS NOT NULL)
 	BEGIN
 		IF ((SELECT(LEN(@HashPassword))) > 7 )
@@ -1977,7 +2018,17 @@ BEGIN
 							SET @employeeID = @userID
 							SET @userPhoto = (SELECT Photo FROM Employee WHERE EID = @userID)
 							UPDATE Employee SET LogInStatus = '01' WHERE EID = @userID
-							UPDATE Employee SET LogInTStamp = GETDATE() WHERE EID = @userID
+							SET @inStamp = GETDATE()
+							UPDATE Employee SET LogInTStamp = @inStamp WHERE EID = @userID
+							INSERT INTO dbo.EmployeeLogs(
+								EmployeeID,
+								LogInTime
+							)
+							VALUES(
+								@userID,
+								@inStamp
+							)
+
 							RETURN 0
 						END
 						IF(@status = '01')
@@ -2045,6 +2096,7 @@ AS
 BEGIN
 	SET NOCOUNT ON
 	DECLARE @status NVARCHAR(32)
+	Declare @outStamp DATETIME
 	-- IF (@userID IS NOT NULL)
 	IF (@dummyToken IS NOT NULL)
 	BEGIN
@@ -2061,9 +2113,14 @@ BEGIN
 					-- UPDATE Employee SET LogInStatus = '00' WHERE EID = @userID
 					-- UPDATE Employee SET LogOutStamp = GETDATE() WHERE EID = @userID
 					UPDATE dbo.Employee SET LogInStatus = '00' WHERE (Email=@dummyToken OR PAN=@dummyToken OR NationalID=@dummyToken)
-					UPDATE dbo.Employee SET LogOutStamp = GETDATE() WHERE (Email=@dummyToken OR PAN=@dummyToken OR NationalID=@dummyToken)
+					SET @outStamp = GETDATE()
+					UPDATE dbo.Employee SET LogOutStamp = @outStamp WHERE (Email=@dummyToken OR PAN=@dummyToken OR NationalID=@dummyToken)
 					SET @responseMessage='Logged out successfully'
 					SELECT @return_Hex_value = '00'
+					UPDATE EmployeeLogs
+					SET LogOutTime = @outStamp
+					WHERE EmployeeID = (SELECT EID FROM Employee WHERE (Email=@dummyToken OR PAN=@dummyToken OR NationalID=@dummyToken))
+					AND LogInTime= (SELECT LogInTStamp FROM Employee where (Email=@dummyToken OR PAN=@dummyToken OR NationalID=@dummyToken))
 					RETURN 0
 				END
 				ELSE IF(@status='00')
@@ -2213,6 +2270,7 @@ BEGIN
 	END
 END
 
+
 --GO
 --DECLARE @return_Hex_value NVARCHAR(2),
 --        @responseMessage NVARCHAR(128),
@@ -2267,7 +2325,6 @@ END
 ----------------------------------------NEW SET OF STORED PROCEDURES--------------------------------------------------------------
 
 --TODO: Add the PatientID select query to set values.
-GO
 GO
 CREATE OR ALTER PROC usp_getAndroidIncident
 @VIN INT,
