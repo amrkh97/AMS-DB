@@ -724,8 +724,8 @@ CREATE TABLE IncidentCallers
 CREATE TABLE LoginTime 
 (
 	LoginID INT IDENTITY,
-	LoginTime DATETIME DEFAULT (GETDATE()),
-	LogoutTime DATETIME DEFAULT (GETDATE()),
+	LoginTime DATETIME,
+	LogoutTime DATETIME,
 	EmployeeID INT NOT NULL,
 	PRIMARY KEY (LoginID),
 	FOREIGN KEY(EmployeeID) REFERENCES dbo.Employee(EID)
