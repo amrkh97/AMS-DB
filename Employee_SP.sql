@@ -104,9 +104,9 @@ END
 
 GO
 CREATE OR ALTER PROC get_Employee_getLogTimes
-@EID
+@EID INTEGER
 AS
 BEGIN
-SELECT LoginTime,LogoutTime,DATEDIFF(MINUTE,LoginTime,ISNULL(LogoutTime,LoginTime)) FROM dbo.LoginTime
+SELECT LogInTime,LogOutTime,DATEDIFF(MINUTE,LogInTime,ISNULL(LogOutTime,LogInTime)) FROM dbo.EmployeeLogs
 WHERE EmployeeID = @EID
 END

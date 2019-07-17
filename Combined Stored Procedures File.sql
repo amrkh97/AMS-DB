@@ -1860,10 +1860,10 @@ END
 
 GO
 CREATE OR ALTER PROC get_Employee_getLogTimes
-@EID
+@EID INTEGER
 AS
 BEGIN
-SELECT LoginTime,LogoutTime,DATEDIFF(MINUTE,LoginTime,ISNULL(LogoutTime,LoginTime)) FROM dbo.LoginTime
+SELECT LogInTime,LogOutTime,DATEDIFF(MINUTE,LogInTime,ISNULL(LogOutTime,LogInTime)) FROM dbo.EmployeeLogs
 WHERE EmployeeID = @EID
 END
 ----------------------------------------NEW SET OF STORED PROCEDURES--------------------------------------------------------------
@@ -1968,6 +1968,9 @@ END
 ----------------------------------------NEW SET OF STORED PROCEDURES--------------------------------------------------------------
 -- Employee SP --
 -- Login --
+
+-- Employee SP --
+-- Login --
 GO
 CREATE OR ALTER PROC usp_Employee_Login 
 	@EmailOrPAN NVARCHAR(128),
@@ -2021,6 +2024,15 @@ BEGIN
 							SET @userPhoto = (SELECT Photo FROM Employee WHERE EID = @userID)
 							UPDATE Employee SET LogInStatus = '01' WHERE EID = @userID
 							UPDATE Employee SET LogInTStamp = GETDATE() WHERE EID = @userID
+							INSERT INTO dbo.LoginTime(
+								EmployeeID,
+								LoginTime
+							)
+							VALUES(
+								@userID,
+								(SELECT LogInTStamp FROM Employee WHERE EID = @userID)
+							)
+
 							RETURN 0
 						END
 						IF(@status = '01')
@@ -2107,6 +2119,10 @@ BEGIN
 					UPDATE dbo.Employee SET LogOutStamp = GETDATE() WHERE (Email=@dummyToken OR PAN=@dummyToken OR NationalID=@dummyToken)
 					SET @responseMessage='Logged out successfully'
 					SELECT @return_Hex_value = '00'
+					UPDATE EmployeeLogs
+					SET LogOutTime = (SELECT LogOutStamp FROM Employee where (Email=@dummyToken OR PAN=@dummyToken OR NationalID=@dummyToken))
+					WHERE EmployeeID = (SELECT EID FROM Employee WHERE (Email=@dummyToken OR PAN=@dummyToken OR NationalID=@dummyToken))
+					AND LogInTime= (SELECT LogInTStamp FROM Employee where (Email=@dummyToken OR PAN=@dummyToken OR NationalID=@dummyToken))
 					RETURN 0
 				END
 				ELSE IF(@status='00')
@@ -2256,6 +2272,7 @@ BEGIN
 	END
 END
 
+
 --GO
 --DECLARE @return_Hex_value NVARCHAR(2),
 --        @responseMessage NVARCHAR(128),
@@ -2310,7 +2327,6 @@ END
 ----------------------------------------NEW SET OF STORED PROCEDURES--------------------------------------------------------------
 
 --TODO: Add the PatientID select query to set values.
-GO
 GO
 CREATE OR ALTER PROC usp_getAndroidIncident
 @VIN INT,

@@ -53,6 +53,15 @@ BEGIN
 							SET @userPhoto = (SELECT Photo FROM Employee WHERE EID = @userID)
 							UPDATE Employee SET LogInStatus = '01' WHERE EID = @userID
 							UPDATE Employee SET LogInTStamp = GETDATE() WHERE EID = @userID
+							INSERT INTO dbo.LoginTime(
+								EmployeeID,
+								LoginTime
+							)
+							VALUES(
+								@userID,
+								(SELECT LogInTStamp FROM Employee WHERE EID = @userID)
+							)
+
 							RETURN 0
 						END
 						IF(@status = '01')
@@ -139,6 +148,10 @@ BEGIN
 					UPDATE dbo.Employee SET LogOutStamp = GETDATE() WHERE (Email=@dummyToken OR PAN=@dummyToken OR NationalID=@dummyToken)
 					SET @responseMessage='Logged out successfully'
 					SELECT @return_Hex_value = '00'
+					UPDATE EmployeeLogs
+					SET LogOutTime = (SELECT LogOutStamp FROM Employee where (Email=@dummyToken OR PAN=@dummyToken OR NationalID=@dummyToken))
+					WHERE EmployeeID = (SELECT EID FROM Employee WHERE (Email=@dummyToken OR PAN=@dummyToken OR NationalID=@dummyToken))
+					AND LogInTime= (SELECT LogInTStamp FROM Employee where (Email=@dummyToken OR PAN=@dummyToken OR NationalID=@dummyToken))
 					RETURN 0
 				END
 				ELSE IF(@status='00')
@@ -288,54 +301,5 @@ BEGIN
 	END
 END
 
---GO
---DECLARE @return_Hex_value NVARCHAR(2),
---        @responseMessage NVARCHAR(128),
---        @jobID NVARCHAR(64),
---        @employeeID NVARCHAR(64);
---EXEC dbo.usp_Employee_Login @EmailOrPAN = N'07810798770078',                            -- nvarchar(128)
---                            @HashPassword = N'Z8Y8IXV7AO8CAI77J1U380ITRONV2SY21MEJW9VFZN0U1I2I',                          -- nvarchar(128)
---                            @return_Hex_value = @return_Hex_value OUTPUT, -- nvarchar(2)
---                            @responseMessage = @responseMessage OUTPUT,   -- nvarchar(128)
---                            @jobID = @jobID OUTPUT,                       -- nvarchar(64)
---                            @employeeID = @employeeID OUTPUT              -- nvarchar(64)
---							PRINT @responseMessage
---							PRINT @return_Hex_value
---							PRINT @jobID
---							PRINT @employeeID
 
---GO
---DECLARE @return_Hex_value NVARCHAR(2),
---        @responseMessage NVARCHAR(128);
---EXEC dbo.usp_Employee_Logout @dummyToken = N'91008004917121647682',                            -- nvarchar(128)
---                             @return_Hex_value = @return_Hex_value OUTPUT, -- nvarchar(2)
---                             @responseMessage = @responseMessage OUTPUT    -- nvarchar(128)
---							 PRINT @responseMessage
---							 PRINT @return_Hex_value
--- END of Employee SP --
 
---GO
---DECLARE @return_Hex_value NVARCHAR(2),
---        @responseMessage NVARCHAR(128),
---        @JobID NVARCHAR(64),
---        @employeeID NVARCHAR(64);
---EXEC dbo.usp_Employee_Login @EmailOrPAN = N'07810798770078',                            -- nvarchar(128)
---                            @HashPassword = N'Z8Y8IXV7AO8CAI77J1U380ITRONV2SY21MEJW9VFZN0U1I2I',                          -- nvarchar(128)
---                            @return_Hex_value = @return_Hex_value OUTPUT, -- nvarchar(2)
---                            @responseMessage = @responseMessage OUTPUT,   -- nvarchar(128)
---                            @JobID = @JobID OUTPUT,                       -- nvarchar(64)
---                            @employeeID = @employeeID OUTPUT              -- nvarchar(64)
---							PRINT @responseMessage
---							PRINT @return_Hex_value
---							PRINT @JobID
---							PRINT @employeeID
-
---GO
---DECLARE @return_Hex_value NVARCHAR(2),
---        @responseMessage NVARCHAR(128);
---EXEC dbo.usp_Employee_Logout @dummyToken = N'91008004917121647682',                            -- nvarchar(128)
---                             @return_Hex_value = @return_Hex_value OUTPUT, -- nvarchar(2)
---                             @responseMessage = @responseMessage OUTPUT    -- nvarchar(128)
---							 PRINT @responseMessage
---							 PRINT @return_Hex_value
--- END of Employee SP --
