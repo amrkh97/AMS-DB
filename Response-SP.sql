@@ -59,12 +59,6 @@ BEGIN
 		SELECT @return_Hex_value = 'FB'
 		RETURN -1
 	END
-	ELSE IF (@PersonCount IS NULL OR @PersonCount='')
-	BEGIN
-		SET @responseMessage = 'Missing Persons Count'
-		SELECT @return_Hex_value = 'FC'
-		RETURN -1
-	END
 	SET @ResponseID = (SELECT SequenceNumber FROM dbo.Responses WHERE (AssociatedVehicleVIN=@AssociatedVehicleVIN AND StartLocationID=@StartLocationID AND PickLocationID=@PickLocationID 
 	AND DropLocationID=@DropLocationID AND DestinationLocationID=@DestinationLocationID AND IncidentSQN=@IncidentSQN AND RespAlarmLevel=@RespAlarmLevel))
 	IF(@ResponseID IS NOT NULL)
