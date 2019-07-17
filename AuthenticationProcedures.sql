@@ -1,5 +1,4 @@
--- Employee SP --
--- Login --
+USE KAN_AMO
 GO
 CREATE OR ALTER PROC usp_Employee_Login 
 	@EmailOrPAN NVARCHAR(128),
@@ -17,7 +16,8 @@ BEGIN
 	SET NOCOUNT on
 	DECLARE @userID INT
 	DECLARE @status NVARCHAR(32)
-	
+	Declare @inStamp DATETIME
+
 	IF (@EmailOrPAN IS NOT NULL AND @HashPassword IS NOT NULL)
 	BEGIN
 		IF ((SELECT(LEN(@HashPassword))) > 7 )
@@ -52,14 +52,15 @@ BEGIN
 							SET @employeeID = @userID
 							SET @userPhoto = (SELECT Photo FROM Employee WHERE EID = @userID)
 							UPDATE Employee SET LogInStatus = '01' WHERE EID = @userID
-							UPDATE Employee SET LogInTStamp = GETDATE() WHERE EID = @userID
-							INSERT INTO dbo.LoginTime(
+							SET @inStamp = GETDATE()
+							UPDATE Employee SET LogInTStamp = @inStamp WHERE EID = @userID
+							INSERT INTO dbo.EmployeeLogs(
 								EmployeeID,
-								LoginTime
+								LogInTime
 							)
 							VALUES(
 								@userID,
-								(SELECT LogInTStamp FROM Employee WHERE EID = @userID)
+								@inStamp
 							)
 
 							RETURN 0
@@ -129,6 +130,7 @@ AS
 BEGIN
 	SET NOCOUNT ON
 	DECLARE @status NVARCHAR(32)
+	Declare @outStamp DATETIME
 	-- IF (@userID IS NOT NULL)
 	IF (@dummyToken IS NOT NULL)
 	BEGIN
@@ -145,11 +147,12 @@ BEGIN
 					-- UPDATE Employee SET LogInStatus = '00' WHERE EID = @userID
 					-- UPDATE Employee SET LogOutStamp = GETDATE() WHERE EID = @userID
 					UPDATE dbo.Employee SET LogInStatus = '00' WHERE (Email=@dummyToken OR PAN=@dummyToken OR NationalID=@dummyToken)
-					UPDATE dbo.Employee SET LogOutStamp = GETDATE() WHERE (Email=@dummyToken OR PAN=@dummyToken OR NationalID=@dummyToken)
+					SET @outStamp = GETDATE()
+					UPDATE dbo.Employee SET LogOutStamp = @outStamp WHERE (Email=@dummyToken OR PAN=@dummyToken OR NationalID=@dummyToken)
 					SET @responseMessage='Logged out successfully'
 					SELECT @return_Hex_value = '00'
 					UPDATE EmployeeLogs
-					SET LogOutTime = (SELECT LogOutStamp FROM Employee where (Email=@dummyToken OR PAN=@dummyToken OR NationalID=@dummyToken))
+					SET LogOutTime = @outStamp
 					WHERE EmployeeID = (SELECT EID FROM Employee WHERE (Email=@dummyToken OR PAN=@dummyToken OR NationalID=@dummyToken))
 					AND LogInTime= (SELECT LogInTStamp FROM Employee where (Email=@dummyToken OR PAN=@dummyToken OR NationalID=@dummyToken))
 					RETURN 0
@@ -300,6 +303,3 @@ BEGIN
 		RETURN -1
 	END
 END
-
-
-
