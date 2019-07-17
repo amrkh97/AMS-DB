@@ -721,13 +721,13 @@ CREATE TABLE IncidentCallers
 	PRIMARY KEY(IncidentSQN),
 	FOREIGN KEY(IncidentSQN) REFERENCES dbo.Incident(IncidentSequenceNumber)
 );
-CREATE TABLE LoginTime 
+CREATE TABLE EmployeeLogs 
 (
-	LoginID INT IDENTITY,
-	LoginTime DATETIME,
-	LogoutTime DATETIME,
+	LogInID INT IDENTITY,
+	LogInTime DATETIME,
+	LogOutTime DATETIME,
 	EmployeeID INT NOT NULL,
-	PRIMARY KEY (LoginID),
+	PRIMARY KEY (LogInID),
 	FOREIGN KEY(EmployeeID) REFERENCES dbo.Employee(EID)
 );
 ------------------------------------------------------------------------
