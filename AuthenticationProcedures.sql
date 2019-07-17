@@ -339,3 +339,11 @@ END
 --							 PRINT @responseMessage
 --							 PRINT @return_Hex_value
 -- END of Employee SP --
+GO
+CREATE OR ALTER PROC usp_Employee_TimeStamp
+@EID INT
+AS
+BEGIN
+ SELECT * FROM dbo.LoginTime
+ WHERE EID = @EID
+END
