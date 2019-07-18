@@ -1,4 +1,4 @@
-﻿USE KAN_AMO;
+USE KAN_AMO;
 GO
 
 --CREATE TABLE ResponseStatuses
@@ -253,42 +253,54 @@ CREATE TABLE Yellopad
 	INSERT INTO dbo.Yellopad
 	(
 	    YelloPadUniqueID,
-	    YellopadNetworkcardNo
+	    YellopadNetworkcardNo,
+		YelloPadMaintenanceNote
 	)
 	VALUES
 	(  	N'1d11c1d4ea9b8e5b',       -- YelloPadUniqueID - nvarchar(16)
-	    N'1'      -- YellopadNetworkcardNo - nvarchar(64)
+	    N'1',      -- YellopadNetworkcardNo - nvarchar(64)
+		'device 6' -- Yellopad device Number 
 	    ),
 	(  	N'1c05a1d4ea9b8e5b',       -- YelloPadUniqueID - nvarchar(16)
-	    N'2'      -- YellopadNetworkcardNo - nvarchar(64)
-	    ),
+	    N'2',      -- YellopadNetworkcardNo - nvarchar(64)
+	    'device 5' -- Yellopad device Number 
+		),
 	(  	N'151ba1d4ea9b8e5b',       -- YelloPadUniqueID - nvarchar(16)
-	    N'3'      -- YellopadNetworkcardNo - nvarchar(64)
-	    ),
+	    N'3',      -- YellopadNetworkcardNo - nvarchar(64)
+	    'device 8' -- Yellopad device Number 
+		),
 	(  	N'1b06a1d4ea9b8e5b',       -- YelloPadUniqueID - nvarchar(16)
-	    N'4'      -- YellopadNetworkcardNo - nvarchar(64)
-	    ),
+	    N'4',      -- YellopadNetworkcardNo - nvarchar(64)
+	    'device 3' -- Yellopad device Number 
+		),
 	(  	N'1b18a1d4ea9b8e5b',       -- YelloPadUniqueID - nvarchar(16)
-	    N'5'      -- YellopadNetworkcardNo - nvarchar(64)
-	    ),
+	    N'5',      -- YellopadNetworkcardNo - nvarchar(64)
+	    'device 7' -- Yellopad device Number 
+		),
 	(  	N'1208a1d4ea9b8e5b',       -- YelloPadUniqueID - nvarchar(16)
-	    N'6'      -- YellopadNetworkcardNo - nvarchar(64)
-	    ),
+	    N'6',      -- YellopadNetworkcardNo - nvarchar(64)
+	    'device 11' -- Yellopad device Number 
+		),
 	(  	N'1f16a1d4ea9b8e5b',       -- YelloPadUniqueID - nvarchar(16)
-	    N'7'      -- YellopadNetworkcardNo - nvarchar(64)
-	    ),
+	    N'7',      -- YellopadNetworkcardNo - nvarchar(64)
+	    'device 2' -- Yellopad device Number
+		),
 	(  	N'190209d4e3167aba',       -- YelloPadUniqueID - nvarchar(16)
-	    N'8'      -- YellopadNetworkcardNo - nvarchar(64)
-	    ),
+	    N'8',      -- YellopadNetworkcardNo - nvarchar(64)
+	    'device 1' -- Yellopad device Number
+		),
 	(  	N'0a0d11d4e3167aba',       -- YelloPadUniqueID - nvarchar(16)
-	    N'9'      -- YellopadNetworkcardNo - nvarchar(64)
-	    ),
+	    N'9',      -- YellopadNetworkcardNo - nvarchar(64)
+	    'device 10' -- Yellopad device Number
+		),
 	(  	N'1702c1d4ea9b8e5b',       -- YelloPadUniqueID - nvarchar(16)
-	    N'10'      -- YellopadNetworkcardNo - nvarchar(64)
-	    ),
+	    N'10',      -- YellopadNetworkcardNo - nvarchar(64)
+	    'device 4' -- Yellopad device Number
+		),
 	(  	N'240d11d4e3167aba',       -- YelloPadUniqueID - nvarchar(16)
-	    N'11'      -- YellopadNetworkcardNo - nvarchar(64)
-	    )
+	    N'11',      -- YellopadNetworkcardNo - nvarchar(64)
+	    'device 9' -- Yellopad device Number
+		)
 
 --TODO: Discuss the Vehicle Location Entry
 CREATE TABLE AmbulanceVehicle
