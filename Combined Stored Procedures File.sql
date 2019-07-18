@@ -171,7 +171,7 @@ BEGIN
 		RETURN -1
 	END
 	ELSE 
-	SET @ResponseStatus='00'
+	SET @ResponseStatus='02' --Car Accepted
 	BEGIN
 		INSERT INTO Responses
 		(
@@ -212,6 +212,15 @@ BEGIN
 	BEGIN
 		SET @responseMessage = 'Response Has Been Added'
 		SELECT @return_Hex_value = '00'
+		
+		UPDATE dbo.AmbulanceMap
+		SET StatusMap = '01' --Ambulance Is Busy Ans Assigned
+		WHERE VIN = @AssociatedVehicleVIN AND StatusMap = '00'
+
+		UPDATE dbo.AmbulanceVehicle
+		SET VehicleStatus = '06'
+		WHERE VIN = @AssociatedVehicleVIN
+
 		RETURN 1
 	END
 END
@@ -1857,7 +1866,7 @@ CREATE OR ALTER PROC get_Employee_getLogTimes
 @EID INTEGER
 AS
 BEGIN
-SELECT LogInTime,LogOutTime,DATEDIFF(MINUTE,LogInTime,ISNULL(LogOutTime,LogInTime)) AS WorkMins FROM dbo.EmployeeLogs
+SELECT LogInTime,ISNULL(LogOutTime,LogInTime),DATEDIFF(MINUTE,LogInTime,ISNULL(LogOutTime,LogInTime)) AS WorkMins FROM dbo.EmployeeLogs
 WHERE EmployeeID = @EID
 END
 ----------------------------------------NEW SET OF STORED PROCEDURES--------------------------------------------------------------
