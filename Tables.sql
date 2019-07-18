@@ -509,12 +509,10 @@ VALUES
 	('paramedic8@test.com','23456789','6699874890125969','',2,2,'Nehal','Hegazy'),
 	('paramedic9@test.com','12345678','0189720283374105','',3,2,'Khalid','Abdalla'),
 	('paramedic10@test.com','01234567','9874502983497779','',2,2,'Walid','Mohamd'),
-	('m@m.com','12345678','4444444444444444','29410242104097',2,2,'Mohamed','Sherif')
-
- 
+	('m@m.com','12345678','4444444444444444','29410242104097',2,2,'Mohamed','Sherif'),
    	('mrmanager@test.com','53513676',null,'',1,1,'Mahmoud','Rashad'),
 	('mroperator@test.com','53513676','','29704090101931',2,4,'Mahmoud','Rashad'),
-        ('mrdriver@test.com','53513676','',null,2,3,'Mahmoud','Rashad'),
+    ('mrdriver@test.com','53513676','',null,2,3,'Mahmoud','Rashad'),
 	('mrparamedic@test.com','53513676',null,'',2,2,'Mahmoud','Rashad')
 
 CREATE TABLE Incident
