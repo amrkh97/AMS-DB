@@ -1857,7 +1857,7 @@ CREATE OR ALTER PROC get_Employee_getLogTimes
 @EID INTEGER
 AS
 BEGIN
-SELECT LogInTime,LogOutTime,DATEDIFF(MINUTE,LogInTime,ISNULL(LogOutTime,LogInTime)) FROM dbo.EmployeeLogs
+SELECT LogInTime,LogOutTime,DATEDIFF(MINUTE,LogInTime,ISNULL(LogOutTime,LogInTime)) AS WorkMins FROM dbo.EmployeeLogs
 WHERE EmployeeID = @EID
 END
 ----------------------------------------NEW SET OF STORED PROCEDURES--------------------------------------------------------------
