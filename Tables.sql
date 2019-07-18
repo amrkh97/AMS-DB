@@ -515,8 +515,6 @@ VALUES
 	('rashad_p@test.com','53513676',null,'',6,2,'Mahmoud','Rashad'),
 	('m@m.com','12345678','4444444444444444','29410242104097',2,2,'Mohamed','Sherif')
 
-	select * from Employee
- 
 
 CREATE TABLE Incident
 (
