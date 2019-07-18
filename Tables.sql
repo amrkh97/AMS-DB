@@ -1,4 +1,4 @@
-USE KAN_AMO;
+﻿USE KAN_AMO;
 GO
 
 --CREATE TABLE ResponseStatuses
@@ -492,45 +492,52 @@ CREATE TABLE Employee
 INSERT INTO Employee
 	(Email,HashPassword,PAN,NationalID,SuperSSN,JobID,Fname,Lname)
 VALUES
-	('admin@test.com','12345678',null,null,1,0,'Ahmed','Al-Gohary') ,
-    ('move_manager1@test.com','91234567',null,'',1,1,'Amr','Khaled'),
-	('move_manager2@test.com','89123456','0123456789012345','',1,1,'Mostafa','Mufeed'),
-	('move_manager3@test.com','78912345','01234567890123','',1,1,'Ahmed','Salah'),
-	('move_manager4@test.com','67891234','9876543210987654','01234567890123',1,1,'Mohamed','Sherif'),
-   	('rashad_m@test.com','53513676',null,'',1,1,'Mahmoud','Rashad'),
-	('dewidar_manager@test.com','1234567890mo',null,'',1,1,'mohamed','dewidar'),
-	('operator1@test.com','91234567','','29704090101931',2,4,'Hossam','Hassan'),
-	('operator2@test.com','89123456',null,null,3,4,'Ibrahim','Hassan'),
-	('operator3@test.com','78912345',null,'',4,4,'Mohamed','El-Sokkary'),
-	('operator4@test.com','67891234',null,'',4,4,'Mohamed','Said'),
-	('rashad_o@test.com','53513676','','29704090101931',6,4,'Mahmoud','Rashad'),
-	('dewidar_operator@test.com','1234567890mo',null,'',7,4,'mohamed','dewidar'),
-	('driver1@test.com','91234567','',null,2,3,'Anas','Mohamed'),
-	('driver2@test.com','12588888','1010101010101010','',3,3,'Ahmed','Amrawy'),
-	('driver3@test.com','78912345','','11112222333344',4,3,'Kamel','Mohsen'),
-	('driver4@test.com','67891234','','12345678978945',2,3,'Ahmed','Elgohary'),
-	('driver5@test.com','56789123','','55555669933214',3,3,'Ahmed','Zaki'),
-	('driver6@test.com','45678912','','77715892541359',4,3,'Mohamed','Abdelhady'),
-	('driver7@test.com','34567891','','01258963271408',2,3,'Mahmoud','Rashad'),
-	('driver8@test.com','23456789','','40489305967281',5,3,'Eman','Mohamed'),
-	('driver9@test.com','12345678','','12302020363699',2,3,'Aya','Mohamed'),
-	('driver10@test.com','01234567','','89887744252664',5,3,'Noha','Ezzat'),
-    ('rashad_d@test.com','53513676','',null,6,3,'Mahmoud','Rashad'),
-	('dewidar_driver@test.com','1234567890mo','','',7,3,'mohamed','dewidar'),
-	('paramedic1@test.com','91234567',null,'',2,2,'Mohamed','Salah'),
-	('paramedic2@test.com','89123456',null,'',3,2,'Abdelrahman','Ahmed'),
-	('paramedic3@test.com','78912345','4017772008280452','',4,2,'Omar','Mohamed'),
-	('paramedic4@test.com','67891234','4918012011072830','',2,2,'Hussien','Khaled'),
-	('paramedic5@test.com','56789123','4325885600298917','',3,2,'Ahmed','Al-Gohary'),
-	('paramedic6@test.com','45678912','1233555889966004','',4,2,'Mohamed','Dwidar'),
-	('paramedic7@test.com','34567891','3366998855001258','',5,2,'Dina','Jouda'),
-	('paramedic8@test.com','23456789','6699874890125969','',2,2,'Nehal','Hegazy'),
-	('paramedic9@test.com','12345678','0189720283374105','',3,2,'Khalid','Abdalla'),
-	('paramedic10@test.com','01234567','9874502983497779','',2,2,'Walid','Mohamd'),
-	('rashad_p@test.com','53513676',null,'',6,2,'Mahmoud','Rashad'),
-	('dewidar_paramedic@test.com','1234567890mo','9874502983497779','',7,2,'mohamed','dewidar'),
-	('m@m.com','12345678','4444444444444444','29410242104097',2,2,'Mohamed','Sherif')
-
+	('admin@test.com','12345678',null,null,1,0,'Ahmed','Al-Gohary') , --1
+    ('move_manager1@test.com','91234567',null,'',1,1,'Amr','Khaled'), --2
+	('move_manager2@test.com','89123456','0123456789012345','',1,1,'Mostafa','Mufeed'), --3
+	('move_manager3@test.com','78912345','01234567890123','',1,1,'Ahmed','Salah'), --4
+	('move_manager4@test.com','67891234','9876543210987654','01234567890123',1,1,'Mohamed','Sherif'), --5
+   	('rashad_m@test.com','53513676',null,'',1,1,'Mahmoud','Rashad'), --6
+	('dewidar_manager@test.com','1234567890mo',null,'',1,1,'mohamed','dewidar'), --7
+	('operator1@test.com','91234567','','29704090101931',2,4,'Hossam','Hassan'), --8
+	('operator2@test.com','89123456',null,null,3,4,'Ibrahim','Hassan'), --9
+	('operator3@test.com','78912345',null,'',4,4,'Mohamed','El-Sokkary'), --10
+	('operator4@test.com','67891234',null,'',4,4,'Mohamed','Said'), --11
+	('rashad_o@test.com','53513676','','29704090101931',6,4,'Mahmoud','Rashad'), --12
+	('dewidar_operator@test.com','1234567890mo',null,'',7,4,'mohamed','dewidar'), --13
+	('driver1@test.com','91234567','',null,2,3,'Anas','Mohamed'), --14
+	('driver2@test.com','12588888','1010101010101010','',3,3,'Ahmed','Amrawy'), --15
+	('driver3@test.com','78912345','','11112222333344',4,3,'Kamel','Mohsen'), --16
+	('driver4@test.com','67891234','','12345678978945',2,3,'Ahmed','Elgohary'), --17
+	('driver5@test.com','56789123','','55555669933214',3,3,'Ahmed','Zaki'), --18
+	('driver6@test.com','45678912','','77715892541359',4,3,'Mohamed','Abdelhady'), --19
+	('driver7@test.com','34567891','','01258963271408',2,3,'Mahmoud','Rashad'), --20
+	('driver8@test.com','23456789','','40489305967281',5,3,'Eman','Mohamed'), --21
+	('driver9@test.com','12345678','','12302020363699',2,3,'Aya','Mohamed'), --22
+	('driver10@test.com','01234567','','89887744252664',5,3,'Noha','Ezzat'), --23
+    ('rashad_d@test.com','53513676','',null,6,3,'Mahmoud','Rashad'), --24
+	('dewidar_driver@test.com','1234567890mo','','',7,3,'mohamed','dewidar'), --25
+	('paramedic1@test.com','91234567',null,'',2,2,'Mohamed','Salah'), --26
+	('paramedic2@test.com','89123456',null,'',3,2,'Abdelrahman','Ahmed'), --27
+	('paramedic3@test.com','78912345','4017772008280452','',4,2,'Omar','Mohamed'), --28
+	('paramedic4@test.com','67891234','4918012011072830','',2,2,'Hussien','Khaled'), --29
+	('paramedic5@test.com','56789123','4325885600298917','',3,2,'Ahmed','Al-Gohary'), --30
+	('paramedic6@test.com','45678912','1233555889966004','',4,2,'Mohamed','Dwidar'), --31
+	('paramedic7@test.com','34567891','3366998855001258','',5,2,'Dina','Jouda'), --32
+	('paramedic8@test.com','23456789','6699874890125969','',2,2,'Nehal','Hegazy'), --33
+	('paramedic9@test.com','12345678','0189720283374105','',3,2,'Khalid','Abdalla'), --34
+	('paramedic10@test.com','01234567','9874502983497779','',2,2,'Walid','Mohamd'), --35
+	('rashad_p@test.com','53513676',null,'',6,2,'Mahmoud','Rashad'), --36
+	('dewidar_paramedic@test.com','1234567890mo','9874502983497779','',7,2,'mohamed','dewidar'), --37
+	('m@m.com','12345678','4444444444444444','29410242104097',2,2,'Mohamed','Sherif'), --38
+	('aya_m@test.com','12345678',null,null,1,1,'aya','aya'), --39
+	('aya_o@test.com','12345678',null,null,39,4,'aya','aya'), --40
+	('aya_d@test.com','12345678',null,null,39,3,'aya','aya'), --41
+	('aya_p@test.com','12345678',null,null,39,2,'aya','aya'), --42
+	('eman_m@test.com','12345678',null,null,1,1,'eman','eman'), --43
+	('eman_o@test.com','12345678',null,null,43,4,'eman','eman'), --44
+	('eman_d@test.com','12345678',null,null,43,3,'eman','eman'), --45
+	('eman_p@test.com','12345678',null,null,43,2,'eman','eman') --46
 
 CREATE TABLE Incident
 (
