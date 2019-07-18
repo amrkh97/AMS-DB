@@ -1,4 +1,4 @@
-﻿USE KAN_AMO;
+USE KAN_AMO;
 GO
 
 --CREATE TABLE ResponseStatuses
@@ -253,10 +253,10 @@ CREATE TABLE Yellopad
 	INSERT INTO dbo.Yellopad
 	(
 	    YelloPadUniqueID,
-	    YellopadNetworkcardNo
+	    YellopadNetworkcardNo,
+		YelloPadMaintenanceNote
 	)
 	VALUES
-	/////////////////
 	(  	N'1d11c1d4ea9b8e5b',       -- YelloPadUniqueID - nvarchar(16)
 	    N'1',      -- YellopadNetworkcardNo - nvarchar(64)
 		'device 6' -- Yellopad device Number 
