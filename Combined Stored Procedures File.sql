@@ -3384,7 +3384,7 @@ as
 
 
 GO 
-CREATE OR ALTER PROC  usp_add_New_Patient
+Create OR ALTER PROC  usp_add_New_Patient
 	@PatientFName VARCHAR(32),
 	@PatientLName VARCHAR(32),
 	@Gender NVARCHAR(1),
@@ -3398,30 +3398,46 @@ CREATE OR ALTER PROC  usp_add_New_Patient
 	@PatientStatus NVARCHAR(32) ,
 	@PatientNationalID NVARCHAR(14),
 
-	@PatientID INT OUTPUT,
+	@PatientID INT = -1 OUTPUT,
 	@responseCode NVARCHAR(2)='FF' OUTPUT,
 	@responseMessage NVARCHAR(128)='' OUTPUT
 AS
-	BEGIN TRY
-INSERT INTO Patient ( PatientFName, PatientLName, Gender, Age, Phone, LastBenifitedTime, FirstBenifitedTime, NextOfKenName, NextOfKenPhone, NextOfKenAddress, PatientStatus, PatientNationalID)
-			  VALUES  (@PatientFName,@PatientLName,@Gender,@Age,@Phone,@LastBenifitedTime,@FirstBenifitedTime,@NextOfKenName,@NextOfKenPhone,@NextOfKenAddress,@PatientStatus,@PatientNationalID)
-			    SELECT @responseCode = '00'
-		        SELECT @responseMessage = 'Success'
-		      SET 	@PatientID = (SELECT PatientID 
-				       FROM Patient		
-					WHERE PatientNationalID  =@PatientNationalID
-					AND  PatientFName = @PatientFName  AND  PatientLName = @PatientLName  AND Gender = @Gender AND Age =@Age  AND  Phone = @Phone 
-					 AND LastBenifitedTime  = @LastBenifitedTime   AND FirstBenifitedTime  = @FirstBenifitedTime  AND  NextOfKenName = @NextOfKenName 
-					AND  NextOfKenPhone = @NextOfKenPhone AND NextOfKenAddress= @NextOfKenAddress AND PatientStatus = @PatientStatus)
- 
- 
-				END TRY
-BEGIN CATCH
-			SELECT @responseCode = 'FF',
-		@responseMessage=ERROR_MESSAGE()
-			return -1;
-	END CATCH
-		return -1
+BEGIN
+	SET @PatientID = (SELECT dbo.Patient.PatientID FROM dbo.Patient WHERE Age = @Age AND Gender = @Gender AND PatientFName = @PatientFName
+	AND PatientLName = @PatientLName AND Phone = @Phone AND PatientNationalID = @PatientNationalID)
+	IF (@PatientID IS NOT NULL)
+	BEGIN
+		SET @responseCode = 'EF'
+		SET @responseMessage = 'Patient Already Exist'
+		PRINT @PatientID
+		RETURN
+	END 
+	ELSE
+	BEGIN
+		INSERT INTO Patient ( PatientFName, PatientLName, Gender, Age, Phone, LastBenifitedTime, FirstBenifitedTime, NextOfKenName, NextOfKenPhone, NextOfKenAddress, PatientStatus, PatientNationalID)
+		VALUES (@PatientFName,@PatientLName,@Gender,@Age,@Phone,@LastBenifitedTime,@FirstBenifitedTime,@NextOfKenName,@NextOfKenPhone,@NextOfKenAddress,@PatientStatus,@PatientNationalID)
+		SET @PatientID = (
+			SELECT PatientID 
+			FROM dbo.Patient 
+			WHERE (Age = @Age AND Gender = @Gender AND PatientFName = @PatientFName AND PatientLName = @PatientLName 
+			AND Phone = @Phone)
+		)
+		IF (@PatientID IS NOT NULL)
+		BEGIN
+			SET @responseCode = '00'
+			SET @responseMessage = 'Succesfully Added New Patient'
+			PRINT @PatientID
+			RETURN
+		END 
+		ELSE 
+		BEGIN
+			SET @responseCode = 'FF'
+			SET @responseMessage = 'Failed To Add Patient'
+			PRINT @PatientID
+			RETURN
+		END
+	END
+END
 
 GO
 CREATE OR ALTER PROC usp_Update_Patient
