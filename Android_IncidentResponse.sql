@@ -86,7 +86,7 @@ SELECT @alarmLevelName = AlarmLevelName,
        @alarmLevelNote = AlarmLevelNote 
        FROM  dbo.AlarmLevels WHERE AlarmLevelID = @alarmLevelID
 
-SELECT @BatchID = BatchID FROM dbo.AmbulanceMap WHERE dbo.AmbulanceMap.VIN = @VIN AND StatusMap = '00'
+SELECT @BatchID = BatchID FROM dbo.AmbulanceMap WHERE dbo.AmbulanceMap.VIN = @VIN AND StatusMap = '01'
 
 SELECT @callerFName = CallerFName,@callerLName = CallerFName, @callerMobileNumber = CallerMobile
 FROM dbo.IncidentCallers WHERE IncidentSQN = @iSQN
