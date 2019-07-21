@@ -86,3 +86,11 @@ set @HexCode = '01'
 END
 END
 GO
+
+CREATE OR ALTER PROC usp_AmbulanceMap_getAllBatches
+@VIN INTEGER
+AS
+BEGIN
+SELECT BatchID FROM dbo.AmbulanceBatchesMap WHERE AssociatedVIN = @VIN
+END
+GO
