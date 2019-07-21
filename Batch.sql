@@ -76,7 +76,7 @@ VALUES
 	@batchID,
 	@barCode,
 	@usedAmt,
-	(select VIN from dbo.AmbulanceMap where BatchID = @batchID)
+	(select AssociatedVIN from dbo.AmbulanceBatchesMap where BatchID = @batchID)
 )
 set @HexCode = '00'
 END

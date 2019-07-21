@@ -1946,7 +1946,7 @@ VALUES
 	@batchID,
 	@barCode,
 	@usedAmt,
-	(select VIN from dbo.AmbulanceMap where BatchID = @batchID)
+	(select AssociatedVIN from dbo.AmbulanceBatchesMap where BatchID = @batchID)
 )
 set @HexCode = '00'
 END
@@ -1955,7 +1955,6 @@ BEGIN
 set @HexCode = '01'
 END
 END
-
 GO
 
 CREATE OR ALTER PROC usp_Batch_getMedicines
@@ -2784,6 +2783,7 @@ end
 END
 GO
 
+
 CREATE OR ALTER PROC usp_AmbulanceMap_Insert_Batch
 @VIN INT,
 @batchID BIGINT,
@@ -2795,6 +2795,18 @@ begin
 UPDATE dbo.AmbulanceMap
 SET BatchID = @batchID
 where VIN = @VIN and StatusMap = '00'
+
+INSERT INTO AmbulanceBatchesMap
+(
+    AssociatedVIN,
+    BatchID
+)
+VALUES (
+    @VIN,
+    @batchID
+)
+
+
 -- '00' -> updated succesfully
 SET @HexCode = '00'
 end
@@ -2804,7 +2816,6 @@ BEGIN
 SET @HexCode = '01'
 END
 END
-
 GO
 
 ------------------------------------------------------
