@@ -150,6 +150,7 @@ CREATE TABLE Medicine
 	ActiveComponent NVARCHAR(MAX),
 	MedicineStatus NVARCHAR(32) DEFAULT '00',
 	ExpirationDate date,
+	CompanyID INT,
 
 	PRIMARY KEY(BarCode),
 	CHECK (Price > 0),
