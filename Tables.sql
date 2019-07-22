@@ -194,16 +194,6 @@ CREATE TABLE PharmaCompany
 		PRIMARY key (CompanyID)
 );
 
-CREATE TABLE CompanyMedicineMap
-(
-	CompID INT,
-	MedBCode NVARCHAR(64),
-	MapStatus NVARCHAR(2),
-	PRIMARY key (CompID,MedBCode),
-	FOREIGN KEY (CompID) REFERENCES PharmaCompany (CompanyID),
-	FOREIGN KEY (MedBCode) REFERENCES Medicine (BarCode)
-
-);
 CREATE TABLE Batch
 (
 	BatchID BIGINT,
