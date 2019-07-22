@@ -9,32 +9,37 @@ USE KAN_AMO;
 GO
 CREATE OR ALTER proc usp_YelloPads_SelectAll
 as
-	select * from Yellopad
+select *
+from Yellopad
 
 GO
 
 CREATE OR ALTER proc usp_YelloPads_selectActive
 AS
-    select * from Yellopad
-	where YelloPadStatus <> '02'
+select *
+from Yellopad
+where YelloPadStatus <> '02'
 
 GO
 CREATE OR ALTER proc usp_YelloPads_selectInActive
 AS
-    select * from Yellopad
-	where YelloPadStatus = '02'
+select *
+from Yellopad
+where YelloPadStatus = '02'
  ------------------------------------------
 -- (2) Search Unique ID --
 -----------------------------------------
 GO
-CREATE OR ALTER proc usp_YelloPads_Search @UniqueID NVARCHAR(16)
+CREATE OR ALTER proc usp_YelloPads_Search
+	@UniqueID NVARCHAR(16)
 as
 IF (@UniqueID IS NOT NULL)
 	BEGIN
-		select * from Yellopad
-		
-		WHERE  YelloPad.YelloPadUniqueID = @UniqueID
-	END
+	select *
+	from Yellopad
+
+	WHERE  YelloPad.YelloPadUniqueID = @UniqueID
+END
 	ELSE
 		RETURN -1
 
@@ -42,13 +47,15 @@ IF (@UniqueID IS NOT NULL)
 -- (3) Get YelloPad Status --
 -----------------------------------------
 GO
-CREATE OR ALTER proc usp_YelloPads_Status @UniqueID NVARCHAR(16)
+CREATE OR ALTER proc usp_YelloPads_Status
+	@UniqueID NVARCHAR(16)
 as
-	IF (@UniqueID IS NOT NULL)
+IF (@UniqueID IS NOT NULL)
 	BEGIN
-		select YelloPadStatus from dbo.Yellopad
-		WHERE YelloPad.YelloPadUniqueID=@UniqueID;
-	END
+	select YelloPadStatus
+	from dbo.Yellopad
+	WHERE YelloPad.YelloPadUniqueID=@UniqueID;
+END
 	ELSE
 		RETURN -1
 
@@ -56,13 +63,15 @@ as
 -- (4) Get YelloPad Network Info --
 -----------------------------------------
 GO
-CREATE OR ALTER proc usp_YelloPads_NetworkCard @UniqueID NVARCHAR(16)
+CREATE OR ALTER proc usp_YelloPads_NetworkCard
+	@UniqueID NVARCHAR(16)
 as
-	IF (@UniqueID IS NOT NULL)
+IF (@UniqueID IS NOT NULL)
 	BEGIN
-		select YellopadNetworkcardNo from YelloPad
-		where YelloPadUniqueID = @UniqueID
-	END
+	select YellopadNetworkcardNo
+	from YelloPad
+	where YelloPadUniqueID = @UniqueID
+END
 	ELSE
 		RETURN -1
 
@@ -74,48 +83,49 @@ CREATE OR ALTER PROC usp_Response_TableData
 AS
 BEGIN
 
-SELECT
-dbo.Responses.IncidentSQN, dbo.IncidentTypes.TypeName, dbo.Responses.SequenceNumber,
-dbo.Priorities.PriorityName,dbo.Responses.RespStatus,
-dbo.AmbulanceMap.VIN,dbo.AmbulanceMap.ParamedicID,ParamedicTable.Fname,ParamedicTable.Lname,ParamedicTable.ContactNumber,
-dbo.AmbulanceMap.DriverID,DriverTable.Fname,DriverTable.Lname,DriverTable.ContactNumber,
-dbo.AmbulanceVehicle.LicencePlate,dbo.AmbulanceVehicle.Model,
-PatientLoc.FreeFormatAddress
-FROM dbo.AmbulanceMap
-INNER JOIN dbo.AmbulanceVehicle 
-ON AmbulanceVehicle.VIN = AmbulanceMap.VIN
-INNER JOIN dbo.Employee AS ParamedicTable
-ON ParamedicTable.EID = AmbulanceMap.ParamedicID
-INNER JOIN dbo.Employee AS DriverTable
-ON DriverTable.EID = AmbulanceMap.DriverID
-INNER JOIN dbo.Responses
-ON Responses.AssociatedVehicleVIN = AmbulanceVehicle.VIN
-INNER JOIN dbo.Incident
-ON Incident.IncidentSequenceNumber = Responses.IncidentSQN
-INNER JOIN dbo.IncidentTypes
-ON IncidentTypes.IncidentTypeID = Incident.IncidentType
-INNER JOIN dbo.Priorities
-ON Priorities.PrioritYID = Incident.IncidentPriority
-INNER JOIN dbo.Locations AS PatientLoc
-ON PatientLoc.LocationID = Responses.PickLocationID
+	SELECT
+		dbo.Responses.IncidentSQN, dbo.IncidentTypes.TypeName, dbo.Responses.SequenceNumber,
+		dbo.Priorities.PriorityName, dbo.Responses.RespStatus,
+		dbo.AmbulanceMap.VIN, dbo.AmbulanceMap.ParamedicID, ParamedicTable.Fname, ParamedicTable.Lname, ParamedicTable.ContactNumber,
+		dbo.AmbulanceMap.DriverID, DriverTable.Fname, DriverTable.Lname, DriverTable.ContactNumber,
+		dbo.AmbulanceVehicle.LicencePlate, dbo.AmbulanceVehicle.Model,
+		PatientLoc.FreeFormatAddress
+	FROM dbo.AmbulanceMap
+		INNER JOIN dbo.AmbulanceVehicle
+		ON AmbulanceVehicle.VIN = AmbulanceMap.VIN
+		INNER JOIN dbo.Employee AS ParamedicTable
+		ON ParamedicTable.EID = AmbulanceMap.ParamedicID
+		INNER JOIN dbo.Employee AS DriverTable
+		ON DriverTable.EID = AmbulanceMap.DriverID
+		INNER JOIN dbo.Responses
+		ON Responses.AssociatedVehicleVIN = AmbulanceVehicle.VIN
+		INNER JOIN dbo.Incident
+		ON Incident.IncidentSequenceNumber = Responses.IncidentSQN
+		INNER JOIN dbo.IncidentTypes
+		ON IncidentTypes.IncidentTypeID = Incident.IncidentType
+		INNER JOIN dbo.Priorities
+		ON Priorities.PrioritYID = Incident.IncidentPriority
+		INNER JOIN dbo.Locations AS PatientLoc
+		ON PatientLoc.LocationID = Responses.PickLocationID
 
 
 END
 
 GO
 CREATE OR ALTER PROC usp_Response_Insert
-@AssociatedVehicleVIN INT, --1
-@StartLocationID INT,--2
-@PickLocationID INT,--3
-@DropLocationID INT,--4
-@DestinationLocationID INT,--5
-@IncidentSQN INT,--6
-@PrimaryResponseSQN INT,--7
-@RespAlarmLevel INT,--8
-@PersonCount NVARCHAR(32),--9
-@return_Hex_value NVARCHAR(2)='FF' OUTPUT,--10
-@responseMessage NVARCHAR(128)='' OUTPUT,--11
-@ResponseID INT= 0 OUTPUT--12
+	@AssociatedVehicleVIN INT,
+	--1
+	@StartLocationID INT,--2
+	@PickLocationID INT,--3
+	@DropLocationID INT,--4
+	@DestinationLocationID INT,--5
+	@IncidentSQN INT,--6
+	@PrimaryResponseSQN INT,--7
+	@RespAlarmLevel INT,--8
+	@PersonCount NVARCHAR(32),--9
+	@return_Hex_value NVARCHAR(2)='FF' OUTPUT,--10
+	@responseMessage NVARCHAR(128)='' OUTPUT,--11
+	@ResponseID INT= 0 OUTPUT--12
 AS
 BEGIN
 	SET NOCOUNT ON
@@ -124,7 +134,7 @@ BEGIN
 	BEGIN
 		SET @responseMessage = 'Missing VIN'
 		SELECT @return_Hex_value = 'AF'
-		RETURN -1	
+		RETURN -1
 	END
 	ELSE IF (@StartLocationID IS NULL OR @StartLocationID=0)
 	BEGIN
@@ -162,8 +172,10 @@ BEGIN
 		SELECT @return_Hex_value = 'FB'
 		RETURN -1
 	END
-	SET @ResponseID = (SELECT SequenceNumber FROM dbo.Responses WHERE (AssociatedVehicleVIN=@AssociatedVehicleVIN AND StartLocationID=@StartLocationID AND PickLocationID=@PickLocationID 
-	AND DropLocationID=@DropLocationID AND DestinationLocationID=@DestinationLocationID AND IncidentSQN=@IncidentSQN AND RespAlarmLevel=@RespAlarmLevel))
+	SET @ResponseID = (SELECT SequenceNumber
+	FROM dbo.Responses
+	WHERE (AssociatedVehicleVIN=@AssociatedVehicleVIN AND StartLocationID=@StartLocationID AND PickLocationID=@PickLocationID
+		AND DropLocationID=@DropLocationID AND DestinationLocationID=@DestinationLocationID AND IncidentSQN=@IncidentSQN AND RespAlarmLevel=@RespAlarmLevel))
 	IF(@ResponseID IS NOT NULL)
 	BEGIN
 		SET @responseMessage = 'Response Already Exist'
@@ -171,10 +183,11 @@ BEGIN
 		RETURN -1
 	END
 	ELSE 
-	SET @ResponseStatus='02' --Car Accepted
+	SET @ResponseStatus='02'
+	--Car Accepted
 	BEGIN
 		INSERT INTO Responses
-		(
+			(
 			AssociatedVehicleVIN,
 			StartLocationID,
 			PickLocationID,
@@ -185,23 +198,25 @@ BEGIN
 			PrimaryResponseSQN,
 			RespAlarmLevel,
 			PersonCount
-		)
+			)
 		VALUES
-		(   
-			@AssociatedVehicleVIN, 
-			@StartLocationID,
-			@PickLocationID,
-			@DropLocationID,
-			@DestinationLocationID,
-			@ResponseStatus,
-			@IncidentSQN,
-			@PrimaryResponseSQN,
-			@RespAlarmLevel,
-			@PersonCount
+			(
+				@AssociatedVehicleVIN,
+				@StartLocationID,
+				@PickLocationID,
+				@DropLocationID,
+				@DestinationLocationID,
+				@ResponseStatus,
+				@IncidentSQN,
+				@PrimaryResponseSQN,
+				@RespAlarmLevel,
+				@PersonCount
 		)
 	END
-	SET @ResponseID = (SELECT SequenceNumber FROM dbo.Responses WHERE (AssociatedVehicleVIN=@AssociatedVehicleVIN AND StartLocationID=@StartLocationID AND PickLocationID=@PickLocationID 
-	AND DropLocationID=@DropLocationID AND DestinationLocationID=@DestinationLocationID AND IncidentSQN=@IncidentSQN AND RespAlarmLevel=@RespAlarmLevel))
+	SET @ResponseID = (SELECT SequenceNumber
+	FROM dbo.Responses
+	WHERE (AssociatedVehicleVIN=@AssociatedVehicleVIN AND StartLocationID=@StartLocationID AND PickLocationID=@PickLocationID
+		AND DropLocationID=@DropLocationID AND DestinationLocationID=@DestinationLocationID AND IncidentSQN=@IncidentSQN AND RespAlarmLevel=@RespAlarmLevel))
 	IF(@ResponseID IS NULL)
 	BEGIN
 		SET @responseMessage = 'Failed To Add The Response'
@@ -212,7 +227,7 @@ BEGIN
 	BEGIN
 		SET @responseMessage = 'Response Has Been Added'
 		SELECT @return_Hex_value = '00'
-		
+
 		UPDATE dbo.AmbulanceMap
 		SET StatusMap = '01' --Ambulance Is Busy Ans Assigned
 		WHERE VIN = @AssociatedVehicleVIN AND StatusMap = '00'
@@ -227,16 +242,22 @@ END
 GO
 ------------------------------------------------------------------------------------
 -- FIND RESPONSE STATUS BY ID --
-CREATE OR ALTER PROC usp_ResponseStatus_SearchByID 
-@SequenceNumber INT, --1
-@return_Hex_value NVARCHAR(2)='FF' OUTPUT,--2
-@responseMessage NVARCHAR(128)='' OUTPUT,--3
-@RespStatus NVARCHAR(32) = '' OUTPUT--4
+CREATE OR ALTER PROC usp_ResponseStatus_SearchByID
+	@SequenceNumber INT,
+	--1
+	@return_Hex_value NVARCHAR(2)='FF' OUTPUT,--2
+	@responseMessage NVARCHAR(128)='' OUTPUT,--3
+	@RespStatus NVARCHAR(32) = '' OUTPUT--4
 AS
 BEGIN
-	IF EXISTS (SELECT TOP 1 SequenceNumber FROM dbo.Responses WHERE SequenceNumber=@SequenceNumber)
+	IF EXISTS (SELECT TOP 1
+		SequenceNumber
+	FROM dbo.Responses
+	WHERE SequenceNumber=@SequenceNumber)
 	BEGIN
-		SET @RespStatus = (SELECT RespStatus FROM Responses WHERE SequenceNumber=@SequenceNumber)
+		SET @RespStatus = (SELECT RespStatus
+		FROM Responses
+		WHERE SequenceNumber=@SequenceNumber)
 		SET @responseMessage = 'RESPONSE STATUS LOCATED'
 		SELECT @return_Hex_value = '00'
 		RETURN 1
@@ -251,12 +272,13 @@ END
 GO
 ------------------------------------------------------------------------------------
 -- UPDATE RESPONSE STATUS BY ID --
-CREATE OR ALTER PROC usp_ResponseStatus_UpdateByID 
-@SequenceNumber INT, --1
-@ResponseStatus NVARCHAR(32),--2
-@return_Hex_value NVARCHAR(2)='FF' OUTPUT,--3
-@responseMessage NVARCHAR(128)='' OUTPUT,--4
-@RespStatus NVARCHAR(32) = '' OUTPUT--5
+CREATE OR ALTER PROC usp_ResponseStatus_UpdateByID
+	@SequenceNumber INT,
+	--1
+	@ResponseStatus NVARCHAR(32),--2
+	@return_Hex_value NVARCHAR(2)='FF' OUTPUT,--3
+	@responseMessage NVARCHAR(128)='' OUTPUT,--4
+	@RespStatus NVARCHAR(32) = '' OUTPUT--5
 AS
 BEGIN
 	IF(@ResponseStatus IS NULL OR @ResponseStatus = '')
@@ -267,12 +289,17 @@ BEGIN
 	END
 	ELSE
 	BEGIN
-		IF EXISTS (SELECT TOP 1 SequenceNumber FROM dbo.Responses WHERE SequenceNumber=@SequenceNumber)
+		IF EXISTS (SELECT TOP 1
+			SequenceNumber
+		FROM dbo.Responses
+		WHERE SequenceNumber=@SequenceNumber)
 		BEGIN
 			UPDATE dbo.Responses
 			SET RespStatus = @ResponseStatus
 			WHERE SequenceNumber = @SequenceNumber
-			SET @RespStatus = (SELECT RespStatus FROM Responses WHERE SequenceNumber=@SequenceNumber)
+			SET @RespStatus = (SELECT RespStatus
+			FROM Responses
+			WHERE SequenceNumber=@SequenceNumber)
 			SET @responseMessage = 'RESPONSE STATUS LOCATED'
 			SELECT @return_Hex_value = '00'
 			RETURN 1
@@ -291,444 +318,489 @@ END
 GO
 
 CREATE OR ALTER PROC usp_Patient_getAllLocations
-@UserID INT
+	@UserID INT
 AS
 BEGIN
-SELECT * FROM Locations
-INNER JOIN dbo.PatientLocations ON PatientLocations.LocationID = Locations.LocationID
-WHERE PatientID=@UserID
+	SELECT *
+	FROM Locations
+		INNER JOIN dbo.PatientLocations ON PatientLocations.LocationID = Locations.LocationID
+	WHERE PatientID=@UserID
 
 END
 GO
 
 
 CREATE OR ALTER PROC  usp_Patient_Locations
-@UserID INT,
-@LocationUser NVARCHAR(100),
-@Lat NVARCHAR(32),
-@Long NVARCHAR(32),
-@HexCode NVARCHAR(2) OUTPUt
+	@UserID INT,
+	@LocationUser NVARCHAR(100),
+	@Lat NVARCHAR(32),
+	@Long NVARCHAR(32),
+	@HexCode NVARCHAR(2) OUTPUt
 AS
 Begin
-DECLARE @ID INT
-Declare @UserTableID INT
-Declare @LocID INT
-SET @ID = (select PatientnationalID from Patient where PatientID=@UserID)
-    --Patient doesn't already exist.
-    if(@ID is not NULL)
+	DECLARE @ID INT
+	Declare @UserTableID INT
+	Declare @LocID INT
+	SET @ID = (select PatientnationalID
+	from Patient
+	where PatientID=@UserID)
+	--Patient doesn't already exist.
+	if(@ID is not NULL)
     BEGIN
-    --If this address is previously registered.
-    if exists (SELECT FreeFormatAddress FROM Locations
-               Inner Join PatientLocations on PatientLocations.LocationID = Locations.LocationID
-               WHERE Locations.FreeFormatAddress=@LocationUser)
+		--If this address is previously registered.
+		if exists (SELECT FreeFormatAddress
+		FROM Locations
+			Inner Join PatientLocations on PatientLocations.LocationID = Locations.LocationID
+		WHERE Locations.FreeFormatAddress=@LocationUser)
             --HexCode : 00 -> Location was already registered   
                set @HexCode = '00'
             
             else
             BEGIN
-            --If the location wasn't registered.
-            Insert into Locations(FreeFormatAddress,Latitude,Longitude)
-            values(@LocationUser,@Lat,@Long)
+			--If the location wasn't registered.
+			Insert into Locations
+				(FreeFormatAddress,Latitude,Longitude)
+			values(@LocationUser, @Lat, @Long)
 
-            INSERT INTO  PatientLocations(PatientID,LocationID)
-            values((Select PatientID from Patient where Patient.PatientNationalID=@UserID),(SELECT TOP 1 LocationID from Locations where Locations.FreeFormatAddress=@LocationUser))
+			INSERT INTO  PatientLocations
+				(PatientID,LocationID)
+			values((Select PatientID
+					from Patient
+					where Patient.PatientNationalID=@UserID), (SELECT TOP 1
+						LocationID
+					from Locations
+					where Locations.FreeFormatAddress=@LocationUser))
 
-           --HexCode : 01 -> Location wasn't registered   
-               set @HexCode = '01'
-        
+			--HexCode : 01 -> Location wasn't registered   
+			set @HexCode = '01'
 
-            END
-    END
+
+		END
+	END
     ELSE
     BEGIN
-            Insert into Patient(PatientID,PatientnationalID) 
-            VALUES (@UserID,@UserID)
+		Insert into Patient
+			(PatientID,PatientnationalID)
+		VALUES
+			(@UserID, @UserID)
 
-        --TODO: Handle the case of having more than one apartment
-        --on the same Latitude and Longitude.
+		--TODO: Handle the case of having more than one apartment
+		--on the same Latitude and Longitude.
 
-            Insert into Locations(FreeFormatAddress,Longitude,Latitude)
-            Values(@LocationUser,@Long,@Lat)
-            
-            set @UserTableID = (select PatientID from Patient where Patient.PatientnationalID=@UserID)
-            set @LocID = (select top 1 LocationID from Locations 
-                        where Locations.FreeFormatAddress=@LocationUser
-                        and Locations.Longitude=@Long and Locations.Latitude=@Lat)
+		Insert into Locations
+			(FreeFormatAddress,Longitude,Latitude)
+		Values(@LocationUser, @Long, @Lat)
+
+		set @UserTableID = (select PatientID
+		from Patient
+		where Patient.PatientnationalID=@UserID)
+		set @LocID = (select top 1
+			LocationID
+		from Locations
+		where Locations.FreeFormatAddress=@LocationUser
+			and Locations.Longitude=@Long and Locations.Latitude=@Lat)
 
 
-        --Add Entry in PatientLocations Table:
+		--Add Entry in PatientLocations Table:
 
-            INSERT INTO  PatientLocations(PatientID,LocationID)
-            values(@UserTableID,@LocID)  
+		INSERT INTO  PatientLocations
+			(PatientID,LocationID)
+		values(@UserTableID, @LocID)
 
-            
-        --HexCode: 02 -> User wasn't registered in database.
-            set @HexCode = '02'
-    END
+
+		--HexCode: 02 -> User wasn't registered in database.
+		set @HexCode = '02'
+	END
 
 END
 
 ----------------------------------------NEW SET OF STORED PROCEDURES--------------------------------------------------------------
 GO
-CREATE OR ALTER PROC usp_Receipt_Insert 
-	
+CREATE OR ALTER PROC usp_Receipt_Insert
+
 	@RespSQN NVARCHAR(64),
 	@CasheirSSN INT,
 	@FTPFileLocation NVARCHAR(128),
 	@Cost NVARCHAR(32),
 	@PaymentMethod NVARCHAR(32)= '00',
-    @responseCode NVARCHAR(2)='FF' OUTPUT,
+	@responseCode NVARCHAR(2)='FF' OUTPUT,
 	@responseMessage NVARCHAR(128)='' OUTPUT
-	
-		as 
-	BEGIN TRY
+
+as
+BEGIN TRY
 	IF (@RespSQN IS NOT NULL )
 		BEGIN
-			INSERT INTO Receipt(RespSQN,CasheirSSN,FTPFileLocation,Cost,PaymentMethod)
-			values (@RespSQN,@CasheirSSN,@FTPFileLocation,@Cost,@PaymentMethod)
-	         SELECT @responseCode = '00'
-				SELECT @responseMessage = 'Success'
-		END
+	INSERT INTO Receipt
+		(RespSQN,CasheirSSN,FTPFileLocation,Cost,PaymentMethod)
+	values
+		(@RespSQN, @CasheirSSN, @FTPFileLocation, @Cost, @PaymentMethod)
+	SELECT @responseCode = '00'
+	SELECT @responseMessage = 'Success'
+END
 	ELSE
 	BEGIN
-				return -1
-				SELECT @responseCode = 'FF'
-				SELECT @responseMessage = 'Unknown Error'
-			END
+	return -1
+	SELECT @responseCode = 'FF'
+	SELECT @responseMessage = 'Unknown Error'
+END
 	END TRY
 	BEGIN CATCH
 			SELECT @responseCode = 'FF',
-			@responseMessage=ERROR_MESSAGE()
+	@responseMessage=ERROR_MESSAGE()
 			return -1;
 	END CATCH
-		return -1
+return -1
 ------------------------------------------------------------------------
 GO
-CREATE OR ALTER proc usp_Receipt_Delete 
- @ReceiptID INT,
-  @responseCode NVARCHAR(2)='FF' OUTPUT,
+CREATE OR ALTER proc usp_Receipt_Delete
+	@ReceiptID INT,
+	@responseCode NVARCHAR(2)='FF' OUTPUT,
 	@responseMessage NVARCHAR(128)='' OUTPUT
 
 as
 BEGIN TRY
 	IF (@ReceiptID IS NOT NULL)
 	BEGIN
-		UPDATE Receipt
+	UPDATE Receipt
 		SET ReceiptStatus = 99
-		where ReceiptID = @ReceiptID AND  ReceiptStatus='00'
-	    SELECT @responseCode = '00'
-		SELECT @responseMessage = 'Success'
-		
-	END
+		where ReceiptID = @ReceiptID AND ReceiptStatus='00'
+	SELECT @responseCode = '00'
+	SELECT @responseMessage = 'Success'
+
+END
 		ELSE
 	BEGIN
-				return -1
-				SELECT @responseCode = 'FF'
-				SELECT @responseMessage = 'Unknown Error'
-			END
+	return -1
+	SELECT @responseCode = 'FF'
+	SELECT @responseMessage = 'Unknown Error'
+END
 	END TRY
 	BEGIN CATCH
 			SELECT @responseCode = 'FF',
-			       @responseMessage=ERROR_MESSAGE()
+	@responseMessage=ERROR_MESSAGE()
 			return -1;
 	END CATCH
-		return -1	
+return -1	
 ---------------------------------------------------------------------------
 GO
-CREATE OR ALTER proc usp_Receipt_SelectByRespSQN  @RespSQN NVARCHAR(64),
-    @responseCode NVARCHAR(2)='FF' OUTPUT,
+CREATE OR ALTER proc usp_Receipt_SelectByRespSQN
+	@RespSQN NVARCHAR(64),
+	@responseCode NVARCHAR(2)='FF' OUTPUT,
 	@responseMessage NVARCHAR(128)='' OUTPUT
 
 as
 BEGIN TRY
 	IF (@RespSQN IS NOT NULL)
 	BEGIN
-		select * from Receipt
-		where ((RespSQN = @RespSQN) AND (ReceiptStatus='00'))
- SELECT @responseCode = '00'
-		SELECT @responseMessage = 'Success'
-	END
+	select *
+	from Receipt
+	where ((RespSQN = @RespSQN) AND (ReceiptStatus='00'))
+	SELECT @responseCode = '00'
+	SELECT @responseMessage = 'Success'
+END
 	ELSE
-	BEGIN 
+	BEGIN
 	return -1
-				SELECT @responseCode = 'FF'
-				SELECT @responseMessage = 'nO PARAMETER'
-	END
+	SELECT @responseCode = 'FF'
+	SELECT @responseMessage = 'nO PARAMETER'
+END
 	END TRY
 BEGIN CATCH
 			SELECT @responseCode = 'FF',
-		@responseMessage=ERROR_MESSAGE()
+	@responseMessage=ERROR_MESSAGE()
 			return -1;
 	END CATCH
-		return -1
+return -1
 
 		
 GO
-CREATE OR ALTER proc usp_Receipt_SelectByCasheirSSN  @CasheirSSN INT,
-   @responseCode NVARCHAR(2)='FF' OUTPUT,
+CREATE OR ALTER proc usp_Receipt_SelectByCasheirSSN
+	@CasheirSSN INT,
+	@responseCode NVARCHAR(2)='FF' OUTPUT,
 	@responseMessage NVARCHAR(128)='' OUTPUT
 
 as
 BEGIN TRY
 	IF (@CasheirSSN IS NOT NULL)
 	BEGIN
-		select * from Receipt
-		where ((CasheirSSN = @CasheirSSN) AND (ReceiptStatus='00'))
- SELECT @responseCode = '00'
-		SELECT @responseMessage = 'Success'
-	END
+	select *
+	from Receipt
+	where ((CasheirSSN = @CasheirSSN) AND (ReceiptStatus='00'))
+	SELECT @responseCode = '00'
+	SELECT @responseMessage = 'Success'
+END
 	ELSE
-	BEGIN 
+	BEGIN
 	return -1
-				SELECT @responseCode = 'FF'
-				SELECT @responseMessage = 'nO PARAMETER'
-	END
+	SELECT @responseCode = 'FF'
+	SELECT @responseMessage = 'nO PARAMETER'
+END
 	END TRY
 BEGIN CATCH
 			SELECT @responseCode = 'FF',
-		@responseMessage=ERROR_MESSAGE()
+	@responseMessage=ERROR_MESSAGE()
 			return -1;
 	END CATCH
-		return -1
+return -1
 
 
 		
 GO
-CREATE OR ALTER proc usp_Receipt_SelectByFTPFileLocation  @FTPFileLocation NVARCHAR(128),
- @responseCode NVARCHAR(2)='FF' OUTPUT,
+CREATE OR ALTER proc usp_Receipt_SelectByFTPFileLocation
+	@FTPFileLocation NVARCHAR(128),
+	@responseCode NVARCHAR(2)='FF' OUTPUT,
 	@responseMessage NVARCHAR(128)='' OUTPUT
 
 as
 BEGIN TRY
 	IF (@FTPFileLocation IS NOT NULL)
 	BEGIN
-		select * from Receipt
-		where ((FTPFileLocation = @FTPFileLocation) AND (ReceiptStatus='00'))
- SELECT @responseCode = '00'
-		SELECT @responseMessage = 'Success'
-	END
+	select *
+	from Receipt
+	where ((FTPFileLocation = @FTPFileLocation) AND (ReceiptStatus='00'))
+	SELECT @responseCode = '00'
+	SELECT @responseMessage = 'Success'
+END
 	ELSE
-	BEGIN 
+	BEGIN
 	return -1
-				SELECT @responseCode = 'FF'
-				SELECT @responseMessage = 'nO PARAMETER'
-	END
+	SELECT @responseCode = 'FF'
+	SELECT @responseMessage = 'nO PARAMETER'
+END
 	END TRY
 BEGIN CATCH
 			SELECT @responseCode = 'FF',
-		@responseMessage=ERROR_MESSAGE()
+	@responseMessage=ERROR_MESSAGE()
 			return -1;
 	END CATCH
-		return -1
+return -1
 
 		
 GO
-CREATE OR ALTER proc usp_Receipt_SelectByReceiptStatus  @ReceiptStatus NVARCHAR(64),
- @responseCode NVARCHAR(2)='FF' OUTPUT,
+CREATE OR ALTER proc usp_Receipt_SelectByReceiptStatus
+	@ReceiptStatus NVARCHAR(64),
+	@responseCode NVARCHAR(2)='FF' OUTPUT,
 	@responseMessage NVARCHAR(128)='' OUTPUT
 
 as
 BEGIN TRY
 	IF (@ReceiptStatus IS NOT NULL)
 	BEGIN
-		select * from Receipt
-		where ((ReceiptStatus = @ReceiptStatus))
- SELECT @responseCode = '00'
-		SELECT @responseMessage = 'Success'
-	END
+	select *
+	from Receipt
+	where ((ReceiptStatus = @ReceiptStatus))
+	SELECT @responseCode = '00'
+	SELECT @responseMessage = 'Success'
+END
 	ELSE
-	BEGIN 
+	BEGIN
 	return -1
-				SELECT @responseCode = 'FF'
-				SELECT @responseMessage = 'nO PARAMETER'
-	END
+	SELECT @responseCode = 'FF'
+	SELECT @responseMessage = 'nO PARAMETER'
+END
 	END TRY
 BEGIN CATCH
 			SELECT @responseCode = 'FF',
-		@responseMessage=ERROR_MESSAGE()
+	@responseMessage=ERROR_MESSAGE()
 			return -1;
 	END CATCH
-		return -1
+return -1
 
 		
 GO
-CREATE OR ALTER proc usp_Receipt_SelectByCost  @Cost NVARCHAR(64),
- @responseCode NVARCHAR(2)='FF' OUTPUT,
+CREATE OR ALTER proc usp_Receipt_SelectByCost
+	@Cost NVARCHAR(64),
+	@responseCode NVARCHAR(2)='FF' OUTPUT,
 	@responseMessage NVARCHAR(128)='' OUTPUT
 
 as
 BEGIN TRY
 	IF (@Cost IS NOT NULL)
 	BEGIN
-		select * from Receipt
-		where ((Cost = @Cost) AND (ReceiptStatus='00'))
- SELECT @responseCode = '00'
-		SELECT @responseMessage = 'Success'
-	END
+	select *
+	from Receipt
+	where ((Cost = @Cost) AND (ReceiptStatus='00'))
+	SELECT @responseCode = '00'
+	SELECT @responseMessage = 'Success'
+END
 	ELSE
-	BEGIN 
+	BEGIN
 	return -1
-				SELECT @responseCode = 'FF'
-				SELECT @responseMessage = 'nO PARAMETER'
-	END
+	SELECT @responseCode = 'FF'
+	SELECT @responseMessage = 'nO PARAMETER'
+END
 	END TRY
 BEGIN CATCH
 			SELECT @responseCode = 'FF',
-		@responseMessage=ERROR_MESSAGE()
+	@responseMessage=ERROR_MESSAGE()
 			return -1;
 	END CATCH
-		return -1
+return -1
 
 		
 GO
-CREATE OR ALTER proc usp_Receipt_SelectByPaymentMethod  @PaymentMethod NVARCHAR(64),
- @responseCode NVARCHAR(2)='FF' OUTPUT,
+CREATE OR ALTER proc usp_Receipt_SelectByPaymentMethod
+	@PaymentMethod NVARCHAR(64),
+	@responseCode NVARCHAR(2)='FF' OUTPUT,
 	@responseMessage NVARCHAR(128)='' OUTPUT
 
 as
 BEGIN TRY
 	IF (@PaymentMethod IS NOT NULL)
 	BEGIN
-		select * from Receipt
-		where ((PaymentMethod = @PaymentMethod) AND (ReceiptStatus='00'))
- SELECT @responseCode = '00'
-		SELECT @responseMessage = 'Success'
-	END
+	select *
+	from Receipt
+	where ((PaymentMethod = @PaymentMethod) AND (ReceiptStatus='00'))
+	SELECT @responseCode = '00'
+	SELECT @responseMessage = 'Success'
+END
 	ELSE
-	BEGIN 
+	BEGIN
 	return -1
-				SELECT @responseCode = 'FF'
-				SELECT @responseMessage = 'nO PARAMETER'
-	END
+	SELECT @responseCode = 'FF'
+	SELECT @responseMessage = 'nO PARAMETER'
+END
 	END TRY
 BEGIN CATCH
 			SELECT @responseCode = 'FF',
-		@responseMessage=ERROR_MESSAGE()
+	@responseMessage=ERROR_MESSAGE()
 			return -1;
 	END CATCH
-		return -1
+return -1
 
 		
 GO
-CREATE OR ALTER proc usp_Receipt_SelectByReceiptCreationTime  @ReceiptCreationTime DATETIME
+CREATE OR ALTER proc usp_Receipt_SelectByReceiptCreationTime
+	@ReceiptCreationTime DATETIME
 as
-	IF (@ReceiptCreationTime IS NOT NULL)
+IF (@ReceiptCreationTime IS NOT NULL)
 		BEGIN
-			IF  (NOT(DatePart(yy,@ReceiptCreationTime)=0)) AND 
-			(NOT(DatePart(mm,@ReceiptCreationTime) = 0)) AND 
-			(NOT(DatePart(dd,@ReceiptCreationTime)=0)) AND 
-			(NOT(DatePart(hh,@ReceiptCreationTime) =0)) AND 
-			(NOT(DatePart(Mi,@ReceiptCreationTime) =0))
-			BEGIN	
-			select * from Receipt
-			where ReceiptStatus='00' AND (DatePart(yy,ReceiptCreationTime) = DatePart(yy,@ReceiptCreationTime)) and
+	IF  (NOT(DatePart(yy,@ReceiptCreationTime)=0)) AND
+		(NOT(DatePart(mm,@ReceiptCreationTime) = 0)) AND
+		(NOT(DatePart(dd,@ReceiptCreationTime)=0)) AND
+		(NOT(DatePart(hh,@ReceiptCreationTime) =0)) AND
+		(NOT(DatePart(Mi,@ReceiptCreationTime) =0))
+			BEGIN
+		select *
+		from Receipt
+		where ReceiptStatus='00' AND (DatePart(yy,ReceiptCreationTime) = DatePart(yy,@ReceiptCreationTime)) and
 			(DatePart(mm,ReceiptCreationTime) = DatePart(mm,@ReceiptCreationTime))
 			and (DatePart(dd,ReceiptCreationTime) = DatePart(dd,@ReceiptCreationTime)
 			and (DatePart(hh,ReceiptCreationTime) = DatePart(hh,@ReceiptCreationTime))
 			and (DatePart(mi,ReceiptCreationTime) = DatePart(mi,@ReceiptCreationTime)) )
-		END
-		ELSE IF  (NOT(DatePart(yy,@ReceiptCreationTime)=0)) AND 
-			(NOT(DatePart(mm,@ReceiptCreationTime) = 0)) AND 
-			(NOT(DatePart(dd,@ReceiptCreationTime)=0)) AND 
-			(NOT(DatePart(hh,@ReceiptCreationTime) =0)) AND
-			(DatePart(Mi,@ReceiptCreationTime)=0)
-			BEGIN	
-			select * from Receipt
-			where  ReceiptStatus='00' AND  (DatePart(yy,ReceiptCreationTime) = DatePart(yy,@ReceiptCreationTime)) and
+	END
+		ELSE IF  (NOT(DatePart(yy,@ReceiptCreationTime)=0)) AND
+		(NOT(DatePart(mm,@ReceiptCreationTime) = 0)) AND
+		(NOT(DatePart(dd,@ReceiptCreationTime)=0)) AND
+		(NOT(DatePart(hh,@ReceiptCreationTime) =0)) AND
+		(DatePart(Mi,@ReceiptCreationTime)=0)
+			BEGIN
+		select *
+		from Receipt
+		where  ReceiptStatus='00' AND (DatePart(yy,ReceiptCreationTime) = DatePart(yy,@ReceiptCreationTime)) and
 			(DatePart(mm,ReceiptCreationTime) = DatePart(mm,@ReceiptCreationTime))
 			and (DatePart(dd,ReceiptCreationTime) = DatePart(dd,@ReceiptCreationTime)
-			and (DatePart(hh,ReceiptCreationTime) = DatePart(hh,@ReceiptCreationTime))) 
-		END
-		ELSE IF  (NOT(DatePart(yy,@ReceiptCreationTime)=0)) AND 
-			(NOT(DatePart(mm,@ReceiptCreationTime) = 0)) AND 
-			(NOT(DatePart(dd,@ReceiptCreationTime)=0)) AND 
-			(DatePart(hh,@ReceiptCreationTime)=0) AND 
-			(DatePart(mi,@ReceiptCreationTime)=0)
-			BEGIN	
-			select * from Receipt
-			where  ReceiptStatus='00' AND  (DatePart(yy,ReceiptCreationTime) = DatePart(yy,@ReceiptCreationTime)) and
+			and (DatePart(hh,ReceiptCreationTime) = DatePart(hh,@ReceiptCreationTime)))
+	END
+		ELSE IF  (NOT(DatePart(yy,@ReceiptCreationTime)=0)) AND
+		(NOT(DatePart(mm,@ReceiptCreationTime) = 0)) AND
+		(NOT(DatePart(dd,@ReceiptCreationTime)=0)) AND
+		(DatePart(hh,@ReceiptCreationTime)=0) AND
+		(DatePart(mi,@ReceiptCreationTime)=0)
+			BEGIN
+		select *
+		from Receipt
+		where  ReceiptStatus='00' AND (DatePart(yy,ReceiptCreationTime) = DatePart(yy,@ReceiptCreationTime)) and
 			(DatePart(mm,ReceiptCreationTime) = DatePart(mm,@ReceiptCreationTime))
 			and (DatePart(dd,ReceiptCreationTime) = DatePart(dd,@ReceiptCreationTime) )
-		END
-		ELSE IF  (NOT(DatePart(yy,@ReceiptCreationTime) = 0)) AND 
-			(NOT(DatePart(mm,@ReceiptCreationTime) = 0)) AND 
-			(DatePart(dd,@ReceiptCreationTime) = 0) AND 
-			(DatePart(hh,@ReceiptCreationTime) = 0) AND 
-			(DatePart(Mi,@ReceiptCreationTime) = 0)
-			BEGIN	
-			select * from Receipt
-			where  ReceiptStatus='00' AND (DatePart(yy,ReceiptCreationTime) = DatePart(yy,@ReceiptCreationTime)) and
-			(DatePart(mm,ReceiptCreationTime) = DatePart(mm,@ReceiptCreationTime)) 
-		END
-			ELSE IF  (NOT(DatePart(yy,@ReceiptCreationTime)=0)) AND 
-			(DatePart(mm,@ReceiptCreationTime)=0) AND 
-			(DatePart(dd,@ReceiptCreationTime)=0) AND 
-			(DatePart(hh,@ReceiptCreationTime)=0) AND 
-			(DatePart(Mi,@ReceiptCreationTime)=0)
-			BEGIN	
-			select * from Receipt
-			where  ReceiptStatus='00' AND DatePart(yy,ReceiptCreationTime) = DatePart(yy,@ReceiptCreationTime)
 	END
-	end
+		ELSE IF  (NOT(DatePart(yy,@ReceiptCreationTime) = 0)) AND
+		(NOT(DatePart(mm,@ReceiptCreationTime) = 0)) AND
+		(DatePart(dd,@ReceiptCreationTime) = 0) AND
+		(DatePart(hh,@ReceiptCreationTime) = 0) AND
+		(DatePart(Mi,@ReceiptCreationTime) = 0)
+			BEGIN
+		select *
+		from Receipt
+		where  ReceiptStatus='00' AND (DatePart(yy,ReceiptCreationTime) = DatePart(yy,@ReceiptCreationTime)) and
+			(DatePart(mm,ReceiptCreationTime) = DatePart(mm,@ReceiptCreationTime))
+	END
+			ELSE IF  (NOT(DatePart(yy,@ReceiptCreationTime)=0)) AND
+		(DatePart(mm,@ReceiptCreationTime)=0) AND
+		(DatePart(dd,@ReceiptCreationTime)=0) AND
+		(DatePart(hh,@ReceiptCreationTime)=0) AND
+		(DatePart(Mi,@ReceiptCreationTime)=0)
+			BEGIN
+		select *
+		from Receipt
+		where  ReceiptStatus='00' AND DatePart(yy,ReceiptCreationTime) = DatePart(yy,@ReceiptCreationTime)
+	END
+end
 	ELSE
 		RETURN -1
 ----------------------------------------NEW SET OF STORED PROCEDURES--------------------------------------------------------------
 -- Reports SP --
 --(0) Insert Report --
 GO
-CREATE OR ALTER PROC usp_Report_Insert 
-	
+CREATE OR ALTER PROC usp_Report_Insert
+
 	@ReportTitle VARCHAR(64),
 	@PatientID INT,
 	@ReportDestination NVARCHAR(64),
-    @responseCode NVARCHAR(2)='FF' OUTPUT,
+	@responseCode NVARCHAR(2)='FF' OUTPUT,
 	@responseMessage NVARCHAR(128)='' OUTPUT
-	
-		as 
-	BEGIN TRY
+
+as
+BEGIN TRY
 	IF (@ReportTitle IS NOT NULL )
 		BEGIN
-			INSERT INTO Reports (ReportTitle,PatientID,ReportDestination)
-			values (@ReportTitle,@PatientID,@ReportDestination)
-	         SELECT @responseCode = '00'
-				SELECT @responseMessage = 'Success'
-		END
+	INSERT INTO Reports
+		(ReportTitle,PatientID,ReportDestination)
+	values
+		(@ReportTitle, @PatientID, @ReportDestination)
+	SELECT @responseCode = '00'
+	SELECT @responseMessage = 'Success'
+END
 	ELSE
 	BEGIN
-				return -1
-				SELECT @responseCode = 'FF'
-				SELECT @responseMessage = 'Unknown Error'
-			END
+	return -1
+	SELECT @responseCode = 'FF'
+	SELECT @responseMessage = 'Unknown Error'
+END
 	END TRY
 	BEGIN CATCH
 			SELECT @responseCode = 'FF',
-			@responseMessage=ERROR_MESSAGE()
+	@responseMessage=ERROR_MESSAGE()
 			return -1;
 	END CATCH
-		return -1
+return -1
 
 --(1) Get Report by ReportTitle --
 GO
-CREATE OR ALTER proc usp_Reports_SelectByReportTitle  @ReportTitle NVARCHAR(64)
+CREATE OR ALTER proc usp_Reports_SelectByReportTitle
+	@ReportTitle NVARCHAR(64)
 as
-	IF (@ReportTitle IS NOT NULL)
+IF (@ReportTitle IS NOT NULL)
 	BEGIN
-		select * from Reports
-		where ReportTitle = @ReportTitle AND ReportStatus='00'
-	END
+	select *
+	from Reports
+	where ReportTitle = @ReportTitle AND ReportStatus='00'
+END
 	ELSE
 		RETURN -1
 
 
 --(2) Get Report by ReportStatus --
 GO
-CREATE OR ALTER proc usp_Reports_SelectByReportStatus  @ReportStatus NVARCHAR(64)
+CREATE OR ALTER proc usp_Reports_SelectByReportStatus
+	@ReportStatus NVARCHAR(64)
 as
-	IF (@ReportStatus IS NOT NULL)
+IF (@ReportStatus IS NOT NULL)
 	BEGIN
-		select * from Reports
-		where ReportStatus = @ReportStatus AND ReportStatus='00'
-	END
+	select *
+	from Reports
+	where ReportStatus = @ReportStatus AND ReportStatus='00'
+END
 	ELSE
 		RETURN -1
 
@@ -737,185 +809,211 @@ GO
 Use KAN_AMO
 GO
 
-CREATE OR ALTER proc usp_Reports_SelectByReportIssueTime  @ReportIssueTime DATETIME
+CREATE OR ALTER proc usp_Reports_SelectByReportIssueTime
+	@ReportIssueTime DATETIME
 as
-	IF (@ReportIssueTime IS NOT NULL)
+IF (@ReportIssueTime IS NOT NULL)
 		BEGIN
-			IF  (NOT(DatePart(yy,@ReportIssueTime)=0)) AND 
-			(NOT(DatePart(mm,@ReportIssueTime) = 0)) AND 
-			(NOT(DatePart(dd,@ReportIssueTime)=0)) AND 
-			(NOT(DatePart(hh,@ReportIssueTime) =0)) AND 
-			(NOT(DatePart(Mi,@ReportIssueTime) =0))
-			BEGIN	
-			select * from Reports
-			where ReportStatus='00' AND (DatePart(yy,ReportIssueTime) = DatePart(yy,@ReportIssueTime)) and
+	IF  (NOT(DatePart(yy,@ReportIssueTime)=0)) AND
+		(NOT(DatePart(mm,@ReportIssueTime) = 0)) AND
+		(NOT(DatePart(dd,@ReportIssueTime)=0)) AND
+		(NOT(DatePart(hh,@ReportIssueTime) =0)) AND
+		(NOT(DatePart(Mi,@ReportIssueTime) =0))
+			BEGIN
+		select *
+		from Reports
+		where ReportStatus='00' AND (DatePart(yy,ReportIssueTime) = DatePart(yy,@ReportIssueTime)) and
 			(DatePart(mm,ReportIssueTime) = DatePart(mm,@ReportIssueTime))
 			and (DatePart(dd,ReportIssueTime) = DatePart(dd,@ReportIssueTime)
 			and (DatePart(hh,ReportIssueTime) = DatePart(hh,@ReportIssueTime))
 			and (DatePart(mi,ReportIssueTime) = DatePart(mi,@ReportIssueTime)) )
-		END
-		ELSE IF  (NOT(DatePart(yy,@ReportIssueTime)=0)) AND 
-			(NOT(DatePart(mm,@ReportIssueTime) = 0)) AND 
-			(NOT(DatePart(dd,@ReportIssueTime)=0)) AND 
-			(NOT(DatePart(hh,@ReportIssueTime) =0)) AND
-			(DatePart(Mi,@ReportIssueTime)=0)
-			BEGIN	
-			select * from Reports
-			where  ReportStatus='00' AND  (DatePart(yy,ReportIssueTime) = DatePart(yy,@ReportIssueTime)) and
+	END
+		ELSE IF  (NOT(DatePart(yy,@ReportIssueTime)=0)) AND
+		(NOT(DatePart(mm,@ReportIssueTime) = 0)) AND
+		(NOT(DatePart(dd,@ReportIssueTime)=0)) AND
+		(NOT(DatePart(hh,@ReportIssueTime) =0)) AND
+		(DatePart(Mi,@ReportIssueTime)=0)
+			BEGIN
+		select *
+		from Reports
+		where  ReportStatus='00' AND (DatePart(yy,ReportIssueTime) = DatePart(yy,@ReportIssueTime)) and
 			(DatePart(mm,ReportIssueTime) = DatePart(mm,@ReportIssueTime))
 			and (DatePart(dd,ReportIssueTime) = DatePart(dd,@ReportIssueTime)
-			and (DatePart(hh,ReportIssueTime) = DatePart(hh,@ReportIssueTime))) 
-		END
-		ELSE IF  (NOT(DatePart(yy,@ReportIssueTime)=0)) AND 
-			(NOT(DatePart(mm,@ReportIssueTime) = 0)) AND 
-			(NOT(DatePart(dd,@ReportIssueTime)=0)) AND 
-			(DatePart(hh,@ReportIssueTime)=0) AND 
-			(DatePart(mi,@ReportIssueTime)=0)
-			BEGIN	
-			select * from Reports
-			where  ReportStatus='00' AND  (DatePart(yy,ReportIssueTime) = DatePart(yy,@ReportIssueTime)) and
+			and (DatePart(hh,ReportIssueTime) = DatePart(hh,@ReportIssueTime)))
+	END
+		ELSE IF  (NOT(DatePart(yy,@ReportIssueTime)=0)) AND
+		(NOT(DatePart(mm,@ReportIssueTime) = 0)) AND
+		(NOT(DatePart(dd,@ReportIssueTime)=0)) AND
+		(DatePart(hh,@ReportIssueTime)=0) AND
+		(DatePart(mi,@ReportIssueTime)=0)
+			BEGIN
+		select *
+		from Reports
+		where  ReportStatus='00' AND (DatePart(yy,ReportIssueTime) = DatePart(yy,@ReportIssueTime)) and
 			(DatePart(mm,ReportIssueTime) = DatePart(mm,@ReportIssueTime))
 			and (DatePart(dd,ReportIssueTime) = DatePart(dd,@ReportIssueTime) )
-		END
-		ELSE IF  (NOT(DatePart(yy,@ReportIssueTime) = 0)) AND 
-			(NOT(DatePart(mm,@ReportIssueTime) = 0)) AND 
-			(DatePart(dd,@ReportIssueTime) = 0) AND 
-			(DatePart(hh,@ReportIssueTime) = 0) AND 
-			(DatePart(Mi,@ReportIssueTime) = 0)
-			BEGIN	
-			select * from Reports
-			where  ReportStatus='00' AND (DatePart(yy,ReportIssueTime) = DatePart(yy,@ReportIssueTime)) and
-			(DatePart(mm,ReportIssueTime) = DatePart(mm,@ReportIssueTime)) 
-		END
-			ELSE IF  (NOT(DatePart(yy,@ReportIssueTime)=0)) AND 
-			(DatePart(mm,@ReportIssueTime)=0) AND 
-			(DatePart(dd,@ReportIssueTime)=0) AND 
-			(DatePart(hh,@ReportIssueTime)=0) AND 
-			(DatePart(Mi,@ReportIssueTime)=0)
-			BEGIN	
-			select * from Reports
-			where  ReportStatus='00' AND DatePart(yy,ReportIssueTime) = DatePart(yy,@ReportIssueTime)
 	END
-	end
+		ELSE IF  (NOT(DatePart(yy,@ReportIssueTime) = 0)) AND
+		(NOT(DatePart(mm,@ReportIssueTime) = 0)) AND
+		(DatePart(dd,@ReportIssueTime) = 0) AND
+		(DatePart(hh,@ReportIssueTime) = 0) AND
+		(DatePart(Mi,@ReportIssueTime) = 0)
+			BEGIN
+		select *
+		from Reports
+		where  ReportStatus='00' AND (DatePart(yy,ReportIssueTime) = DatePart(yy,@ReportIssueTime)) and
+			(DatePart(mm,ReportIssueTime) = DatePart(mm,@ReportIssueTime))
+	END
+			ELSE IF  (NOT(DatePart(yy,@ReportIssueTime)=0)) AND
+		(DatePart(mm,@ReportIssueTime)=0) AND
+		(DatePart(dd,@ReportIssueTime)=0) AND
+		(DatePart(hh,@ReportIssueTime)=0) AND
+		(DatePart(Mi,@ReportIssueTime)=0)
+			BEGIN
+		select *
+		from Reports
+		where  ReportStatus='00' AND DatePart(yy,ReportIssueTime) = DatePart(yy,@ReportIssueTime)
+	END
+end
 	ELSE
 		RETURN -1
 
 
 --(4) Get Report by ReportStatus --
 GO
-CREATE OR ALTER proc usp_Reports_SelectByPatientID  @PatientID INT
+CREATE OR ALTER proc usp_Reports_SelectByPatientID
+	@PatientID INT
 as
-	IF (@PatientID IS NOT NULL)
+IF (@PatientID IS NOT NULL)
 	BEGIN
-		select * from Reports
-		where  ReportStatus='00' AND  PatientID = @PatientID
-	END
+	select *
+	from Reports
+	where  ReportStatus='00' AND PatientID = @PatientID
+END
 	ELSE
 		RETURN -1
 --(5) Get Report by ReportTitleAndStatus --
 GO
-CREATE OR ALTER proc usp_Reports_SelectByReportTitleAndStatus  @ReportTitle NVARCHAR(64),
- @ReportStatus NVARCHAR(64)
+CREATE OR ALTER proc usp_Reports_SelectByReportTitleAndStatus
+	@ReportTitle NVARCHAR(64),
+	@ReportStatus NVARCHAR(64)
 as
-	IF (@ReportTitle IS NOT NULL AND @ReportStatus IS NOT NULL)
+IF (@ReportTitle IS NOT NULL AND @ReportStatus IS NOT NULL)
 	BEGIN
-		select * from Reports
-		where ReportTitle = @ReportTitle AND ReportStatus = @ReportStatus
-	END
+	select *
+	from Reports
+	where ReportTitle = @ReportTitle AND ReportStatus = @ReportStatus
+END
 	ELSE
 		RETURN -1
 GO
-CREATE OR ALTER proc usp_Reports_Delete 
- @ReportID INT,
-  @responseCode NVARCHAR(2)='FF' OUTPUT,
+CREATE OR ALTER proc usp_Reports_Delete
+	@ReportID INT,
+	@responseCode NVARCHAR(2)='FF' OUTPUT,
 	@responseMessage NVARCHAR(128)='' OUTPUT
 
 as
 BEGIN TRY
 	IF (@ReportID IS NOT NULL)
 	BEGIN
-		UPDATE Reports
+	UPDATE Reports
 		SET ReportStatus = 99
-		where ReportID = @ReportID AND  ReportStatus='00'
-	    SELECT @responseCode = '00'
-		SELECT @responseMessage = 'Success'
-		
-	END
+		where ReportID = @ReportID AND ReportStatus='00'
+	SELECT @responseCode = '00'
+	SELECT @responseMessage = 'Success'
+
+END
 		ELSE
 	BEGIN
-				return -1
-				SELECT @responseCode = 'FF'
-				SELECT @responseMessage = 'Unknown Error'
-			END
+	return -1
+	SELECT @responseCode = 'FF'
+	SELECT @responseMessage = 'Unknown Error'
+END
 	END TRY
 	BEGIN CATCH
 			SELECT @responseCode = 'FF',
-			       @responseMessage=ERROR_MESSAGE()
+	@responseMessage=ERROR_MESSAGE()
 			return -1;
 	END CATCH
-		return -1	
+return -1	
 
 
 -- END of Reports SP --
 ----------------------------------------NEW SET OF STORED PROCEDURES--------------------------------------------------------------
 ----------------------------------------------------
 GO
-CREATE OR ALTER proc usp_Report_By_Full_Time  @ReportIssueTime DATETIME
+CREATE OR ALTER proc usp_Report_By_Full_Time
+	@ReportIssueTime DATETIME
 as
-	IF (@ReportIssueTime IS NOT NULL)
-		BEGIN	
-			select * from Reports
-			where ReportStatus='00' AND	(ReportIssueTime=@ReportIssueTime)
+IF (@ReportIssueTime IS NOT NULL)
+		BEGIN
+	select *
+	from Reports
+	where ReportStatus='00' AND (ReportIssueTime=@ReportIssueTime)
 end
 	ELSE
 		RETURN -1
 -------------------------------------------------------
 GO
-CREATE OR ALTER proc usp_Report_By_Year  @ReportCreationYear int
+CREATE OR ALTER proc usp_Report_By_Year
+	@ReportCreationYear int
 as
-	IF (@ReportCreationYear IS NOT NULL)
-		BEGIN	
-			select * from Reports
-			where ReportStatus='00' AND (DatePart(yy,ReportIssueTime) = @ReportCreationYear)
-	end
+IF (@ReportCreationYear IS NOT NULL)
+		BEGIN
+	select *
+	from Reports
+	where ReportStatus='00' AND (DatePart(yy,ReportIssueTime) = @ReportCreationYear)
+end
 ELSE
 	RETURN -1
 ------------------------------------------------------
 GO
-CREATE OR ALTER proc usp_Report_By_Year_Month   @ReportCreationYear int, @ReportCreationMonth int
+CREATE OR ALTER proc usp_Report_By_Year_Month
+	@ReportCreationYear int,
+	@ReportCreationMonth int
 as
-	IF ((@ReportCreationYear IS NOT NULL) and (@ReportCreationMonth is not null))
-		BEGIN	
-			select * from Reports
-			where ReportStatus='00' AND (DatePart(yy,ReportIssueTime) = @ReportCreationYear)
-			and(DatePart(mm,ReportIssueTime) = @ReportCreationMonth)
+IF ((@ReportCreationYear IS NOT NULL) and (@ReportCreationMonth is not null))
+		BEGIN
+	select *
+	from Reports
+	where ReportStatus='00' AND (DatePart(yy,ReportIssueTime) = @ReportCreationYear)
+		and(DatePart(mm,ReportIssueTime) = @ReportCreationMonth)
 end
 	ELSE
 		RETURN -1
 ------------------------------------------------
 GO
-CREATE OR ALTER proc usp_Report_By_Year_Month_Day  @ReportCreationYear int, @ReportCreationMonth int,@ReportCreationDay int
+CREATE OR ALTER proc usp_Report_By_Year_Month_Day
+	@ReportCreationYear int,
+	@ReportCreationMonth int,
+	@ReportCreationDay int
 as
-	IF ((@ReportCreationYear IS NOT NULL) and (@ReportCreationMonth IS NOT NULL) and (@ReportCreationDay IS NOT NULL))
-		BEGIN	
-			select * from Reports
-			where ReportStatus='00' AND (DatePart(yy,ReportIssueTime) = @ReportCreationYear) and
-			(DatePart(mm,ReportIssueTime) = @ReportCreationMonth)
-			and (DatePart(dd,ReportIssueTime) = @ReportCreationDay)
+IF ((@ReportCreationYear IS NOT NULL) and (@ReportCreationMonth IS NOT NULL) and (@ReportCreationDay IS NOT NULL))
+		BEGIN
+	select *
+	from Reports
+	where ReportStatus='00' AND (DatePart(yy,ReportIssueTime) = @ReportCreationYear) and
+		(DatePart(mm,ReportIssueTime) = @ReportCreationMonth)
+		and (DatePart(dd,ReportIssueTime) = @ReportCreationDay)
 end
 	ELSE
 		RETURN -1
 ------------------------------------------------
 GO
-CREATE OR ALTER proc usp_Report_By_Year_Month_Day_Hour   @ReportCreationYear int, @ReportCreationMonth int,@ReportCreationDay int,@ReportCreationHour int
+CREATE OR ALTER proc usp_Report_By_Year_Month_Day_Hour
+	@ReportCreationYear int,
+	@ReportCreationMonth int,
+	@ReportCreationDay int,
+	@ReportCreationHour int
 as
-	IF ((@ReportCreationYear IS NOT NULL) and (@ReportCreationMonth IS NOT NULL) and (@ReportCreationDay IS NOT NULL) and (@ReportCreationHour is not null) )
-		BEGIN	
-			select * from Reports
-			where ReportStatus='00' AND (DatePart(yy,ReportIssueTime) = @ReportCreationYear) and
-			(DatePart(mm,ReportIssueTime) = @ReportCreationMonth)
-			and (DatePart(dd,ReportIssueTime) = @ReportCreationDay
-			and (DatePart(hh,ReportIssueTime) = @ReportCreationHour))
+IF ((@ReportCreationYear IS NOT NULL) and (@ReportCreationMonth IS NOT NULL) and (@ReportCreationDay IS NOT NULL) and (@ReportCreationHour is not null) )
+		BEGIN
+	select *
+	from Reports
+	where ReportStatus='00' AND (DatePart(yy,ReportIssueTime) = @ReportCreationYear) and
+		(DatePart(mm,ReportIssueTime) = @ReportCreationMonth)
+		and (DatePart(dd,ReportIssueTime) = @ReportCreationDay
+		and (DatePart(hh,ReportIssueTime) = @ReportCreationHour))
 end
 	ELSE
 		RETURN -1
@@ -923,80 +1021,86 @@ end
 ----------------------------------------NEW SET OF STORED PROCEDURES--------------------------------------------------------------
 GO
 Create  OR ALTER PROC usp_Medicine_SelectByCompanyName
-@CompanyName NVARCHAR(64)
+	@CompanyName NVARCHAR(64)
 as
 DECLARE @CompanyID INT
 if (@CompanyName IS NOT NULL)
 	BEGIN
-SET @CompanyID = (select CompanyID from PharmaCompany where CompanyName=@CompanyName)
-	select BarCode,  MedicineStatus, MedicineName,CountInStock, Implications,MedicineUsage, SideEffects, ActiveComponent,price FROM Medicine
-	INNER JOIN CompanyMedicineMap  
-	ON CompanyMedicineMap.MedBCode=Medicine.BarCode
+	SET @CompanyID = (select CompanyID
+	from PharmaCompany
+	where CompanyName=@CompanyName)
+	select BarCode, MedicineStatus, MedicineName, CountInStock, Implications, MedicineUsage, SideEffects, ActiveComponent, price
+	FROM Medicine
+		INNER JOIN CompanyMedicineMap
+		ON CompanyMedicineMap.MedBCode=Medicine.BarCode
 	where CompID=@CompanyID AND MapStatus<>'ff'
-	END
+END
 	ELSE
 	RETURN -1
 GO
 Create  OR ALTER PROC usp_PharmaCompany_SelectByMedicineName
-@MedicineName NVARCHAR(64)
+	@MedicineName NVARCHAR(64)
 as
 DECLARE @BarCode INT
 if (@MedicineName IS NOT NULL)
 	BEGIN
-SET @BarCode = (select BarCode from Medicine where MedicineName = @MedicineName)
-	select CompanyID ,CompanyName,ContactPerson ,CompanyAddress ,CompanyPhone , CompanyStatus
-	 from PharmaCompany
-	INNER JOIN CompanyMedicineMap
-	ON CompanyMedicineMap.CompID=PharmaCompany.CompanyID
+	SET @BarCode = (select BarCode
+	from Medicine
+	where MedicineName = @MedicineName)
+	select CompanyID , CompanyName, ContactPerson , CompanyAddress , CompanyPhone , CompanyStatus
+	from PharmaCompany
+		INNER JOIN CompanyMedicineMap
+		ON CompanyMedicineMap.CompID=PharmaCompany.CompanyID
 	where MedBCode=@BarCode AND MapStatus<>'ff'
-	END
+END
 	ELSE
 	return -1
 
 
 GO
 Create  OR ALTER PROC usp_Medicine_SelectByContactPerson
-@ContactPerson NVARCHAR(32)
+	@ContactPerson NVARCHAR(32)
 as
 if (@ContactPerson IS NOT NULL)
 	BEGIN
-	select DISTINCT BarCode,  MedicineStatus, MedicineName,CountInStock, Implications,MedicineUsage, 
-	SideEffects,ActiveComponent,ActiveComponent,price
-	from Medicine INNER join  CompanyMedicineMap
-	ON CompanyMedicineMap.MedBCode = Medicine.BarCode 
-	INNER join PharmaCompany 
-	on CompanyMedicineMap.CompID = PharmaCompany.CompanyID  
+	select DISTINCT BarCode, MedicineStatus, MedicineName, CountInStock, Implications, MedicineUsage,
+		SideEffects, ActiveComponent, ActiveComponent, price
+	from Medicine INNER join CompanyMedicineMap
+		ON CompanyMedicineMap.MedBCode = Medicine.BarCode
+		INNER join PharmaCompany
+		on CompanyMedicineMap.CompID = PharmaCompany.CompanyID
 	where PharmaCompany.ContactPerson =@ContactPerson AND MapStatus<>'ff'
-	END
+END
 	ELSE
 	return -1
 	
 GO
 CREATE  OR alter proc usp_Medicine_SelectByCompanyStatus
-@CompanyStatus NVARCHAR(32)
+	@CompanyStatus NVARCHAR(32)
 as
 if (@CompanyStatus IS NOT NULL)
 	BEGIN
-	select DISTINCT BarCode,  MedicineStatus,  MedicineName,CountInStock, Implications,MedicineUsage, 
-	SideEffects,ActiveComponent,ActiveComponent,price
-	from Medicine INNER join  CompanyMedicineMap
-	ON CompanyMedicineMap.MedBCode = Medicine.BarCode 
-	INNER join PharmaCompany 
-	on CompanyMedicineMap.CompID = PharmaCompany.CompanyID  
-	where PharmaCompany.CompanyStatus=@CompanyStatus  AND MapStatus<>'ff'
-	END
+	select DISTINCT BarCode, MedicineStatus, MedicineName, CountInStock, Implications, MedicineUsage,
+		SideEffects, ActiveComponent, ActiveComponent, price
+	from Medicine INNER join CompanyMedicineMap
+		ON CompanyMedicineMap.MedBCode = Medicine.BarCode
+		INNER join PharmaCompany
+		on CompanyMedicineMap.CompID = PharmaCompany.CompanyID
+	where PharmaCompany.CompanyStatus=@CompanyStatus AND MapStatus<>'ff'
+END
 	ELSE
 	return -1
 
 GO
 CREATE OR alter proc usp_Medicine_SelectByActiveComponent
-@ActiveComponent NVARCHAR(MAX)
+	@ActiveComponent NVARCHAR(MAX)
 as
 if (@ActiveComponent IS NOT NULL)
 	BEGIN
-	select * from Medicine
+	select *
+	from Medicine
 	where ActiveComponent=@ActiveComponent
-	END
+END
 	ELSE
 	return -1
 
@@ -1005,10 +1109,10 @@ if (@ActiveComponent IS NOT NULL)
  	
 GO
 CREATE  OR alter proc usp_Medicine_UpdateStatus
-@MedicineStatus NVARCHAR(2),
-@barCode NVARCHAR(64),
-@responseCode NVARCHAR(2)='FF' OUTPUT,
-@responseMessage NVARCHAR(128)='' OUTPUT
+	@MedicineStatus NVARCHAR(2),
+	@barCode NVARCHAR(64),
+	@responseCode NVARCHAR(2)='FF' OUTPUT,
+	@responseMessage NVARCHAR(128)='' OUTPUT
 
 AS
 BEGIN TRY
@@ -1018,67 +1122,74 @@ if (@barCode IS NOT NULL AND @MedicineStatus  IS NOT NULL )
 	SET MedicineStatus = ISNULL (@MedicineStatus,MedicineStatus)
 	where BarCode=@barCode
 	SELECT @responseCode = '00'
-		SELECT @responseMessage = 'Success'
-	END
+	SELECT @responseMessage = 'Success'
+END
 	ELSE
-	BEGIN 
+	BEGIN
 
-				SELECT @responseCode = 'FF'
-				SELECT @responseMessage = 'nO PARAMETER'
-				 RETURN -1
-	END
+	SELECT @responseCode = 'FF'
+	SELECT @responseMessage = 'nO PARAMETER'
+	RETURN -1
+END
 	END TRY
 BEGIN CATCH
 			SELECT @responseCode = 'FF',
-	           	@responseMessage=ERROR_MESSAGE()
+	@responseMessage=ERROR_MESSAGE()
 			return -1;
 	END CATCH
-		
-	return -1
+
+return -1
 
 -- (2) Search Unique ID --
 
 ----------------------------------------MEDICAL RECORD STORED PROCEDURES --------------------------------------------------------------
 
 GO
-CREATE OR ALTER proc usp_MedicalRecord_SelectAll 
+CREATE OR ALTER proc usp_MedicalRecord_SelectAll
 as
-	select * from MedicalRecord
+select *
+from MedicalRecord
 	
 GO
-CREATE OR ALTER proc usp_MedicalRecord_SelectByID  @MedicalRecordID INT
+CREATE OR ALTER proc usp_MedicalRecord_SelectByID
+	@MedicalRecordID INT
 as
-	IF (@MedicalRecordID IS NOT NULL)
+IF (@MedicalRecordID IS NOT NULL)
 	BEGIN
-		select * from MedicalRecord
-		where MedicalRecordID = @MedicalRecordID
-	END
+	select *
+	from MedicalRecord
+	where MedicalRecordID = @MedicalRecordID
+END
 	ELSE
 		RETURN -1
 		
 GO
-CREATE OR ALTER proc usp_MedicalRecord_SelectByPatient  @PatientID INT
+CREATE OR ALTER proc usp_MedicalRecord_SelectByPatient
+	@PatientID INT
 as
-	IF (@PatientID IS NOT NULL)
+IF (@PatientID IS NOT NULL)
 	BEGIN
-		select * from MedicalRecord
-		where PatientID = @PatientID
-	END
+	select *
+	from MedicalRecord
+	where PatientID = @PatientID
+END
 	ELSE
 		RETURN -1
 
 GO
-CREATE OR ALTER proc usp_MedicalRecord_SelectByStatus  @MRStatus NVARCHAR(32)
+CREATE OR ALTER proc usp_MedicalRecord_SelectByStatus
+	@MRStatus NVARCHAR(32)
 as
-	IF (@MRStatus IS NOT NULL)
+IF (@MRStatus IS NOT NULL)
 	BEGIN
-		select * from MedicalRecord
-		where MRStatus = @MRStatus
-	END
+	select *
+	from MedicalRecord
+	where MRStatus = @MRStatus
+END
 	ELSE
 		RETURN -1
 		GO
-CREATE OR ALTER PROC usp_MedicalRecord_Insert 
+CREATE OR ALTER PROC usp_MedicalRecord_Insert
 	@RespSQN INT,
 	@PatientID INT,
 	@BloodType NVARCHAR(12),
@@ -1092,8 +1203,8 @@ CREATE OR ALTER PROC usp_MedicalRecord_Insert
 	@Other NVARCHAR(MAX),
 	@Dead NVARCHAR(2),
 	@Consciousness NVARCHAR(2),
-    @Breathing NVARCHAR(2),
-    @Capillaries NVARCHAR(2),
+	@Breathing NVARCHAR(2),
+	@Capillaries NVARCHAR(2),
 	@Pulse NVARCHAR(12),
 	@BloodPressureLevel NVARCHAR(12),
 	@DiabetesLevel NVARCHAR(12),
@@ -1109,31 +1220,34 @@ CREATE OR ALTER PROC usp_MedicalRecord_Insert
 	@responseCode NVARCHAR(2)='FF' OUTPUT,
 	@responseMessage NVARCHAR(128)='' OUTPUT,
 	@mrID INT = 0  OUTPUT
-	
-	as 
-	BEGIN TRY
+
+as
+BEGIN TRY
 	IF(@RespSQN IS NOT NULL AND @PatientID IS NOT NULL )
 		BEGIN
-			INSERT INTO MedicalRecord (RespSQN,PatientID,BloodType,BloodPressure,Diabetes,RespiratoryDiseases,Cancer,CardiovascularDiseases,COPD,Pregnancy,Other,Dead,Consciousness,Breathing,Capillaries,Pulse,BloodPressureLevel,DiabetesLevel,BodyTemp,BreathingRate,CapillariesLevel,Injury,PhysicalExaminationImage,MedicineApplied,ProcedureDoneInCar,RecommendedProcedure,MRStatus)
-			values(@RespSQN,@PatientID,@BloodType,@BloodPressure,@Diabetes,@RespiratoryDiseases,@Cancer,@CardiovascularDiseases,@COPD,@Pregnancy,@Other,@Dead,@Consciousness,@Breathing,@Capillaries,@Pulse,@BloodPressureLevel,@DiabetesLevel,@BodyTemp,@BreathingRate,@CapillariesLevel,@Injury,@PhysicalExaminationImage,@MedicineApplied,@ProcedureDoneInCar,@RecommendedProcedure,@MRStatus)
-		    SELECT @responseCode = '00'
-		    SELECT @responseMessage = 'Successfully Added Medical Record'
-	        SELECT @mrID = (SELECT MedicalRecordID FROM MedicalRecord WHERE RespSQN = @RespSQN AND PatientID=@PatientID )
-			END
+	INSERT INTO MedicalRecord
+		(RespSQN,PatientID,BloodType,BloodPressure,Diabetes,RespiratoryDiseases,Cancer,CardiovascularDiseases,COPD,Pregnancy,Other,Dead,Consciousness,Breathing,Capillaries,Pulse,BloodPressureLevel,DiabetesLevel,BodyTemp,BreathingRate,CapillariesLevel,Injury,PhysicalExaminationImage,MedicineApplied,ProcedureDoneInCar,RecommendedProcedure,MRStatus)
+	values(@RespSQN, @PatientID, @BloodType, @BloodPressure, @Diabetes, @RespiratoryDiseases, @Cancer, @CardiovascularDiseases, @COPD, @Pregnancy, @Other, @Dead, @Consciousness, @Breathing, @Capillaries, @Pulse, @BloodPressureLevel, @DiabetesLevel, @BodyTemp, @BreathingRate, @CapillariesLevel, @Injury, @PhysicalExaminationImage, @MedicineApplied, @ProcedureDoneInCar, @RecommendedProcedure, @MRStatus)
+	SELECT @responseCode = '00'
+	SELECT @responseMessage = 'Successfully Added Medical Record'
+	SELECT @mrID = (SELECT MedicalRecordID
+		FROM MedicalRecord
+		WHERE RespSQN = @RespSQN AND PatientID=@PatientID )
+END
 			
 	ELSE
 	BEGIN
-				return -1
-				SELECT @responseCode = 'FF'
-				SELECT @responseMessage = 'Unknown Error'
-			END
+	return -1
+	SELECT @responseCode = 'FF'
+	SELECT @responseMessage = 'Unknown Error'
+END
 	END TRY
 	BEGIN CATCH
 			SELECT @responseCode = 'FF',
-			@responseMessage= 'This Response Already Has A Medical Record'
+	@responseMessage= 'This Response Already Has A Medical Record'
 			return -1;
 	END CATCH
-		return -1
+return -1
 
 
 		-- (4) Update MedicalRecord --
@@ -1146,7 +1260,7 @@ CREATE OR ALTER PROC usp_MedicalRecord_Insert
 GO
 CREATE OR ALTER PROC usp_MedicalRecord_Update
 
-    @MedicalRecordID INT,
+	@MedicalRecordID INT,
 	@RespSQN INT,
 	@PatientID INT,
 	@BloodType NVARCHAR(12),
@@ -1160,8 +1274,8 @@ CREATE OR ALTER PROC usp_MedicalRecord_Update
 	@Other NVARCHAR(MAX),
 	@Dead NVARCHAR(2),
 	@Consciousness NVARCHAR(2),
-    @Breathing NVARCHAR(2),
-    @Capillaries NVARCHAR(2),
+	@Breathing NVARCHAR(2),
+	@Capillaries NVARCHAR(2),
 	@Pulse NVARCHAR(12),
 	@BloodPressureLevel NVARCHAR(12),
 	@DiabetesLevel NVARCHAR(12),
@@ -1182,7 +1296,7 @@ as
 Begin TRY
 	IF (@MedicalRecordID  IS NOT NULL)
 		BEGIN
-			UPDATE MedicalRecord
+	UPDATE MedicalRecord
 			SET   
 			
 			RespSQN=ISNULL(@RespSQN,RespSQN),
@@ -1214,94 +1328,100 @@ Begin TRY
 			MRStatus=ISNULL(@MRStatus,MRStatus)
 			
 			WHERE MedicalRecordID = @MedicalRecordID
-		    SELECT @responseCode = '00'
-		    SELECT @responseMessage = 'Successfuly Updated'
-			if NOT EXISTS(SELECT * from MedicalRecord WHERE MedicalRecordID = @MedicalRecordID )
+	SELECT @responseCode = '00'
+	SELECT @responseMessage = 'Successfuly Updated'
+	if NOT EXISTS(SELECT *
+	from MedicalRecord
+	WHERE MedicalRecordID = @MedicalRecordID )
 			Begin
-		    SELECT @responseCode = '05'
-		    SELECT @responseMessage = 'Not Found'
-			END
-		
-		END
+		SELECT @responseCode = '05'
+		SELECT @responseMessage = 'Not Found'
+	END
+
+END
 		ELSE
 	BEGIN
-				return -1
-				SELECT @responseCode = 'FF'
-				SELECT @responseMessage = 'Unknown Error'
-			END
+	return -1
+	SELECT @responseCode = 'FF'
+	SELECT @responseMessage = 'Unknown Error'
+END
 	END TRY
 	BEGIN CATCH
 			SELECT @responseCode = 'FF',
-			@responseMessage=ERROR_MESSAGE()
+	@responseMessage=ERROR_MESSAGE()
 			return -1;
 	END CATCH
-		return -1
+return -1
 
 		-- (5) Delete MedicalRecord By ID --
 GO
-CREATE OR ALTER proc usp_MedicalRecord_Delete  @MedicalRecordID  INT,@responseCode NVARCHAR(2)='FF' OUTPUT,
+CREATE OR ALTER proc usp_MedicalRecord_Delete
+	@MedicalRecordID  INT,
+	@responseCode NVARCHAR(2)='FF' OUTPUT,
 	@responseMessage NVARCHAR(128)='' OUTPUT
 as
 Begin TRY
 	IF (@MedicalRecordID IS NOT NULL)
 	BEGIN
 
-		UPDATE  MedicalRecord 
+	UPDATE  MedicalRecord 
 		SET MRStatus = 'FF' 
-		where MedicalRecordID = @MedicalRecordID AND NOT MRStatus = 'FF'  
-		 SELECT @responseCode = '00'
-		 SELECT @responseMessage = 'Successfuly Deleted'
-    END
+		where MedicalRecordID = @MedicalRecordID AND NOT MRStatus = 'FF'
+	SELECT @responseCode = '00'
+	SELECT @responseMessage = 'Successfuly Deleted'
+END
  
 		ELSE
 	BEGIN
-				return -1
-				SELECT @responseCode = 'FF'
-				SELECT @responseMessage = 'Unknown Error'
-			END
+	return -1
+	SELECT @responseCode = 'FF'
+	SELECT @responseMessage = 'Unknown Error'
+END
 	END TRY
 	BEGIN CATCH
 			SELECT @responseCode = 'FF',
-			@responseMessage=ERROR_MESSAGE()
+	@responseMessage=ERROR_MESSAGE()
 			return -1;
 	END CATCH
-		return -1
+return -1
 ----------------------------------------NEW SET OF STORED PROCEDURES--------------------------------------------------------------
 ------------------------- Stored Procedures ----------------------------
 ------------------------------------------------------------------------
 -- Location Stored Procedures --
 -- (1) Insert New Location --
 GO
-CREATE OR ALTER PROC usp_Locations_Insert 
+CREATE OR ALTER PROC usp_Locations_Insert
 	@FreeFormatAddress NVARCHAR(256),
-    @City NVARCHAR(32) = NULL,
-    @Longitude  NVARCHAR(32) = NULL,
-    @Latitude  NVARCHAR(32) = NULL,
-    @Street NVARCHAR(32) = NULL,
-    @Apartement NVARCHAR(32) = NULL,
-    @PostalCode NVARCHAR(20) = NULL,
-    @FloorLevel NVARCHAR(20) = NULL,
+	@City NVARCHAR(32) = NULL,
+	@Longitude  NVARCHAR(32) = NULL,
+	@Latitude  NVARCHAR(32) = NULL,
+	@Street NVARCHAR(32) = NULL,
+	@Apartement NVARCHAR(32) = NULL,
+	@PostalCode NVARCHAR(20) = NULL,
+	@FloorLevel NVARCHAR(20) = NULL,
 	@HouseNumber NVARCHAR(12) = NULL,
 	@responseCode NVARCHAR(2)='FF' OUTPUT,
 	@responseMessage NVARCHAR(128)='' OUTPUT
 as
-	BEGIN TRY
+BEGIN TRY
 		IF (@FreeFormatAddress IS NOT NULL)
 			BEGIN
-				INSERT INTO Locations (FreeFormatAddress,City,Longitude,Latitude,Street,Apartement,PostalCode,FloorLevel,HouseNumber)
-				values (@FreeFormatAddress,@City,@Longitude,@Latitude,@Street,@Apartement,@PostalCode,@FloorLevel,@HouseNumber)
-				SELECT @responseCode = '00'
-				SELECT @responseMessage = 'Location Added Successfully'
-			END
+	INSERT INTO Locations
+		(FreeFormatAddress,City,Longitude,Latitude,Street,Apartement,PostalCode,FloorLevel,HouseNumber)
+	values
+		(@FreeFormatAddress, @City, @Longitude, @Latitude, @Street, @Apartement, @PostalCode, @FloorLevel, @HouseNumber)
+	SELECT @responseCode = '00'
+	SELECT @responseMessage = 'Location Added Successfully'
+END
 		ELSE	
 			BEGIN
-				return -1
-				SELECT @responseCode = 'FF'
-				SELECT @responseMessage = 'Unknown Error'
-			END
+	return -1
+	SELECT @responseCode = 'FF'
+	SELECT @responseMessage = 'Unknown Error'
+END
 	END TRY
 	BEGIN CATCH
-			SELECT @responseCode = 'FF',@responseMessage=ERROR_MESSAGE()
+			SELECT @responseCode = 'FF', @responseMessage=ERROR_MESSAGE()
 			return -1;
 	END CATCH
 Go
@@ -1323,7 +1443,8 @@ Go
 GO
 CREATE OR ALTER proc usp_Locations_SelectAll
 as
-	select * from Locations
+select *
+from Locations
 ------------------------------------------
 -- (2) Get Get All Locations Test --
 --GO
@@ -1331,13 +1452,15 @@ as
 -----------------------------------------
 -- (2.1) Get Locations by city --
 GO
-CREATE OR ALTER proc usp_Locations_SelectByCity @CityName NVARCHAR(32)
+CREATE OR ALTER proc usp_Locations_SelectByCity
+	@CityName NVARCHAR(32)
 as
-	IF (@CityName IS NOT NULL)
+IF (@CityName IS NOT NULL)
 	BEGIN
-		select * from Locations
-		where City = @CityName
-	END
+	select *
+	from Locations
+	where City = @CityName
+END
 	ELSE
 		RETURN -1
 -----------------------------------------
@@ -1347,15 +1470,16 @@ as
 -----------------------------------------
 -- (2.2) GET Locations by Cooredinates --
 GO
-CREATE OR ALTER PROC usp_Locations_SelectByGPS 
+CREATE OR ALTER PROC usp_Locations_SelectByGPS
 	@Longitude  NVARCHAR(32),
 	@Latitude  NVARCHAR(32)
 as
-	IF (@Longitude IS NOT NULL AND @Latitude IS NOT NULL)
+IF (@Longitude IS NOT NULL AND @Latitude IS NOT NULL)
 	BEGIN
-		select * from Locations
-		where Longitude = @Longitude AND Latitude = @Latitude
-	END
+	select *
+	from Locations
+	where Longitude = @Longitude AND Latitude = @Latitude
+END
 	ELSE
 		RETURN -1
 -----------------------------------------
@@ -1368,11 +1492,12 @@ GO
 CREATE OR ALTER PROC usp_Locations_SelectByStreet
 	@Street NVARCHAR(32)
 as
-	IF (@Street IS NOT NULL)
+IF (@Street IS NOT NULL)
 	BEGIN
-		select * from Locations
-		where Street = @Street
-	END
+	select *
+	from Locations
+	where Street = @Street
+END
 	ELSE
 		RETURN -1
 -----------------------------------------
@@ -1385,11 +1510,12 @@ GO
 CREATE OR ALTER PROC usp_Locations_SelectByPostalCode
 	@PostalCode NVARCHAR(20)
 as
-	IF (@PostalCode IS NOT NULL)
+IF (@PostalCode IS NOT NULL)
 	BEGIN
-		select * from Locations
-		where PostalCode = @PostalCode
-	END
+	select *
+	from Locations
+	where PostalCode = @PostalCode
+END
 	ELSE
 		RETURN -1
 -----------------------------------------
@@ -1402,11 +1528,12 @@ GO
 CREATE OR ALTER PROC usp_Locations_SelectByPostalZipCode
 	@PostalZipCode NVARCHAR(32)
 as
-	IF (@PostalZipCode IS NOT NULL)
+IF (@PostalZipCode IS NOT NULL)
 	BEGIN
-		select * from Locations
-		where PostalCode = @PostalZipCode
-	END
+	select *
+	from Locations
+	where PostalCode = @PostalZipCode
+END
 	ELSE
 		RETURN -1
 -----------------------------------------
@@ -1419,11 +1546,12 @@ GO
 CREATE OR ALTER PROC usp_Locations_SelectByID
 	@LocationID INT
 as
-	IF (@LocationID IS NOT NULL)
+IF (@LocationID IS NOT NULL)
 	BEGIN
-		select * from Locations
-		where LocationID = @LocationID
-	END
+	select *
+	from Locations
+	where LocationID = @LocationID
+END
 	ELSE
 		RETURN -1
 -----------------------------------------
@@ -1436,11 +1564,12 @@ GO
 CREATE OR ALTER PROC usp_Locations_SelectByAddress
 	@FreeFormatAddress NVARCHAR(256)
 as
-	IF (@FreeFormatAddress IS NOT NULL)
+IF (@FreeFormatAddress IS NOT NULL)
 	BEGIN
-		select * from Locations
-		where FreeFormatAddress LIKE '%' + @FreeFormatAddress + '%'
-	END
+	select *
+	from Locations
+	where FreeFormatAddress LIKE '%' + @FreeFormatAddress + '%'
+END
 	ELSE
 		RETURN -1
 -----------------------------------------
@@ -1450,14 +1579,15 @@ EXEC usp_Locations_SelectByAddress @FreeFormatAddress = 'giza'
 -----------------------------------------
 -- (3) Delete Location By LocationID --
 GO
-CREATE OR ALTER proc usp_Location_Delete  @LocationID INT
+CREATE OR ALTER proc usp_Location_Delete
+	@LocationID INT
 as
-	IF (@LocationID IS NOT NULL)
+IF (@LocationID IS NOT NULL)
 	BEGIN
-		UPDATE Locations
+	UPDATE Locations
 		SET LocationStatus = 99
 		where LocationID = @LocationID
-	END
+END
 	ELSE
 		return -1
 -----------------------------------------
@@ -1470,17 +1600,17 @@ GO
 CREATE OR ALTER PROC usp_Location_Update
 	@LocationID INT,
 	@FreeFormatAddress NVARCHAR(256) = NULL,
-    @Longitude  NVARCHAR(32) = NULL,
-    @Latitude  NVARCHAR(32) = NULL,
-    @Street NVARCHAR(32) = NULL,
-    @Apartement NVARCHAR(32) = NULL,
-    @PostalCode NVARCHAR(20) = NULL,
-    @FloorLevel NVARCHAR(20) = NULL,
+	@Longitude  NVARCHAR(32) = NULL,
+	@Latitude  NVARCHAR(32) = NULL,
+	@Street NVARCHAR(32) = NULL,
+	@Apartement NVARCHAR(32) = NULL,
+	@PostalCode NVARCHAR(20) = NULL,
+	@FloorLevel NVARCHAR(20) = NULL,
 	@HouseNumber NVARCHAR(12) = NULL
 as
-	IF (@LocationID IS NOT NULL)
+IF (@LocationID IS NOT NULL)
 		BEGIN
-			UPDATE Locations
+	UPDATE Locations
 			SET FreeFormatAddress = ISNULL(@FreeFormatAddress,FreeFormatAddress),
 			Longitude = ISNULL(@Longitude,Longitude),
 			Latitude = ISNULL(@Latitude,Latitude),
@@ -1491,7 +1621,7 @@ as
 			HouseNumber = ISNULL(@HouseNumber,HouseNumber),
 			LocationStatus = 2
 			WHERE LocationID = @LocationID
-		END
+END
 	ELSE
 		return -1
 -----------------------------------------
@@ -1502,7 +1632,7 @@ as
 -----------------------------------------
 
 GO
-CREATE OR ALTER PROC usp_InsertNewLocation 
+CREATE OR ALTER PROC usp_InsertNewLocation
 	@FreeFormatAddress NVARCHAR(256),--1
 	@City NVARCHAR(32),--2
 	@Longitude NVARCHAR(32),--3
@@ -1515,73 +1645,77 @@ CREATE OR ALTER PROC usp_InsertNewLocation
 	@return_Hex_value NVARCHAR(2)='FF' OUTPUT,--10
 	@responseMessage NVARCHAR(128)='' OUTPUT,--11
 	@LocationID INT= 0 OUTPUT--12
-	AS
-	BEGIN
+AS
+BEGIN
 	SET NOCOUNT ON
 	DECLARE @locID INT
 	DECLARE @LocationStatus NVARCHAR(32)
 	IF (@FreeFormatAddress IS NOT NULL AND @Longitude IS NOT NULL AND @Latitude IS NOT NULL)
 		BEGIN
-			SET @locID = (SELECT LocationID FROM dbo.Locations WHERE (Longitude = @Longitude AND Latitude = @Latitude AND FreeFormatAddress = @FreeFormatAddress))
-			IF(@locID IS NOT NULL)
+		SET @locID = (SELECT LocationID
+		FROM dbo.Locations
+		WHERE (Longitude = @Longitude AND Latitude = @Latitude AND FreeFormatAddress = @FreeFormatAddress))
+		IF(@locID IS NOT NULL)
 			BEGIN
-				SET @LocationID = @locID
-				SET @responseMessage = 'LOCATION ALREADY EXIST'
-				SELECT @return_Hex_value = 'EF'
-				RETURN -1
-			END
+			SET @LocationID = @locID
+			SET @responseMessage = 'LOCATION ALREADY EXIST'
+			SELECT @return_Hex_value = 'EF'
+			RETURN -1
+		END
 			ELSE
 				BEGIN
-				SELECT @LocationStatus = '00'
-				INSERT INTO dbo.Locations
+			SELECT @LocationStatus = '00'
+			INSERT INTO dbo.Locations
 				(
-					FreeFormatAddress,
-					City,
-					Longitude,
-					Latitude,
-					Street,
-					Apartement,
-					PostalCode,
-					FloorLevel,
-					HouseNumber,
-					LocationStatus
+				FreeFormatAddress,
+				City,
+				Longitude,
+				Latitude,
+				Street,
+				Apartement,
+				PostalCode,
+				FloorLevel,
+				HouseNumber,
+				LocationStatus
 				)
-				VALUES
-				(   @FreeFormatAddress,  -- FreeFormatAddress - nvarchar(256)
-					@City,  -- City - nvarchar(32)
+			VALUES
+				( @FreeFormatAddress, -- FreeFormatAddress - nvarchar(256)
+					@City, -- City - nvarchar(32)
 					@Longitude, -- Longitude - decimal(9, 6)
 					@Latitude, -- Latitude - decimal(9, 6)
-					@Street,  -- Street - nvarchar(32)
-					@Apartement,  -- Apartement - nvarchar(32)
-					@PostalCode,  -- PostalCode - nvarchar(20)
-					@FloorLevel,  -- FloorLevel - nvarchar(20)
-					@HouseNumber,  -- HouseNumber - nvarchar(12)
+					@Street, -- Street - nvarchar(32)
+					@Apartement, -- Apartement - nvarchar(32)
+					@PostalCode, -- PostalCode - nvarchar(20)
+					@FloorLevel, -- FloorLevel - nvarchar(20)
+					@HouseNumber, -- HouseNumber - nvarchar(12)
 					@LocationStatus     -- LocationStatus - int
 					)
-				END	
-		END
-		ELSE 
-		BEGIN
-			SET @responseMessage = 'FAILED TO ADD LOCATION'
-			SELECT @return_Hex_value = 'FF'
-			RETURN -1
-		END
-		SET @locID = (SELECT LocationID FROM dbo.Locations WHERE (Longitude = @Longitude AND Latitude = @Latitude AND FreeFormatAddress = @FreeFormatAddress))
-		IF (@locID IS NULL)
-		BEGIN
-			SET @responseMessage = 'FAILED TO FIND LOCATION'
-			SELECT @return_Hex_value = 'FF'
-			RETURN -1
-		END 
-		ELSE
-		BEGIN
-			SET @responseMessage = 'LOCATION ADDED SUCCESFULLY'
-			SELECT @return_Hex_value = '00'
-			SET @LocationID = @locID
-			PRINT @locID
-			RETURN 1
 		END
 	END
+		ELSE 
+		BEGIN
+		SET @responseMessage = 'FAILED TO ADD LOCATION'
+		SELECT @return_Hex_value = 'FF'
+		RETURN -1
+	END
+	SET @locID = (SELECT LocationID
+	FROM dbo.Locations
+	WHERE (Longitude = @Longitude AND Latitude = @Latitude AND FreeFormatAddress = @FreeFormatAddress))
+	IF (@locID IS NULL)
+		BEGIN
+		SET @responseMessage = 'FAILED TO FIND LOCATION'
+		SELECT @return_Hex_value = 'FF'
+		RETURN -1
+	END 
+		ELSE
+		BEGIN
+		SET @responseMessage = 'LOCATION ADDED SUCCESFULLY'
+		SELECT @return_Hex_value = '00'
+		SET @LocationID = @locID
+		PRINT @locID
+		RETURN 1
+	END
+END
 	GO
 	--EXEC usp_InsertNewLocation  @FreeFormatAddress='FGDG', @City=NULL,
 	--@Longitude='45.3313',
@@ -1591,80 +1725,90 @@ CREATE OR ALTER PROC usp_InsertNewLocation
 	--@PostalCode=NULL,
 	--@FloorLevel=NULL,
 	--@HouseNumber=NULL
-	GO 
-	CREATE OR ALTER PROC usp_location_getByID
+	GO
+CREATE OR ALTER PROC usp_location_getByID
 	@LocID INT,
 	@responseMessage NVARCHAR(128)='' OUTPUT
-	AS
-	BEGIN
-		IF(@LocID IS NOT NULL)
+AS
+BEGIN
+	IF(@LocID IS NOT NULL)
 		BEGIN
-			SELECT * FROM  dbo.Locations WHERE (LocationID=@LocID)
-			SET @responseMessage = 'Found The Location'
-		END
+		SELECT *
+		FROM dbo.Locations
+		WHERE (LocationID=@LocID)
+		SET @responseMessage = 'Found The Location'
+	END
 		ELSE
 		BEGIN
-			SET @responseMessage = 'Location Not Found'
-		END
+		SET @responseMessage = 'Location Not Found'
 	END
-	GO 
-	CREATE OR ALTER PROC usp_location_getAll
-	as
-	select * from dbo.Locations
+END
+	GO
+CREATE OR ALTER PROC usp_location_getAll
+as
+select *
+from dbo.Locations
 	GO
 	--EXEC usp_location_getAll
 	
 ----------------------------------------NEW SET OF STORED PROCEDURES--------------------------------------------------------------
 GO
 CREATE OR ALTER PROC usp_Incident_InsertCallData
-@ISQN INT,
-@FName NVARCHAR(64),
-@LName NVARCHAR(64),
-@MobileNumber NVARCHAR(64),
-@HexCode NVARCHAR(2) OUTPUT
+	@ISQN INT,
+	@FName NVARCHAR(64),
+	@LName NVARCHAR(64),
+	@MobileNumber NVARCHAR(64),
+	@HexCode NVARCHAR(2) OUTPUT
 AS
 BEGIN
-if not exists(Select * from IncidentCallers where CallerMobile = @MobileNumber)
+	if not exists(Select *
+	from IncidentCallers
+	where CallerMobile = @MobileNumber)
 BEGIN
-INSERT INTO  IncidentCallers(
-	IncidentSQN ,
-	CallerFName ,
-	CallerLName ,
-	CallerMobile
-	)
-VALUES
-(
-	@ISQN,
-	ISNULL(@FName,'UnKnown'),
-	ISNULL(@LName,'UnKnown'),
-	@MobileNumber	
+		INSERT INTO  IncidentCallers
+			(
+			IncidentSQN ,
+			CallerFName ,
+			CallerLName ,
+			CallerMobile
+			)
+		VALUES
+			(
+				@ISQN,
+				ISNULL(@FName,'UnKnown'),
+				ISNULL(@LName,'UnKnown'),
+				@MobileNumber	
 )
-SET @HexCode = '00'
-END
+		SET @HexCode = '00'
+	END
 ELSE
 BEGIN
-SET @HexCode = '01' --Number is already in database.
-END
+		SET @HexCode = '01'
+	--Number is already in database.
+	END
 END
 
-GO 
+GO
 CREATE OR ALTER PROC usp_Incident_getCallers
-@iSQN INTEGER
+	@iSQN INTEGER
 AS
 BEGIN
-SELECT CallerFName, CallerLName, CallerMobile, CallTime FROM IncidentCallers
-WHERE IncidentSQN = @iSQN
+	SELECT CallerFName, CallerLName, CallerMobile, CallTime
+	FROM IncidentCallers
+	WHERE IncidentSQN = @iSQN
 END
 
 GO
 CREATE OR ALTER  proc usp_IncidentType_GetAll
 as
-	select * from IncidentTypes
+select *
+from IncidentTypes
 GO
 GO
 CREATE OR ALTER proc usp_IncidentPriority_GetAll
 as
-	select * from Priorities
+select *
+from Priorities
 GO
 
 CREATE OR ALTER PROC usp_Incident_Insert
@@ -1674,81 +1818,87 @@ CREATE OR ALTER PROC usp_Incident_Insert
 	@return_Hex_value NVARCHAR(2)='FF' OUTPUT,--4
 	@responseMessage NVARCHAR(128)='' OUTPUT,--5
 	@IncidentSequenceNumber INT= 0 OUTPUT--6
-	AS
-	BEGIN 
+AS
+BEGIN
 	SET NOCOUNT ON
 	DECLARE @ISN INT
-	IF(@IncidentType IS NOT NULL OR  @IncidentPriority IS NOT NULL OR  @IncidentLocationID IS NOT NULL)
+	IF(@IncidentType IS NOT NULL OR @IncidentPriority IS NOT NULL OR @IncidentLocationID IS NOT NULL)
 		BEGIN
-			SET @ISN = (SELECT IncidentSequenceNumber FROM dbo.Incident WHERE (IncidentLocationID=@IncidentLocationID AND IncidentPriority=@IncidentPriority AND IncidentType=@IncidentType))
-			IF(@ISN IS NOT NULL)
+		SET @ISN = (SELECT IncidentSequenceNumber
+		FROM dbo.Incident
+		WHERE (IncidentLocationID=@IncidentLocationID AND IncidentPriority=@IncidentPriority AND IncidentType=@IncidentType))
+		IF(@ISN IS NOT NULL)
 			BEGIN
-				SET @responseMessage = 'INCIDENT ALREADY EXIST'
-				SELECT @return_Hex_value = 'FF'
-				SET @IncidentSequenceNumber = @ISN
-				UPDATE dbo.Incident 
+			SET @responseMessage = 'INCIDENT ALREADY EXIST'
+			SELECT @return_Hex_value = 'FF'
+			SET @IncidentSequenceNumber = @ISN
+			UPDATE dbo.Incident 
 				SET CreationTime = GETDATE()
 				WHERE (IncidentLocationID=@IncidentLocationID AND IncidentPriority=@IncidentPriority AND IncidentType=@IncidentType)
-				RETURN -1
-			END
-			ELSE
-			BEGIN
-				INSERT INTO dbo.Incident
-				(
-				    IncidentType,
-				    IncidentPriority,
-				    IncidentLocationID
-				)
-				VALUES
-				( 
-				    @IncidentType,         -- IncidentType - int
-				    @IncidentPriority,         -- IncidentPriority - int
-				    @IncidentLocationID         -- IncidentLocationID - int
-				)
-				SET @IncidentSequenceNumber = (SELECT IncidentSequenceNumber FROM dbo.Incident WHERE (IncidentLocationID=@IncidentLocationID AND IncidentPriority=@IncidentPriority AND IncidentType=@IncidentType))
-				IF(@IncidentSequenceNumber IS NULL)
-				BEGIN
-					SET @responseMessage = 'FAILED TO FIND INCIDENT'
-					SELECT @return_Hex_value = 'FF'
-					RETURN -1
-				END
-				ELSE
-				BEGIN
-					SET @responseMessage = 'IINCIDENT ADDED SUCCESFULLY'
-					SELECT @return_Hex_value = '00'
-					PRINT @IncidentSequenceNumber
-					RETURN 1
-				END
-			END
-		END
-		ELSE
-		BEGIN 
-			SET @responseMessage = 'MISSING INFORMATION'
-			SELECT @return_Hex_value = 'FF'
 			RETURN -1
 		END
+			ELSE
+			BEGIN
+			INSERT INTO dbo.Incident
+				(
+				IncidentType,
+				IncidentPriority,
+				IncidentLocationID
+				)
+			VALUES
+				(
+					@IncidentType, -- IncidentType - int
+					@IncidentPriority, -- IncidentPriority - int
+					@IncidentLocationID         -- IncidentLocationID - int
+				)
+			SET @IncidentSequenceNumber = (SELECT IncidentSequenceNumber
+			FROM dbo.Incident
+			WHERE (IncidentLocationID=@IncidentLocationID AND IncidentPriority=@IncidentPriority AND IncidentType=@IncidentType))
+			IF(@IncidentSequenceNumber IS NULL)
+				BEGIN
+				SET @responseMessage = 'FAILED TO FIND INCIDENT'
+				SELECT @return_Hex_value = 'FF'
+				RETURN -1
+			END
+				ELSE
+				BEGIN
+				SET @responseMessage = 'IINCIDENT ADDED SUCCESFULLY'
+				SELECT @return_Hex_value = '00'
+				PRINT @IncidentSequenceNumber
+				RETURN 1
+			END
+		END
 	END
+		ELSE
+		BEGIN
+		SET @responseMessage = 'MISSING INFORMATION'
+		SELECT @return_Hex_value = 'FF'
+		RETURN -1
+	END
+END
 
 
-GO	
+GO
 CREATE OR ALTER PROC [dbo].[spIncidentTypes_AddRow]
-		@TypeName nvarchar(32),
-		@TypeNote nvarchar(256),
-		@IncidentTypeID int OUTPUT
+	@TypeName nvarchar(32),
+	@TypeNote nvarchar(256),
+	@IncidentTypeID int OUTPUT
 As
 Begin
-	insert into dbo.IncidentTypes (TypeName, TypeNote)
-	Values (@TypeName, @TypeNote)
+	insert into dbo.IncidentTypes
+		(TypeName, TypeNote)
+	Values
+		(@TypeName, @TypeNote)
 
 	SET @IncidentTypeID = (SELECT IncidentTypeID
-						   From IncidentTypes
-						   where TypeName = @TypeName)
+	From IncidentTypes
+	where TypeName = @TypeName)
 End	
 
 
 GO
 CREATE OR ALTER PROC [dbo].[spIncidentTypes_DeleteByTypeName]
-		@TypeName nvarchar(32)
+	@TypeName nvarchar(32)
 As
 Begin
 	delete from dbo.IncidentTypes
@@ -1759,220 +1909,242 @@ GO
 GO
 
 CREATE OR ALTER PROC get_Employee_getAll
-@SuperSSN INT,
-@jobID INT
+	@SuperSSN INT,
+	@jobID INT
 AS
 BEGIN
 
-IF(@jobID = -1)
+	IF(@jobID = -1)
 BEGIN
-SELECT Emp.EID,Emp.Fname,Emp.Lname,Emp.Email,Emp.ContactNumber,
-	   Emp.PAN,Emp.NationalID,Emp.EmployeeStatus,Emp.Photo,Emp.Age,
-	   Emp.Gender,Emp.City,Emp.JobID,J.Title FROM dbo.Employee AS Emp
-INNER JOIN dbo.Jobs AS J ON J.JobID = Emp.JobID
-WHERE Emp.SuperSSN = @SuperSSN
-END
+		SELECT Emp.EID, Emp.Fname, Emp.Lname, Emp.Email, Emp.ContactNumber,
+			Emp.PAN, Emp.NationalID, Emp.EmployeeStatus, Emp.Photo, Emp.Age,
+			Emp.Gender, Emp.City, Emp.JobID, J.Title
+		FROM dbo.Employee AS Emp
+			INNER JOIN dbo.Jobs AS J ON J.JobID = Emp.JobID
+		WHERE Emp.SuperSSN = @SuperSSN
+	END
 ELSE
 BEGIN
 
-SELECT Emp.EID,Emp.Fname,Emp.Lname,Emp.Email,Emp.ContactNumber,
-	   Emp.PAN,Emp.NationalID,Emp.EmployeeStatus,Emp.Photo,Emp.Age,
-	   Emp.Gender,Emp.City,Emp.JobID,J.Title FROM dbo.Employee AS Emp
-INNER JOIN dbo.Jobs AS J ON J.JobID = Emp.JobID
-WHERE Emp.JobID = @jobID AND Emp.SuperSSN = @SuperSSN
-END
+		SELECT Emp.EID, Emp.Fname, Emp.Lname, Emp.Email, Emp.ContactNumber,
+			Emp.PAN, Emp.NationalID, Emp.EmployeeStatus, Emp.Photo, Emp.Age,
+			Emp.Gender, Emp.City, Emp.JobID, J.Title
+		FROM dbo.Employee AS Emp
+			INNER JOIN dbo.Jobs AS J ON J.JobID = Emp.JobID
+		WHERE Emp.JobID = @jobID AND Emp.SuperSSN = @SuperSSN
+	END
 END
 GO
 
 CREATE OR ALTER PROC get_Employee_AllParamedics
-@SuperSSN INT
+	@SuperSSN INT
 AS
 BEGIN
 
-SELECT EID,Fname,Lname,Email,ContactNumber,PAN,NationalID,EmployeeStatus,Photo,Age FROM dbo.Employee
-WHERE JobID = 2 AND SuperSSN = @SuperSSN
+	SELECT EID, Fname, Lname, Email, ContactNumber, PAN, NationalID, EmployeeStatus, Photo, Age
+	FROM dbo.Employee
+	WHERE JobID = 2 AND SuperSSN = @SuperSSN
 
 END
 GO
 
 CREATE OR ALTER PROC get_Employee_Paramedics
-@SuperSSN INT
+	@SuperSSN INT
 AS
 BEGIN
 
-SELECT EID,Fname,Lname,Email,ContactNumber,PAN,NationalID,EmployeeStatus,Photo,Age FROM dbo.Employee
-WHERE JobID = 2 AND SuperSSN = @SuperSSN AND (EmployeeStatus = '00' OR EmployeeStatus = '01') 
+	SELECT EID, Fname, Lname, Email, ContactNumber, PAN, NationalID, EmployeeStatus, Photo, Age
+	FROM dbo.Employee
+	WHERE JobID = 2 AND SuperSSN = @SuperSSN AND (EmployeeStatus = '00' OR EmployeeStatus = '01')
 
 END
 GO
 
 CREATE OR ALTER PROC get_Employee_InActiveParamedics
-@SuperSSN INT
+	@SuperSSN INT
 AS
 BEGIN
 
-SELECT EID,Fname,Lname,Email,ContactNumber,PAN,NationalID,EmployeeStatus,Photo,Age FROM dbo.Employee
-WHERE JobID = 2 AND SuperSSN = @SuperSSN AND (EmployeeStatus = '02' OR EmployeeStatus = '03'  OR EmployeeStatus = '04' ) 
+	SELECT EID, Fname, Lname, Email, ContactNumber, PAN, NationalID, EmployeeStatus, Photo, Age
+	FROM dbo.Employee
+	WHERE JobID = 2 AND SuperSSN = @SuperSSN AND (EmployeeStatus = '02' OR EmployeeStatus = '03' OR EmployeeStatus = '04' )
 
 END
 
 GO
 CREATE OR ALTER PROC get_Employee_AllDrivers
-@SuperSSN INT
+	@SuperSSN INT
 AS
 BEGIN
 
-SELECT EID,Fname,Lname,Email,ContactNumber,PAN,NationalID,EmployeeStatus,Photo,Age FROM dbo.Employee
-WHERE JobID = 3 AND SuperSSN = @SuperSSN
+	SELECT EID, Fname, Lname, Email, ContactNumber, PAN, NationalID, EmployeeStatus, Photo, Age
+	FROM dbo.Employee
+	WHERE JobID = 3 AND SuperSSN = @SuperSSN
 
 END
 
 GO
 CREATE OR ALTER PROC get_Employee_Drivers
-@SuperSSN INT
+	@SuperSSN INT
 AS
 BEGIN
 
-SELECT EID,Fname,Lname,Email,ContactNumber,PAN,NationalID,EmployeeStatus,Photo,Age FROM dbo.Employee
-WHERE JobID = 3 AND SuperSSN = @SuperSSN AND (EmployeeStatus = '00' OR EmployeeStatus = '01') 
+	SELECT EID, Fname, Lname, Email, ContactNumber, PAN, NationalID, EmployeeStatus, Photo, Age
+	FROM dbo.Employee
+	WHERE JobID = 3 AND SuperSSN = @SuperSSN AND (EmployeeStatus = '00' OR EmployeeStatus = '01')
 
 END
 
 GO
 CREATE OR ALTER PROC get_Employee_InActiveDrivers
-@SuperSSN INT
+	@SuperSSN INT
 AS
 BEGIN
 
-SELECT EID,Fname,Lname,Email,ContactNumber,PAN,NationalID,EmployeeStatus,Photo,Age FROM dbo.Employee
-WHERE JobID = 3 AND SuperSSN = @SuperSSN AND (EmployeeStatus = '02' OR EmployeeStatus = '03'  OR EmployeeStatus = '04' )
+	SELECT EID, Fname, Lname, Email, ContactNumber, PAN, NationalID, EmployeeStatus, Photo, Age
+	FROM dbo.Employee
+	WHERE JobID = 3 AND SuperSSN = @SuperSSN AND (EmployeeStatus = '02' OR EmployeeStatus = '03' OR EmployeeStatus = '04' )
 
 END
 GO
 
 CREATE OR ALTER PROC get_Employee_getDatabyEmployeeID
-@eid INT
+	@eid INT
 AS
 BEGIN
-SELECT
-EID,Fname,Lname,Email,ContactNumber,PAN,NationalID,EmployeeStatus,Photo,
-Age,Gender,BDate,Country,City,SubscriptionDate,LogInTStamp,LogInGPS,SuperSSN,JobID,LogOutStamp,LogInStatus FROM dbo.Employee
-WHERE EID = @eid
+	SELECT
+		EID, Fname, Lname, Email, ContactNumber, PAN, NationalID, EmployeeStatus, Photo,
+		Age, Gender, BDate, Country, City, SubscriptionDate, LogInTStamp, LogInGPS, SuperSSN, JobID, LogOutStamp, LogInStatus
+	FROM dbo.Employee
+	WHERE EID = @eid
 END
 
 
 GO
 CREATE OR ALTER PROC get_Employee_getLogTimes
-@EID INTEGER
+	@EID INTEGER
 AS
 BEGIN
-SELECT LogInTime,ISNULL(LogOutTime,LogInTime),DATEDIFF(MINUTE,LogInTime,ISNULL(LogOutTime,LogInTime)) AS WorkMins FROM dbo.EmployeeLogs
-WHERE EmployeeID = @EID
+	SELECT LogInTime, ISNULL(LogOutTime,LogInTime), DATEDIFF(MINUTE,LogInTime,ISNULL(LogOutTime,LogInTime)) AS WorkMins
+	FROM dbo.EmployeeLogs
+	WHERE EmployeeID = @EID
 END
 ----------------------------------------NEW SET OF STORED PROCEDURES--------------------------------------------------------------
 GO
 
 CREATE OR ALTER PROC usp_BatchMedicine_Insert
-@BatchID BIGINT,
-@MedicineBarcode NVARCHAR(64),
-@MedicineQuantity INTEGER,
-@HexCode NVARCHAR(2) OUTPUT
+	@BatchID BIGINT,
+	@MedicineBarcode NVARCHAR(64),
+	@MedicineQuantity INTEGER,
+	@HexCode NVARCHAR(2) OUTPUT
 AS
 BEGIN
 
-DECLARE @QuantityDifference INT
-set @QuantityDifference = (select CountInStock from Medicine where BarCode = @MedicineBarcode) - @MedicineQuantity
+	DECLARE @QuantityDifference INT
+	set @QuantityDifference = (select CountInStock
+	from Medicine
+	where BarCode = @MedicineBarcode) - @MedicineQuantity
 
-if(@QuantityDifference >= 0)
+	if(@QuantityDifference >= 0)
 begin
 
-if not exists(select * from dbo.Batch  where dbo.Batch.BatchID=@BatchID)
+		if not exists(select *
+		from dbo.Batch
+		where dbo.Batch.BatchID=@BatchID)
 begin
-insert into dbo.Batch(BatchID)
-VALUES(@BatchID)
-end
+			insert into dbo.Batch
+				(BatchID)
+			VALUES(@BatchID)
+		end
 
-INSERT INTO dbo.BatchMedicine
-(
-    BatchID,
-    MedicineBCode,
-    Quantity
-)
-VALUES
-(   @BatchID ,
-    @MedicineBarcode,
-    @MedicineQuantity
+		INSERT INTO dbo.BatchMedicine
+			(
+			BatchID,
+			MedicineBCode,
+			Quantity
+			)
+		VALUES
+			( @BatchID ,
+				@MedicineBarcode,
+				@MedicineQuantity
 )
 
-UPDATE dbo.Medicine
+		UPDATE dbo.Medicine
 SET CountInStock = @QuantityDifference WHERE BarCode = @MedicineBarcode;
--- '00' -> Addition Successful    
-SET @HexCode = '00'
-END
+		-- '00' -> Addition Successful    
+		SET @HexCode = '00'
+	END
 ELSE
 BEGIN
--- '01' -> Addition Failed
-SET @HexCode = '01'
-END
+		-- '01' -> Addition Failed
+		SET @HexCode = '01'
+	END
 END
 go
 
 
 CREATE OR ALTER PROC usp_Batch_UsedMedicine
-@batchID BIGINT,
-@sequenceNumber INTEGER,
-@barCode NVARCHAR(64),
-@usedAmt INTEGER,
-@HexCode NVARCHAR(2) OUTPUT
+	@batchID BIGINT,
+	@sequenceNumber INTEGER,
+	@barCode NVARCHAR(64),
+	@usedAmt INTEGER,
+	@HexCode NVARCHAR(2) OUTPUT
 AS
 BEGIN
-DECLARE @QuantityDifference INT
-set @QuantityDifference = (select CountInStock from Medicine where BarCode = @barcode) - @usedAmt
+	DECLARE @QuantityDifference INT
+	set @QuantityDifference = (select CountInStock
+	from Medicine
+	where BarCode = @barcode) - @usedAmt
 
-if(@QuantityDifference >= 0)
+	if(@QuantityDifference >= 0)
 BEGIN
-Update dbo.BatchMedicine
+		Update dbo.BatchMedicine
 set Quantity = @QuantityDifference
-INSERT INTO dbo.MedicineUsedMedicineUsedPerResponse
-(	RespSQN ,
-	BID,
-	MedBCode,
-	UsedAmt,
-	AmbVIN
+		INSERT INTO dbo.MedicineUsedMedicineUsedPerResponse
+			( RespSQN ,
+			BID,
+			MedBCode,
+			UsedAmt,
+			AmbVIN
+			)
+		VALUES
+			(
+				@sequenceNumber,
+				@batchID,
+				@barCode,
+				@usedAmt,
+				(select AssociatedVIN
+				from dbo.AmbulanceBatchesMap
+				where BatchID = @batchID)
 )
-VALUES
-(
-	@sequenceNumber,
-	@batchID,
-	@barCode,
-	@usedAmt,
-	(select AssociatedVIN from dbo.AmbulanceBatchesMap where BatchID = @batchID)
-)
-set @HexCode = '00'
-END
+		set @HexCode = '00'
+	END
 ELSE
 BEGIN
-set @HexCode = '01'
-END
+		set @HexCode = '01'
+	END
 END
 GO
 
 CREATE OR ALTER PROC usp_AmbulanceMap_getAllBatches
-@VIN INTEGER
+	@VIN INTEGER
 AS
 BEGIN
-SELECT BatchID FROM dbo.AmbulanceBatchesMap WHERE AssociatedVIN = @VIN
+	SELECT BatchID
+	FROM dbo.AmbulanceBatchesMap
+	WHERE AssociatedVIN = @VIN
 END
 GO
 
 CREATE OR ALTER PROC usp_Batch_getMedicines
-@BatchID BIGINT
+	@BatchID BIGINT
 AS
 BEGIN
-select BarCode,MedicineName,Price,dbo.BatchMedicine.Quantity,Implications,MedicineUsage,SideEffects,ActiveComponent,MedicineStatus from dbo.Medicine
-inner join dbo.BatchMedicine
-ON BatchMedicine.MedicineBCode = Medicine.BarCode
-WHERE dbo.BatchMedicine.BatchID = @BatchID
+	select BarCode, MedicineName, Price, dbo.BatchMedicine.Quantity, Implications, MedicineUsage, SideEffects, ActiveComponent, MedicineStatus
+	from dbo.Medicine
+		inner join dbo.BatchMedicine
+		ON BatchMedicine.MedicineBCode = Medicine.BarCode
+	WHERE dbo.BatchMedicine.BatchID = @BatchID
 END
 
 ----------------------------------------NEW SET OF STORED PROCEDURES--------------------------------------------------------------
@@ -1982,17 +2154,18 @@ END
 -- Employee SP --
 -- Login --
 GO
-CREATE OR ALTER PROC usp_Employee_Login 
+CREATE OR ALTER PROC usp_Employee_Login
 	@EmailOrPAN NVARCHAR(128),
 	@HashPassword NVARCHAR(128),
-	
+
 	@return_Hex_value NVARCHAR(2)='FF' OUTPUT,
 	@responseMessage NVARCHAR(128)='' OUTPUT,
 	@jobID INTEGER = -1 OUTPUT,
 	@title NVARCHAR(256) = '' OUTPUT,
 	@employeeID Integer = -1 OUTPUT,
 	@userPhoto NVARCHAR(MAX) = '' OUTPUT
-WITH ENCRYPTION
+WITH
+	ENCRYPTION
 AS
 BEGIN
 	SET NOCOUNT on
@@ -2006,79 +2179,92 @@ BEGIN
 		BEGIN
 			BEGIN TRY
 				
-				IF EXISTS (SELECT * FROM Employee WHERE (Email=@EmailOrPAN OR PAN = @EmailOrPAN OR NationalID=@EmailOrPAN))
+				IF EXISTS (SELECT *
+			FROM Employee
+			WHERE (Email=@EmailOrPAN OR PAN = @EmailOrPAN OR NationalID=@EmailOrPAN))
 				BEGIN
-					-- Found the user using email or PAN or National ID
-					SET @userID = (SELECT EID FROM Employee WHERE (Email=@EmailOrPAN OR PAN = @EmailOrPAN OR NationalID=@EmailOrPAN) AND (HashPassword=@HashPassword))
-					IF(@userID IS NULL)
+				-- Found the user using email or PAN or National ID
+				SET @userID = (SELECT EID
+				FROM Employee
+				WHERE (Email=@EmailOrPAN OR PAN = @EmailOrPAN OR NationalID=@EmailOrPAN) AND (HashPassword=@HashPassword))
+				IF(@userID IS NULL)
 					BEGIN
-						-- Wrong Password
-						SET @responseMessage='Incorrect password'
-						SELECT @return_Hex_value = '02'
-						RETURN -1;
-					END
+					-- Wrong Password
+					SET @responseMessage='Incorrect password'
+					SELECT @return_Hex_value = '02'
+					RETURN -1;
+				END
 					
 					ELSE
 					BEGIN
-						-- @userID IS NOT NULL
-						-- Correct password, so check if he's already logged in
-						SET @status=(SELECT LogInStatus FROM Employee WHERE EID=@userID)				
-						IF(@status = '00')
+					-- @userID IS NOT NULL
+					-- Correct password, so check if he's already logged in
+					SET @status=(SELECT LogInStatus
+					FROM Employee
+					WHERE EID=@userID)
+					IF(@status = '00')
 						BEGIN
-							-- Not logged in, so login successful, send his type to backend and jobID
-							-- And set status to 1
-							SET @responseMessage='User logged in successfully'
-							SELECT @return_Hex_value = '00'
-							SET @jobID = (SELECT JobID FROM Employee WHERE EID = @userID)
-							SET @title = (SELECT Title FROM Jobs WHERE JobID = @jobID)
-							SET @employeeID = @userID
-							SET @userPhoto = (SELECT Photo FROM Employee WHERE EID = @userID)
-							UPDATE Employee SET LogInStatus = '01' WHERE EID = @userID
-							SET @inStamp = GETDATE()
-							UPDATE Employee SET LogInTStamp = @inStamp WHERE EID = @userID
-							INSERT INTO dbo.EmployeeLogs(
-								EmployeeID,
-								LogInTime
+						-- Not logged in, so login successful, send his type to backend and jobID
+						-- And set status to 1
+						SET @responseMessage='User logged in successfully'
+						SELECT @return_Hex_value = '00'
+						SET @jobID = (SELECT JobID
+						FROM Employee
+						WHERE EID = @userID)
+						SET @title = (SELECT Title
+						FROM Jobs
+						WHERE JobID = @jobID)
+						SET @employeeID = @userID
+						SET @userPhoto = (SELECT Photo
+						FROM Employee
+						WHERE EID = @userID)
+						UPDATE Employee SET LogInStatus = '01' WHERE EID = @userID
+						SET @inStamp = GETDATE()
+						UPDATE Employee SET LogInTStamp = @inStamp WHERE EID = @userID
+						INSERT INTO dbo.EmployeeLogs
+							(
+							EmployeeID,
+							LogInTime
 							)
-							VALUES(
+						VALUES(
 								@userID,
 								@inStamp
 							)
 
-							RETURN 0
-						END
-						IF(@status = '01')
+						RETURN 0
+					END
+					IF(@status = '01')
 						BEGIN
-							-- Already logged in, so can't continue
-							SET @responseMessage='User is logged in somewhere'
-							SELECT @return_Hex_value = '03'
-							RETURN 3
-						END
-						IF(@status = '02')
+						-- Already logged in, so can't continue
+						SET @responseMessage='User is logged in somewhere'
+						SELECT @return_Hex_value = '03'
+						RETURN 3
+					END
+					IF(@status = '02')
 						BEGIN
-							-- Not verrified
-							SET @responseMessage='This user is not verified'
-							SELECT @return_Hex_value = '04'
-							RETURN 4
-						END
+						-- Not verrified
+						SET @responseMessage='This user is not verified'
+						SELECT @return_Hex_value = '04'
+						RETURN 4
+					END
 						ELSE
 						BEGIN
-							-- Unknown status
-							SET @responseMessage='User status undefined'
-							SELECT @return_Hex_value = 'FE'
-							RETURN -1
-						END
+						-- Unknown status
+						SET @responseMessage='User status undefined'
+						SELECT @return_Hex_value = 'FE'
+						RETURN -1
 					END
 				END
+			END
 				ELSE
 				BEGIN
 				-- Didn't find the user using Email or PAN or National ID
 				-- Wrong Email
-					SET @responseMessage='No user found with given Email or PAN or National ID'
-					SELECT @return_Hex_value = 'FF'
-					RETURN -1
-				
-				END
+				SET @responseMessage='No user found with given Email or PAN or National ID'
+				SELECT @return_Hex_value = 'FF'
+				RETURN -1
+
+			END
 			END TRY
 			
 			BEGIN CATCH
@@ -2107,7 +2293,8 @@ CREATE OR ALTER PROC usp_Employee_Logout
 	@dummyToken NVARCHAR(128),
 	@return_Hex_value NVARCHAR(2)='FF' OUTPUT,
 	@responseMessage NVARCHAR(128)='' OUTPUT
-WITH ENCRYPTION
+WITH
+	ENCRYPTION
 AS
 BEGIN
 	SET NOCOUNT ON
@@ -2118,57 +2305,65 @@ BEGIN
 	BEGIN
 		BEGIN TRY
 			-- IF EXISTS (SELECT * FROM Employee WHERE EID=@userID)
-			IF EXISTS (SELECT * FROM Employee WHERE (Email=@dummyToken OR PAN=@dummyToken OR NationalID=@dummyToken))
+			IF EXISTS (SELECT *
+		FROM Employee
+		WHERE (Email=@dummyToken OR PAN=@dummyToken OR NationalID=@dummyToken))
 			BEGIN
-				-- Found the user using userID
-				-- SET @status=(SELECT LogInStatus FROM Employee WHERE EID=@userID)
-				SET @status=(SELECT LogInStatus FROM Employee WHERE Email=@dummyToken OR PAN=@dummyToken OR NationalID=@dummyToken)
-				IF(@status='01')
+			-- Found the user using userID
+			-- SET @status=(SELECT LogInStatus FROM Employee WHERE EID=@userID)
+			SET @status=(SELECT LogInStatus
+			FROM Employee
+			WHERE Email=@dummyToken OR PAN=@dummyToken OR NationalID=@dummyToken)
+			IF(@status='01')
 				BEGIN
-					-- Right Status
-					-- UPDATE Employee SET LogInStatus = '00' WHERE EID = @userID
-					-- UPDATE Employee SET LogOutStamp = GETDATE() WHERE EID = @userID
-					UPDATE dbo.Employee SET LogInStatus = '00' WHERE (Email=@dummyToken OR PAN=@dummyToken OR NationalID=@dummyToken)
-					SET @outStamp = GETDATE()
-					UPDATE dbo.Employee SET LogOutStamp = @outStamp WHERE (Email=@dummyToken OR PAN=@dummyToken OR NationalID=@dummyToken)
-					SET @responseMessage='Logged out successfully'
-					SELECT @return_Hex_value = '00'
-					UPDATE EmployeeLogs
+				-- Right Status
+				-- UPDATE Employee SET LogInStatus = '00' WHERE EID = @userID
+				-- UPDATE Employee SET LogOutStamp = GETDATE() WHERE EID = @userID
+				UPDATE dbo.Employee SET LogInStatus = '00' WHERE (Email=@dummyToken OR PAN=@dummyToken OR NationalID=@dummyToken)
+				SET @outStamp = GETDATE()
+				UPDATE dbo.Employee SET LogOutStamp = @outStamp WHERE (Email=@dummyToken OR PAN=@dummyToken OR NationalID=@dummyToken)
+				SET @responseMessage='Logged out successfully'
+				SELECT @return_Hex_value = '00'
+				UPDATE EmployeeLogs
 					SET LogOutTime = @outStamp
-					WHERE EmployeeID = (SELECT EID FROM Employee WHERE (Email=@dummyToken OR PAN=@dummyToken OR NationalID=@dummyToken))
-					AND LogInTime= (SELECT LogInTStamp FROM Employee where (Email=@dummyToken OR PAN=@dummyToken OR NationalID=@dummyToken))
-					RETURN 0
-				END
+					WHERE EmployeeID = (SELECT EID
+					FROM Employee
+					WHERE (Email=@dummyToken OR PAN=@dummyToken OR NationalID=@dummyToken))
+					AND LogInTime= (SELECT LogInTStamp
+					FROM Employee
+					where (Email=@dummyToken OR PAN=@dummyToken OR NationalID=@dummyToken))
+				RETURN 0
+			END
 				ELSE IF(@status='00')
 				BEGIN
-					-- User already logged out
-					SET @responseMessage='Wrong user status; User is already logged out'
-					SELECT @return_Hex_value = '01'
-					RETURN 1
-				END
+				-- User already logged out
+				SET @responseMessage='Wrong user status; User is already logged out'
+				SELECT @return_Hex_value = '01'
+				RETURN 1
+			END
 				ELSE IF(@status='02')
 				BEGIN
-					-- User awaiting verification
-					SET @responseMessage='Wrong user status; User is awaiting verification'
-					SELECT @return_Hex_value = '02'
-					RETURN 2
-				END
+				-- User awaiting verification
+				SET @responseMessage='Wrong user status; User is awaiting verification'
+				SELECT @return_Hex_value = '02'
+				RETURN 2
+			END
 				ELSE
 				BEGIN
-					-- Unknown status
-					SET @responseMessage='Unknown user status'
-					SELECT @return_Hex_value = 'FE'
-					RETURN -1
-				END
-			END
-			ELSE
-			BEGIN
-				-- Didn't find the user using @userID
-				-- SET @responseMessage='No user found with given ID'
-				SET @responseMessage='No user found with given email or pan or national id'
-				SELECT @return_Hex_value = 'FF'
+				-- Unknown status
+				SET @responseMessage='Unknown user status'
+				SELECT @return_Hex_value = 'FE'
 				RETURN -1
 			END
+		END
+			ELSE
+			BEGIN
+			-- Didn't find the user using @userID
+			-- SET @responseMessage='No user found with given ID'
+			SET @responseMessage='No user found with given email or pan or national id'
+			SELECT @return_Hex_value = 'FF'
+			RETURN -1
+		END
 		END TRY
 		BEGIN CATCH
 			SELECT @return_Hex_value='FC', @responseMessage='CATCH BLOCK: ' + ERROR_MESSAGE()
@@ -2201,10 +2396,11 @@ CREATE OR ALTER PROC usp_Employee_Signup
 	@nationalID NVARCHAR(14) = NULL,
 	@jobID INT,
 	@photo NVARCHAR(MAX) = NULL,
-	
+
 	@return_Hex_value NVARCHAR(2)='FF' OUTPUT,
 	@responseMessage NVARCHAR(128)='' OUTPUT
-WITH ENCRYPTION
+WITH
+	ENCRYPTION
 AS
 BEGIN
 	SET NOCOUNT ON
@@ -2216,62 +2412,70 @@ BEGIN
 		BEGIN TRY
 			IF (@pan IS NOT NULL)
 			BEGIN
-				IF ( (SELECT(LEN(@pan))) < 16 OR  (SELECT(LEN(@pan))) > 20)
+			IF ( (SELECT(LEN(@pan))) < 16 OR (SELECT(LEN(@pan))) > 20)
 				BEGIN
-					SET @responseMessage='PAN length is not between 16 and 20 numbers'
-					SELECT @return_Hex_value = 'F8'
-					RETURN -1
-				END
+				SET @responseMessage='PAN length is not between 16 and 20 numbers'
+				SELECT @return_Hex_value = 'F8'
+				RETURN -1
+			END
 				ELSE
 				BEGIN
-					IF EXISTS (SELECT * FROM Employee WHERE PAN=@pan)
+				IF EXISTS (SELECT *
+				FROM Employee
+				WHERE PAN=@pan)
 					BEGIN
-						-- Found a user using this PAN
-						SET @responseMessage='A registered user is using this PAN'
-						SELECT @return_Hex_value = 'F9'
-						RETURN -1
-					END
+					-- Found a user using this PAN
+					SET @responseMessage='A registered user is using this PAN'
+					SELECT @return_Hex_value = 'F9'
+					RETURN -1
 				END
 			END
+		END
 			
 			IF (@nationalID IS NOT NULL)
 			BEGIN
-				IF ( (SELECT(LEN(@nationalID))) <> 14)
+			IF ( (SELECT(LEN(@nationalID))) <> 14)
 				BEGIN
-					SET @responseMessage='National ID length is not 14 numbers'
-					SELECT @return_Hex_value = 'FA'
-					RETURN -1
-				END
-				ELSE
-				BEGIN
-					IF EXISTS (SELECT * FROM Employee WHERE NationalID=@nationalID)
-					BEGIN
-						-- Found a user using this National ID
-						SET @responseMessage='A registered user is using this National ID'
-						SELECT @return_Hex_value = 'FB'
-						RETURN -1
-					END
-				END
-			END
-			
-			IF EXISTS (SELECT * FROM Employee WHERE Email=@email)
-			BEGIN
-				-- Found a user using this Email
-				-- ERROR: Already signed up
-				SET @responseMessage='User already registered with this email. Try signing in'
-				SELECT @return_Hex_value = 'FF'
+				SET @responseMessage='National ID length is not 14 numbers'
+				SELECT @return_Hex_value = 'FA'
 				RETURN -1
 			END
+				ELSE
+				BEGIN
+				IF EXISTS (SELECT *
+				FROM Employee
+				WHERE NationalID=@nationalID)
+					BEGIN
+					-- Found a user using this National ID
+					SET @responseMessage='A registered user is using this National ID'
+					SELECT @return_Hex_value = 'FB'
+					RETURN -1
+				END
+			END
+		END
+			
+			IF EXISTS (SELECT *
+		FROM Employee
+		WHERE Email=@email)
+			BEGIN
+			-- Found a user using this Email
+			-- ERROR: Already signed up
+			SET @responseMessage='User already registered with this email. Try signing in'
+			SELECT @return_Hex_value = 'FF'
+			RETURN -1
+		END
 			ELSE
 			BEGIN
-				-- Email was not used before
-				-- Insert into DB
-				INSERT INTO Employee (Fname,Lname,BDate,Email,HashPassword,Gender,ContactNumber,Country,City,AddressState,AddressStreet,AddressPcode,PAN,NationalID,JobID,Photo)
-				values (@firstName,@lastName,@dateOfBirth,@email,@password,@gender,@contactNumber,@country,@city,@state,@street,@postalCode,@pan,@nationalID,@jobID,@photo)
-				SET @responseMessage='Signed Up. Check Email for Verification'
-				SELECT @return_Hex_value = '00'
-				RETURN 0
-			END
+			-- Email was not used before
+			-- Insert into DB
+			INSERT INTO Employee
+				(Fname,Lname,BDate,Email,HashPassword,Gender,ContactNumber,Country,City,AddressState,AddressStreet,AddressPcode,PAN,NationalID,JobID,Photo)
+			values
+				(@firstName, @lastName, @dateOfBirth, @email, @password, @gender, @contactNumber, @country, @city, @state, @street, @postalCode, @pan, @nationalID, @jobID, @photo)
+			SET @responseMessage='Signed Up. Check Email for Verification'
+			SELECT @return_Hex_value = '00'
+			RETURN 0
+		END
 		END TRY
 		BEGIN CATCH
 			SELECT @return_Hex_value='FC', @responseMessage='CATCH BLOCK: ' + ERROR_MESSAGE()
@@ -2343,210 +2547,223 @@ END
 --TODO: Add the PatientID select query to set values.
 GO
 CREATE OR ALTER PROC usp_getAndroidIncident
-@VIN INT,
+	@VIN INT,
 
-@startLocID INT,
-@destLocID INT,
-@alarmLevelID INT,
-@iSQN INT,
+	@startLocID INT,
+	@destLocID INT,
+	@alarmLevelID INT,
+	@iSQN INT,
 
-@driverFName NVARCHAR(64) OUTPUT,
-@driverLName NVARCHAR(64) OUTPUT,
+	@driverFName NVARCHAR(64) OUTPUT,
+	@driverLName NVARCHAR(64) OUTPUT,
 
-@paramedicFName NVARCHAR(64) OUTPUT,
-@paramedicLName NVARCHAR(64) OUTPUT,
+	@paramedicFName NVARCHAR(64) OUTPUT,
+	@paramedicLName NVARCHAR(64) OUTPUT,
 
-@CarModel NVARCHAR(64) OUTPUT,
-@CarBrand NVARCHAR(64) OUTPUT,
-@CarLicense NVARCHAR(64) OUTPUT,
+	@CarModel NVARCHAR(64) OUTPUT,
+	@CarBrand NVARCHAR(64) OUTPUT,
+	@CarLicense NVARCHAR(64) OUTPUT,
 
-@startLocLong NVARCHAR(64) OUTPUT,
-@startLocLat NVARCHAR(64) OUTPUT,
-@startLocFFA NVARCHAR(500) OUTPUT,
+	@startLocLong NVARCHAR(64) OUTPUT,
+	@startLocLat NVARCHAR(64) OUTPUT,
+	@startLocFFA NVARCHAR(500) OUTPUT,
 
-@destLocLong NVARCHAR(64) OUTPUT,
-@destLocLat NVARCHAR(64) OUTPUT,
-@destLocFFA NVARCHAR(500) OUTPUT,
+	@destLocLong NVARCHAR(64) OUTPUT,
+	@destLocLat NVARCHAR(64) OUTPUT,
+	@destLocFFA NVARCHAR(500) OUTPUT,
 
-@incidentTypeName NVARCHAR(64) OUTPUT,
-@incidentTypeNote NVARCHAR(64) OUTPUT,
-@incidentPriorityName NVARCHAR(64) OUTPUT,
-@incidentPriorityNote NVARCHAR(64) OUTPUT,
+	@incidentTypeName NVARCHAR(64) OUTPUT,
+	@incidentTypeNote NVARCHAR(64) OUTPUT,
+	@incidentPriorityName NVARCHAR(64) OUTPUT,
+	@incidentPriorityNote NVARCHAR(64) OUTPUT,
 
-@alarmLevelName NVARCHAR(64) OUTPUT,
-@alarmLevelNote NVARCHAR(64) OUTPUT,
+	@alarmLevelName NVARCHAR(64) OUTPUT,
+	@alarmLevelNote NVARCHAR(64) OUTPUT,
 
-@batchID BIGINT OUTPUT,
+	@batchID BIGINT OUTPUT,
 
-@patientID INT = -1 OUTPUT,
+	@patientID INT = -1 OUTPUT,
 
-@callerFName NVARCHAR(64) OUTPUT,
-@callerLName NVARCHAR(64) OUTPUT,
-@callerMobileNumber NVARCHAR(11) OUTPUT 
+	@callerFName NVARCHAR(64) OUTPUT,
+	@callerLName NVARCHAR(64) OUTPUT,
+	@callerMobileNumber NVARCHAR(11) OUTPUT
 
 AS
 BEGIN
 
-SELECT @driverFName = Fname,
-       @driverLName=Lname
-       FROM dbo.Employee 
-          INNER  JOIN dbo.AmbulanceMap ON AmbulanceMap.DriverID = Employee.EID 
-          WHERE VIN = @VIN AND StatusMap = '01'
+	SELECT @driverFName = Fname,
+		@driverLName=Lname
+	FROM dbo.Employee
+		INNER JOIN dbo.AmbulanceMap ON AmbulanceMap.DriverID = Employee.EID
+	WHERE VIN = @VIN AND StatusMap = '01'
 
-SELECT @paramedicFName = Fname,
-       @paramedicLName = Lname
-          FROM dbo.Employee
-       INNER  JOIN dbo.AmbulanceMap ON AmbulanceMap.ParamedicID = Employee.EID 
-          WHERE VIN = @VIN AND StatusMap = '01'
+	SELECT @paramedicFName = Fname,
+		@paramedicLName = Lname
+	FROM dbo.Employee
+		INNER JOIN dbo.AmbulanceMap ON AmbulanceMap.ParamedicID = Employee.EID
+	WHERE VIN = @VIN AND StatusMap = '01'
 
-SELECT @CarModel = Model,
-       @CarBrand = Brand,
-       @CarLicense = LicencePlate 
-       FROM dbo.AmbulanceVehicle WHERE VIN = @VIN
+	SELECT @CarModel = Model,
+		@CarBrand = Brand,
+		@CarLicense = LicencePlate
+	FROM dbo.AmbulanceVehicle
+	WHERE VIN = @VIN
 
-SELECT @startLocLong =  Longitude,
-       @startLocLat = Latitude,
-       @startLocFFA=FreeFormatAddress
-       FROM dbo.Locations WHERE LocationID = @startLocID
+	SELECT @startLocLong =  Longitude,
+		@startLocLat = Latitude,
+		@startLocFFA=FreeFormatAddress
+	FROM dbo.Locations
+	WHERE LocationID = @startLocID
 
-SELECT @destLocLong =  Longitude,
-       @destLocLat = Latitude,
-       @destLocFFA=FreeFormatAddress
-       FROM dbo.Locations WHERE LocationID = @destLocID
+	SELECT @destLocLong =  Longitude,
+		@destLocLat = Latitude,
+		@destLocFFA=FreeFormatAddress
+	FROM dbo.Locations
+	WHERE LocationID = @destLocID
 
-SELECT @incidentTypeName = TypeName,
-       @incidentTypeNote = TypeNote,
-       @incidentPriorityName = PriorityName,
-       @incidentPriorityNote = PriorityNote FROM incident
+	SELECT @incidentTypeName = TypeName,
+		@incidentTypeNote = TypeNote,
+		@incidentPriorityName = PriorityName,
+		@incidentPriorityNote = PriorityNote
+	FROM incident
 
-INNER JOIN dbo.IncidentTypes ON IncidentTypes.IncidentTypeID = Incident.IncidentType
-INNER JOIN dbo.Priorities ON Priorities.PrioritYID = Incident.IncidentPriority
-WHERE  IncidentSequenceNumber = @iSQN
+		INNER JOIN dbo.IncidentTypes ON IncidentTypes.IncidentTypeID = Incident.IncidentType
+		INNER JOIN dbo.Priorities ON Priorities.PrioritYID = Incident.IncidentPriority
+	WHERE  IncidentSequenceNumber = @iSQN
 
-SELECT @alarmLevelName = AlarmLevelName,
-       @alarmLevelNote = AlarmLevelNote 
-       FROM  dbo.AlarmLevels WHERE AlarmLevelID = @alarmLevelID
+	SELECT @alarmLevelName = AlarmLevelName,
+		@alarmLevelNote = AlarmLevelNote
+	FROM dbo.AlarmLevels
+	WHERE AlarmLevelID = @alarmLevelID
 
-SELECT @BatchID = BatchID FROM dbo.AmbulanceMap WHERE dbo.AmbulanceMap.VIN = @VIN AND StatusMap = '01'
+	SELECT @BatchID = BatchID
+	FROM dbo.AmbulanceMap
+	WHERE dbo.AmbulanceMap.VIN = @VIN AND StatusMap = '01'
 
-SELECT @callerFName = CallerFName,@callerLName = CallerLName, @callerMobileNumber = CallerMobile
-FROM dbo.IncidentCallers WHERE IncidentSQN = @iSQN
+	SELECT @callerFName = CallerFName, @callerLName = CallerLName, @callerMobileNumber = CallerMobile
+	FROM dbo.IncidentCallers
+	WHERE IncidentSQN = @iSQN
 
 END
 
 GO
 
 CREATE OR ALTER PROC usp_IncidentResponse_GetYelloPad
-@VIN INTEGER,
-@UniqueID NVARCHAR(64) OUTPUT
+	@VIN INTEGER,
+	@UniqueID NVARCHAR(64) OUTPUT
 AS
 BEGIN
-SELECT @UniqueID = YelloPadUniqueID FROM dbo.Yellopad
-INNER JOIN dbo.AmbulanceMap ON AmbulanceMap.YelloPadID = Yellopad.YelloPadID
-WHERE dbo.AmbulanceMap.VIN = @VIN AND dbo.AmbulanceMap.StatusMap = '00'
+	SELECT @UniqueID = YelloPadUniqueID
+	FROM dbo.Yellopad
+		INNER JOIN dbo.AmbulanceMap ON AmbulanceMap.YelloPadID = Yellopad.YelloPadID
+	WHERE dbo.AmbulanceMap.VIN = @VIN AND dbo.AmbulanceMap.StatusMap = '00'
 END
 ----------------------------------------NEW SET OF STORED PROCEDURES--------------------------------------------------------------
 GO
-Create OR ALTER proc usp_AmbulanceVehicle_SelectAll 
+Create OR ALTER proc usp_AmbulanceVehicle_SelectAll
 as
-	select * from AmbulanceVehicle
-	WHERE VehicleStatus <>'FF'
+select *
+from AmbulanceVehicle
+WHERE VehicleStatus <>'FF'
 -- (2.1) Get Patient By ID --
 GO
 Create OR ALTER proc usp_AmbulanceVehicle_SelectByVIN
-  @VIN INT,
-   @responseCode NVARCHAR(2)='FF' OUTPUT,
+	@VIN INT,
+	@responseCode NVARCHAR(2)='FF' OUTPUT,
 	@responseMessage NVARCHAR(128)='' OUTPUT
 
 as
 BEGIN TRY
 	IF (@VIN IS NOT NULL)
 	BEGIN
-		select * from AmbulanceVehicle
-		where VIN = @VIN
-	    SELECT @responseCode = '00'
-		SELECT @responseMessage = 'Success'
-	END
+	select *
+	from AmbulanceVehicle
+	where VIN = @VIN
+	SELECT @responseCode = '00'
+	SELECT @responseMessage = 'Success'
+END
 	ELSE
-	BEGIN 
+	BEGIN
 	return -1
-				SELECT @responseCode = 'FF'
-				SELECT @responseMessage = 'nO PARAMETER'
-	END
+	SELECT @responseCode = 'FF'
+	SELECT @responseMessage = 'nO PARAMETER'
+END
 	END TRY
 BEGIN CATCH
 			SELECT @responseCode = 'FF',
-		@responseMessage=ERROR_MESSAGE()
+	@responseMessage=ERROR_MESSAGE()
 			return -1;
 	END CATCH
-		return -1
+return -1
 
 		
 GO
 Create OR ALTER proc usp_AmbulanceVehicle_SelectByBrand
-  @Brand  NVARCHAR(32),
-   @responseCode NVARCHAR(2)='FF' OUTPUT,
+	@Brand  NVARCHAR(32),
+	@responseCode NVARCHAR(2)='FF' OUTPUT,
 	@responseMessage NVARCHAR(128)='' OUTPUT
 
 as
 BEGIN TRY
 	IF (@Brand IS NOT NULL)
 	BEGIN
-		select * from AmbulanceVehicle
-		where Brand = @Brand
-	    SELECT @responseCode = '00'
-		SELECT @responseMessage = 'Success'
-	END
+	select *
+	from AmbulanceVehicle
+	where Brand = @Brand
+	SELECT @responseCode = '00'
+	SELECT @responseMessage = 'Success'
+END
 	ELSE
-	BEGIN 
+	BEGIN
 	return -1
-				SELECT @responseCode = 'FF'
-				SELECT @responseMessage = 'nO PARAMETER'
-	END
+	SELECT @responseCode = 'FF'
+	SELECT @responseMessage = 'nO PARAMETER'
+END
 	END TRY
 BEGIN CATCH
 			SELECT @responseCode = 'FF',
-		@responseMessage=ERROR_MESSAGE()
+	@responseMessage=ERROR_MESSAGE()
 			return -1;
 	END CATCH
-		
-	return -1
+
+return -1
 		 
 	
 GO
 
 Create OR ALTER proc usp_AmbulanceVehicle_SelectBySts
-  @VehicleStatus  NVARCHAR(32),
-   @responseCode NVARCHAR(2)='FF' OUTPUT,
+	@VehicleStatus  NVARCHAR(32),
+	@responseCode NVARCHAR(2)='FF' OUTPUT,
 	@responseMessage NVARCHAR(128)='' OUTPUT
 
 as
 BEGIN TRY
 	IF (@VehicleStatus IS NOT NULL)
 	BEGIN
-		select * from AmbulanceVehicle
-		where VehicleStatus = @VehicleStatus
-	    SELECT @responseCode = '00'
-		SELECT @responseMessage = 'Success'
-	END
+	select *
+	from AmbulanceVehicle
+	where VehicleStatus = @VehicleStatus
+	SELECT @responseCode = '00'
+	SELECT @responseMessage = 'Success'
+END
 	ELSE
-	BEGIN 
+	BEGIN
 	return -1
-				SELECT @responseCode = 'FF'
-				SELECT @responseMessage = 'nO PARAMETER'
-	END
+	SELECT @responseCode = 'FF'
+	SELECT @responseMessage = 'nO PARAMETER'
+END
 	END TRY
 BEGIN CATCH
 			SELECT @responseCode = 'FF',
-		@responseMessage=ERROR_MESSAGE()
+	@responseMessage=ERROR_MESSAGE()
 			return -1;
 	END CATCH
-		return -1
+return -1
 		 
 -- (3) Insert Ambulance Vehicle --
 GO
-Create OR ALTER PROC usp_AmbulanceVehicle_Insert 
-	
+Create OR ALTER PROC usp_AmbulanceVehicle_Insert
+
 	@VIN INT,
 	@Implication NVARCHAR(32),
 	@Make NVARCHAR(32) ,
@@ -2556,45 +2773,47 @@ Create OR ALTER PROC usp_AmbulanceVehicle_Insert
 	@LicencePlate NVARCHAR(32),
 	@OwnerName NVARCHAR(128),
 	@LicenceStateOrProvince NVARCHAR(32),
-    @ServiceStartDate NVARCHAR(32),
-    @EngineNumber NVARCHAR(32),
-    @Brand NVARCHAR(32),
-    @ChasiahNumber NVARCHAR(32),
-    @Model NVARCHAR(32),
-    @DriverPhoneNumber NVARCHAR(32),
+	@ServiceStartDate NVARCHAR(32),
+	@EngineNumber NVARCHAR(32),
+	@Brand NVARCHAR(32),
+	@ChasiahNumber NVARCHAR(32),
+	@Model NVARCHAR(32),
+	@DriverPhoneNumber NVARCHAR(32),
 	@AssignedYPID NVARCHAR(16),
-    @AmbulanceVehiclePicture NVARCHAR(500),
+	@AmbulanceVehiclePicture NVARCHAR(500),
 
-   @responseCode NVARCHAR(2)='FF' OUTPUT,
+	@responseCode NVARCHAR(2)='FF' OUTPUT,
 	@responseMessage NVARCHAR(128)='' OUTPUT
-	
-		as 
-	BEGIN TRY
+
+as
+BEGIN TRY
 	
 	IF (@VIN IS NOT NULL )
 		BEGIN
-			INSERT INTO AmbulanceVehicle (VIN,Implication,Make,[Type],ProductionYear,RegYear,LicencePlate,OwnerName,
-			LicenceStateOrProvince,ServiceStartDate,EngineNumber,Brand,ChasiahNumber,Model,DriverPhoneNumber,	AmbulanceVehiclePicture)
-			values (@VIN,@Implication,@Make,@Type,@ProductionYear,@RegYear,@LicencePlate,@OwnerName,@LicenceStateOrProvince,
-			@ServiceStartDate,@EngineNumber,@Brand,@ChasiahNumber,@Model,@DriverPhoneNumber ,@AmbulanceVehiclePicture )
-	         SELECT @responseCode = '00'
-			SELECT @responseMessage = 'Success'
-		END
+	INSERT INTO AmbulanceVehicle
+		(VIN,Implication,Make,[Type],ProductionYear,RegYear,LicencePlate,OwnerName,
+		LicenceStateOrProvince,ServiceStartDate,EngineNumber,Brand,ChasiahNumber,Model,DriverPhoneNumber, AmbulanceVehiclePicture)
+	values
+		(@VIN, @Implication, @Make, @Type, @ProductionYear, @RegYear, @LicencePlate, @OwnerName, @LicenceStateOrProvince,
+			@ServiceStartDate, @EngineNumber, @Brand, @ChasiahNumber, @Model, @DriverPhoneNumber , @AmbulanceVehiclePicture )
+	SELECT @responseCode = '00'
+	SELECT @responseMessage = 'Success'
+END
 	
 	
 	ELSE
 	BEGIN
-				return -1
-				SELECT @responseCode = 'FF'
-				SELECT @responseMessage = 'wrong Parameters'
-			END
+	return -1
+	SELECT @responseCode = 'FF'
+	SELECT @responseMessage = 'wrong Parameters'
+END
 	END TRY
 	BEGIN CATCH
 			SELECT @responseCode = 'FF',
-			@responseMessage=ERROR_MESSAGE()
+	@responseMessage=ERROR_MESSAGE()
 			return -1;
 	END CATCH
-		return -1
+return -1
 
 -- (4) Update AmbulanceVehicle --
 GO
@@ -2608,22 +2827,22 @@ Create OR ALTER PROC usp_AmbulanceVehicle_Update
 	@LicencePlate NVARCHAR(32),
 	@OwnerName NVARCHAR(128),
 	@LicenceStateOrProvince NVARCHAR(32),
-    @ServiceStartDate NVARCHAR(32),
-    @EngineNumber NVARCHAR(32),
-    @Brand NVARCHAR(32),
-    @ChasiahNumber NVARCHAR(32),
-    @Model NVARCHAR(32),
-    @DriverPhoneNumber NVARCHAR(32),
-    @AmbulanceVehiclePicture NVARCHAR(500),
+	@ServiceStartDate NVARCHAR(32),
+	@EngineNumber NVARCHAR(32),
+	@Brand NVARCHAR(32),
+	@ChasiahNumber NVARCHAR(32),
+	@Model NVARCHAR(32),
+	@DriverPhoneNumber NVARCHAR(32),
+	@AmbulanceVehiclePicture NVARCHAR(500),
 	@responseCode NVARCHAR(2)='FF' OUTPUT,
 	@responseMessage NVARCHAR(128)='' OUTPUT
 
-as   
+as
 
-	BEgin Try	
+BEgin Try	
 	IF (@VIN IS NOT NULL)
 		BEGIN
-			UPDATE AmbulanceVehicle
+	UPDATE AmbulanceVehicle
 			SET Implication = ISNULL(@Implication,Implication),
 			Make = ISNULL(@Make,Make),
 			[Type] = ISNULL(@Type,[Type]),
@@ -2641,64 +2860,64 @@ as
 				AmbulanceVehiclePicture=ISNULL(	@AmbulanceVehiclePicture,	AmbulanceVehiclePicture),
 			VehicleStatus = 2 
 			WHERE VIN = @VIN
-			
-        SELECT @responseCode = '00'
-		SELECT @responseMessage = 'Success'
-		END
+
+	SELECT @responseCode = '00'
+	SELECT @responseMessage = 'Success'
+END
 		ELSE
 	BEGIN
-				return -1
-				SELECT @responseCode = 'FF'
-				SELECT @responseMessage = 'Unknown Error'
-			END
+	return -1
+	SELECT @responseCode = 'FF'
+	SELECT @responseMessage = 'Unknown Error'
+END
 			END TRY
 			BEGIN CATCH
 				SELECT @responseCode = 'FF',
-			       @responseMessage=ERROR_MESSAGE()
+	@responseMessage=ERROR_MESSAGE()
 			return -1;
 			END CATCH
-				return -1
+return -1
 
 -- (5) Delete Patient By VIN --
 GO
-Create OR ALTER proc usp_AmbulanceVehicle_Delete 
- @VIN INT,
- @responseCode NVARCHAR(2)='FF' OUTPUT,
-@responseMessage NVARCHAR(128)='' OUTPUT
+Create OR ALTER proc usp_AmbulanceVehicle_Delete
+	@VIN INT,
+	@responseCode NVARCHAR(2)='FF' OUTPUT,
+	@responseMessage NVARCHAR(128)='' OUTPUT
 
 as
 BEGIN TRY
 	IF (@VIN IS NOT NULL)
 	BEGIN
-		UPDATE AmbulanceVehicle
+	UPDATE AmbulanceVehicle
 		SET VehicleStatus = 'FF'
 		where VIN = @VIN
-	    SELECT @responseCode = '00'
-		SELECT @responseMessage = 'Success'
-		
-	END
+	SELECT @responseCode = '00'
+	SELECT @responseMessage = 'Success'
+
+END
 		ELSE
 	BEGIN
-				return -1
-				SELECT @responseCode = 'FF'
-				SELECT @responseMessage = 'Unknown Error'
-			END
+	return -1
+	SELECT @responseCode = 'FF'
+	SELECT @responseMessage = 'Unknown Error'
+END
 	END TRY
 	BEGIN CATCH
 			SELECT @responseCode = 'FF',
-			       @responseMessage=ERROR_MESSAGE()
+	@responseMessage=ERROR_MESSAGE()
 			return -1;
 	END CATCH
-		return -1	
+return -1	
 
 		
  	
 GO
 CREATE  OR alter proc usp_AmbulanceVehicle_UpdateStatus
-@AmbulanceVehicleStatus NVARCHAR(2),
-@Vin INT,
-@responseCode NVARCHAR(2)='FF' OUTPUT,
-@responseMessage NVARCHAR(128)='' OUTPUT
+	@AmbulanceVehicleStatus NVARCHAR(2),
+	@Vin INT,
+	@responseCode NVARCHAR(2)='FF' OUTPUT,
+	@responseMessage NVARCHAR(128)='' OUTPUT
 
 AS
 BEGIN TRY
@@ -2709,29 +2928,30 @@ if (@Vin IS NOT NULL AND @AmbulanceVehicleStatus  IS NOT NULL )
 	where Vin=@Vin
 	SELECT @responseCode = '00'
 	SELECT @responseMessage = 'Success'
-	
-	END
-	ELSE
-	BEGIN 
 
-				SELECT @responseCode = 'FF'
-				SELECT @responseMessage = 'nO PARAMETER'
-				 RETURN -1
-	END
+END
+	ELSE
+	BEGIN
+
+	SELECT @responseCode = 'FF'
+	SELECT @responseMessage = 'nO PARAMETER'
+	RETURN -1
+END
 	END TRY
 BEGIN CATCH
 			SELECT @responseCode = 'FF',
-	           	@responseMessage=ERROR_MESSAGE()
+	@responseMessage=ERROR_MESSAGE()
 			return -1;
 	END CATCH
-		
-	return -1
+
+return -1
 		
 ----------------------------------------NEW SET OF STORED PROCEDURES--------------------------------------------------------------
 GO
 CREATE OR ALTER proc usp_AlarmLevel_GetAll
 as
-	select * from AlarmLevels
+select *
+from AlarmLevels
 GO
 
 
@@ -2740,89 +2960,97 @@ GO
 ----------------------------------------NEW SET OF STORED PROCEDURES--------------------------------------------------------------
 --TODO: COnfirm that all checks are passed from front end.
 CREATE OR ALTER PROC usp_AmbulanceMap_Insert
-@VIN INT,
-@ParamedicID INT,
-@DriverID INT,
-@YelloPadID INT,
-@HexCode NVARCHAR(2) OUTPUT
+	@VIN INT,
+	@ParamedicID INT,
+	@DriverID INT,
+	@YelloPadID INT,
+	@HexCode NVARCHAR(2) OUTPUT
 AS
 BEGIN
-if exists(select * from dbo.AmbulanceMap where VIN = @VIN and StatusMap = '00')
+	if exists(select *
+	from dbo.AmbulanceMap
+	where VIN = @VIN and StatusMap = '00')
 BEGIN
--- 1 -> Ambulance was already inserted but not assigned.
-Set @HexCode = '01'
-RETURN 1
-END
-ELSE if exists(select * from dbo.AmbulanceMap where VIN = @VIN and StatusMap ='01')
+		-- 1 -> Ambulance was already inserted but not assigned.
+		Set @HexCode = '01'
+		RETURN 1
+	END
+ELSE if exists(select *
+	from dbo.AmbulanceMap
+	where VIN = @VIN and StatusMap ='01')
 begin
--- 2 -> Ambulance is assigned and already in service.
-Set @HexCode = '02'
- RETURN 2
-end 
+		-- 2 -> Ambulance is assigned and already in service.
+		Set @HexCode = '02'
+		RETURN 2
+	end 
 else begin
-insert into dbo.AmbulanceMap(VIN,ParamedicID,DriverID,YelloPadID)
-VALUES(
-@VIN,
-@ParamedicID,
-@DriverID,
-@YelloPadID
+		insert into dbo.AmbulanceMap
+			(VIN,ParamedicID,DriverID,YelloPadID)
+		VALUES(
+				@VIN,
+				@ParamedicID,
+				@DriverID,
+				@YelloPadID
 )
 
-UPDATE dbo.Yellopad
+		UPDATE dbo.Yellopad
 SET YelloPadStatus = '01'
 WHERE YelloPadID = @YelloPadID
 
-UPDATE dbo.Employee
+		UPDATE dbo.Employee
 SET EmployeeStatus = '05'
 WHERE EID = @ParamedicID
 
-UPDATE dbo.Employee
+		UPDATE dbo.Employee
 SET EmployeeStatus = '05'
 WHERE EID = @DriverID
 
-UPDATE dbo.AmbulanceVehicle
+		UPDATE dbo.AmbulanceVehicle
 SET VehicleStatus = '05'
 WHERE VIN = @VIN
 
--- 0 -> Insertion Successful
-Set @HexCode = '00'
-RETURN 0
-end
+		-- 0 -> Insertion Successful
+		Set @HexCode = '00'
+		RETURN 0
+	end
 END
 GO
 
 
 CREATE OR ALTER PROC usp_AmbulanceMap_Insert_Batch
-@VIN INT,
-@batchID BIGINT,
-@HexCode NVARCHAR(2) OUTPUT
+	@VIN INT,
+	@batchID BIGINT,
+	@HexCode NVARCHAR(2) OUTPUT
 AS
 BEGIN
-if exists(select * from dbo.AmbulanceMap where  VIN = @VIN and StatusMap = '00')
+	if exists(select *
+	from dbo.AmbulanceMap
+	where  VIN = @VIN and StatusMap = '00')
 begin
-UPDATE dbo.AmbulanceMap
+		UPDATE dbo.AmbulanceMap
 SET BatchID = @batchID
 where VIN = @VIN and StatusMap = '00'
 
-INSERT INTO AmbulanceBatchesMap
-(
-    AssociatedVIN,
-    BatchID
-)
-VALUES (
-    @VIN,
-    @batchID
+		INSERT INTO AmbulanceBatchesMap
+			(
+			AssociatedVIN,
+			BatchID
+			)
+		VALUES
+			(
+				@VIN,
+				@batchID
 )
 
 
--- '00' -> updated succesfully
-SET @HexCode = '00'
-end
+		-- '00' -> updated succesfully
+		SET @HexCode = '00'
+	end
 else
 BEGIN
--- '01' -> Failure to add because a vehicle with these conditions doesn't exist
-SET @HexCode = '01'
-END
+		-- '01' -> Failure to add because a vehicle with these conditions doesn't exist
+		SET @HexCode = '01'
+	END
 END
 GO
 
@@ -2831,148 +3059,169 @@ GO
 ------------------------------------------------------
 
 CREATE OR ALTER PROC usp_getAmbulanceCarMapByCarID
-@CarID INT
+	@CarID INT
 AS
 BEGIN
-SELECT * FROM dbo.AmbulanceMap WHERE VIN = @CarID
+	SELECT *
+	FROM dbo.AmbulanceMap
+	WHERE VIN = @CarID
 END
 GO
 
 CREATE OR ALTER PROC usp_getAmbulanceCarMapByDriverID
-@DriverID INT
+	@DriverID INT
 AS
 BEGIN
-SELECT * FROM dbo.AmbulanceMap WHERE DriverID = @DriverID
+	SELECT *
+	FROM dbo.AmbulanceMap
+	WHERE DriverID = @DriverID
 END
 GO
 
 CREATE OR ALTER PROC usp_getAmbulanceCarMapByParamedicID
-@ParamedicID INT
+	@ParamedicID INT
 AS
 BEGIN
-SELECT * FROM dbo.AmbulanceMap WHERE ParamedicID = @ParamedicID
+	SELECT *
+	FROM dbo.AmbulanceMap
+	WHERE ParamedicID = @ParamedicID
 END
 GO
 
 CREATE OR ALTER PROC usp_getAmbulanceCarMapByYelloPadID
-@YelloPadID INT
+	@YelloPadID INT
 AS
 BEGIN
-SELECT * FROM dbo.AmbulanceMap WHERE YelloPadID = @YelloPadID
+	SELECT *
+	FROM dbo.AmbulanceMap
+	WHERE YelloPadID = @YelloPadID
 END
 GO
 
 
 CREATE OR ALTER  Proc usp_deleteAmbulanceMap
-@VIN INT,
-@HexCode NVARCHAR(2) OUTPUT
+	@VIN INT,
+	@HexCode NVARCHAR(2) OUTPUT
 AS
 BEGIN
 
-if exists (select * from AmbulanceMap where VIN = @VIN AND (StatusMap='00' OR StatusMap='02'))
+	if exists (select *
+	from AmbulanceMap
+	where VIN = @VIN AND (StatusMap='00' OR StatusMap='02'))
 BEGIN
-update dbo.AmbulanceMap
+		update dbo.AmbulanceMap
 set StatusMap = '04'
 WHERE VIN = @VIN AND StatusMap='00'
 
-update dbo.AmbulanceMap
+		update dbo.AmbulanceMap
 set StatusMap = '04'
 WHERE VIN = @VIN AND StatusMap='02'
 
-UPDATE dbo.AmbulanceVehicle
+		UPDATE dbo.AmbulanceVehicle
 SET VehicleStatus = '00'
 WHERE VIN = @VIN
 
-SET @HexCode = '00'
-END
+		SET @HexCode = '00'
+	END
 ELSE
 BEGIN
-SET @HexCode = '01'
-END
+		SET @HexCode = '01'
+	END
 END
 GO
 
 
 CREATE OR ALTER PROC usp_AmbulanceMap_getRelevantData
-@VIN INTEGER,
-@License NVARCHAR(64) OUTPUT,
-@Make NVARCHAR(64) OUTPUT,
-@ParamedicFName NVARCHAR(64) OUTPUT,
-@ParamedicLName NVARCHAR(64) OUTPUT,
-@ParamedicID Integer OUTPUT,
-@DriverFName NVARCHAR(64) OUTPUT,
-@DriverLName NVARCHAR(64) OUTPUT,
-@DriverID Integer OUTPUT,
-@YelloPadUniqueID NVARCHAR(64) OUTPUT
-			
+	@VIN INTEGER,
+	@License NVARCHAR(64) OUTPUT,
+	@Make NVARCHAR(64) OUTPUT,
+	@ParamedicFName NVARCHAR(64) OUTPUT,
+	@ParamedicLName NVARCHAR(64) OUTPUT,
+	@ParamedicID Integer OUTPUT,
+	@DriverFName NVARCHAR(64) OUTPUT,
+	@DriverLName NVARCHAR(64) OUTPUT,
+	@DriverID Integer OUTPUT,
+	@YelloPadUniqueID NVARCHAR(64) OUTPUT
+
 AS
 BEGIN
-select @License = LicencePlate, @Make= Make from dbo.AmbulanceVehicle 
-inner join dbo.AmbulanceMap ON AmbulanceMap.VIN = AmbulanceVehicle.VIN
-where dbo.AmbulanceVehicle.VIN = @VIN
+	select @License = LicencePlate, @Make= Make
+	from dbo.AmbulanceVehicle
+		inner join dbo.AmbulanceMap ON AmbulanceMap.VIN = AmbulanceVehicle.VIN
+	where dbo.AmbulanceVehicle.VIN = @VIN
 
-SELECT @ParamedicFName = Fname, @ParamedicLName = Lname,@ParamedicID = EID FROM dbo.Employee
-INNER JOIN dbo.AmbulanceMap ON AmbulanceMap.ParamedicID = Employee.EID
-WHERE dbo.AmbulanceMap.VIN = @VIN
+	SELECT @ParamedicFName = Fname, @ParamedicLName = Lname, @ParamedicID = EID
+	FROM dbo.Employee
+		INNER JOIN dbo.AmbulanceMap ON AmbulanceMap.ParamedicID = Employee.EID
+	WHERE dbo.AmbulanceMap.VIN = @VIN
 
-SELECT @DriverFName = Fname, @DriverLName = Lname,@DriverID = EID FROM dbo.Employee
-INNER JOIN dbo.AmbulanceMap ON AmbulanceMap.DriverID = Employee.EID
-WHERE dbo.AmbulanceMap.VIN = @VIN
+	SELECT @DriverFName = Fname, @DriverLName = Lname, @DriverID = EID
+	FROM dbo.Employee
+		INNER JOIN dbo.AmbulanceMap ON AmbulanceMap.DriverID = Employee.EID
+	WHERE dbo.AmbulanceMap.VIN = @VIN
 
-SELECT @YelloPadUniqueID= YelloPadUniqueID FROM dbo.Yellopad
-INNER JOIN dbo.AmbulanceMap ON AmbulanceMap.YelloPadID = Yellopad.YelloPadID
-WHERE dbo.AmbulanceMap.VIN = @VIN
+	SELECT @YelloPadUniqueID= YelloPadUniqueID
+	FROM dbo.Yellopad
+		INNER JOIN dbo.AmbulanceMap ON AmbulanceMap.YelloPadID = Yellopad.YelloPadID
+	WHERE dbo.AmbulanceMap.VIN = @VIN
 END
 go
 ----------------------------------------NEW SET OF STORED PROCEDURES--------------------------------------------------------------
 -- Medicine Stored Procedures --
 -- (1) Get All Medicines --
 GO
-Create  OR ALTER PROC usp_Medicines_SelectAll 
+Create  OR ALTER PROC usp_Medicines_SelectAll
 as
-	select * from Medicine
-	WHERE  MedicineStatus <>'FF'
+select *
+from Medicine
+WHERE  MedicineStatus <>'FF'
 	OR CountInStock <> 0
 -- (2.1) Get Medicine By Name --
 GO
-create  OR ALTER PROC usp_Medicine_SelectByName  @MedName NVARCHAR(64)
+create  OR ALTER PROC usp_Medicine_SelectByName
+	@MedName NVARCHAR(64)
 as
-	IF (@MedName IS NOT NULL)
+IF (@MedName IS NOT NULL)
 	BEGIN
-		select * from Medicine
-		where MedicineName = @MedName
-	END
+	select *
+	from Medicine
+	where MedicineName = @MedName
+END
 	ELSE
 		RETURN -1
 -- (2.2) Get Medicine By Bar Code --
 GO
-create  OR ALTER PROC usp_Medicine_SelectByBCode  @bCode NVARCHAR(64)
+create  OR ALTER PROC usp_Medicine_SelectByBCode
+	@bCode NVARCHAR(64)
 as
-	IF (@bCode IS NOT NULL)
+IF (@bCode IS NOT NULL)
 		BEGIN
-			select * from Medicine
-			where BarCode = @bCode
-		END
+	select *
+	from Medicine
+	where BarCode = @bCode
+END
 	ELSE
 		RETURN -1
 -- (2.3) Get Medicine By Status --
 GO
-create  OR ALTER PROC usp_Medicine_SelectBySts @MStatus NVARCHAR(32)
+create  OR ALTER PROC usp_Medicine_SelectBySts
+	@MStatus NVARCHAR(32)
 as
-	select * from Medicine
-	where MedicineStatus = @MStatus
+select *
+from Medicine
+where MedicineStatus = @MStatus
 -- (3) Insert Medicine --
 GO
-CREATE  OR ALTER PROC usp_Medicine_Insert 
+CREATE  OR ALTER PROC usp_Medicine_Insert
 	@BarCode NVARCHAR(64),
 	@Name NVARCHAR(64),
-    @CountInStock NVARCHAR(64) = NULL,
-    @Price NVARCHAR(32) = NULL,
-    @Implications NVARCHAR(MAX) = NULL,
-    @MedicineUsage NVARCHAR(MAX) = NULL,
-    @SideEffects NVARCHAR(MAX) = NULL,
-    @ActiveComponent NVARCHAR(MAX) = NULL,
-	 @responseCode NVARCHAR(2)='FF' OUTPUT,
+	@CountInStock NVARCHAR(64) = NULL,
+	@Price NVARCHAR(32) = NULL,
+	@Implications NVARCHAR(MAX) = NULL,
+	@MedicineUsage NVARCHAR(MAX) = NULL,
+	@SideEffects NVARCHAR(MAX) = NULL,
+	@ActiveComponent NVARCHAR(MAX) = NULL,
+	@responseCode NVARCHAR(2)='FF' OUTPUT,
 	@responseMessage NVARCHAR(128)='' OUTPUT
 
 as
@@ -2980,54 +3229,58 @@ BEGIN TRY
 
 	IF (@BarCode IS NOT NULL AND @Name IS NOT NULL)
  BEGIN
-	 IF Exists (Select * from Medicine where BarCode=@BarCode ) 
-	       BEGIN      
-				SELECT @responseCode = '01';
-				SELECT @responseMessage = 'Allready exists';
-				RETURN -1;
-           END
+	IF Exists (Select *
+	from Medicine
+	where BarCode=@BarCode ) 
+	       BEGIN
+		SELECT @responseCode = '01';
+		SELECT @responseMessage = 'Allready exists';
+		RETURN -1;
+	END
      ELSE
           BEGIN
-		        INSERT INTO Medicine (BarCode,CountInStock,MedicineName,Price,Implications,MedicineUsage,SideEffects,ActiveComponent)
-			    VALUES (@BarCode,@CountInStock,@Name,@Price,@Implications,@MedicineUsage,@SideEffects,@ActiveComponent)
-		        SELECT @responseCode = '00'
-		        SELECT @responseMessage = 'Success'
-	      END
-	
+		INSERT INTO Medicine
+			(BarCode,CountInStock,MedicineName,Price,Implications,MedicineUsage,SideEffects,ActiveComponent)
+		VALUES
+			(@BarCode, @CountInStock, @Name, @Price, @Implications, @MedicineUsage, @SideEffects, @ActiveComponent)
+		SELECT @responseCode = '00'
+		SELECT @responseMessage = 'Success'
 	END
+
+END
 ELSE
-       BEGIN      
-				SELECT @responseCode = 'FF'
-				SELECT @responseMessage = 'BarCode IS  NULL or Name IS NULL'
-				RETURN -1
-           END
+       BEGIN
+	SELECT @responseCode = 'FF'
+	SELECT @responseMessage = 'BarCode IS  NULL or Name IS NULL'
+	RETURN -1
+END
 
 	END TRY
 BEGIN CATCH
 		 	SELECT @responseCode = 'FF',
-		    @responseMessage=ERROR_MESSAGE()
+	@responseMessage=ERROR_MESSAGE()
 			 RETURN -1;
 	END CATCH
-			 return -1;
+return -1;
 -- (4) Update Medicine --
 GO
 CREATE  OR ALTER PROC usp_Medicine_Update
 	@BarCode NVARCHAR(64),
 	@Name NVARCHAR(64) = NULL,
-    @CountInStock NVARCHAR(64) = NULL,
-    @Price NVARCHAR(32)  = NULL,
-    @Implications NVARCHAR(MAX) = NULL,
-    @MedicineUsage NVARCHAR(MAX) = NULL,
-    @SideEffects NVARCHAR(MAX) = NULL,
-    @ActiveComponent NVARCHAR(MAX) = NULL,
-     @responseCode NVARCHAR(2)='FF' OUTPUT,
+	@CountInStock NVARCHAR(64) = NULL,
+	@Price NVARCHAR(32)  = NULL,
+	@Implications NVARCHAR(MAX) = NULL,
+	@MedicineUsage NVARCHAR(MAX) = NULL,
+	@SideEffects NVARCHAR(MAX) = NULL,
+	@ActiveComponent NVARCHAR(MAX) = NULL,
+	@responseCode NVARCHAR(2)='FF' OUTPUT,
 	@responseMessage NVARCHAR(128)='' OUTPUT
 
 as
 BEGIN TRY	 
 IF (@BarCode IS NOT NULL)
 		BEGIN
-			UPDATE Medicine
+	UPDATE Medicine
 			SET CountInStock = ISNULL(@CountInStock,CountInStock),
 			MedicineName = ISNULL(@Name,MedicineName),
 			Price = ISNULL(@Price,Price),
@@ -3037,108 +3290,122 @@ IF (@BarCode IS NOT NULL)
 			ActiveComponent = ISNULL(@ActiveComponent,ActiveComponent),
 			MedicineStatus = 2
 			WHERE BarCode = @BarCode
-		SELECT @responseCode = '00'
-		SELECT @responseMessage = 'Success'
-	END
+	SELECT @responseCode = '00'
+	SELECT @responseMessage = 'Success'
+END
 	ELSE
-	BEGIN 
+	BEGIN
 	return -1
-				SELECT @responseCode = 'FF'
-				SELECT @responseMessage = 'nO PARAMETER'
-	END
+	SELECT @responseCode = 'FF'
+	SELECT @responseMessage = 'nO PARAMETER'
+END
 	END TRY
 BEGIN CATCH
 		 	SELECT @responseCode = 'FF',
-		@responseMessage=ERROR_MESSAGE()
+	@responseMessage=ERROR_MESSAGE()
 			return -1;
 	END CATCH
-		return -1
+return -1
 -- (5) Delete Medicine By Barcode --
 GO
-create  OR ALTER PROC usp_Medicine_Delete  
+create  OR ALTER PROC usp_Medicine_Delete
 	@BarCode NVARCHAR(64),
-    @responseCode NVARCHAR(2)='FF' OUTPUT,
+	@responseCode NVARCHAR(2)='FF' OUTPUT,
 	@responseMessage NVARCHAR(128)='' OUTPUT
 
 AS
 BEGIN TRY	 
 IF (@BarCode IS NOT NULL)
 		BEGIN
-			UPDATE Medicine
+	UPDATE Medicine
 			SET  MedicineStatus = 'FF'
 			WHERE BarCode = @BarCode
-		SELECT @responseCode = '00'
-		SELECT @responseMessage = 'Success'
-	END
+	SELECT @responseCode = '00'
+	SELECT @responseMessage = 'Success'
+END
 	ELSE
-	BEGIN 
-				SELECT @responseCode = 'FF'
-				SELECT @responseMessage = 'nO PARAMETER'
-     	        RETURN -1
+	BEGIN
+	SELECT @responseCode = 'FF'
+	SELECT @responseMessage = 'nO PARAMETER'
+	RETURN -1
 
-	END
+END
 	END TRY
 BEGIN CATCH
 		 	SELECT @responseCode = 'FF',
-		     @responseMessage=ERROR_MESSAGE()
+	@responseMessage=ERROR_MESSAGE()
 			 RETURN -1;
 	END CATCH
-		 RETURN -1
+RETURN -1
 ----------------------------------------NEW SET OF STORED PROCEDURES--------------------------------------------------------------
 -- PharmaCompany Stored Procedures --
 -- (1) Get All Companies --
 GO
 Create  OR ALTER PROC usp_PharmaCompany_SelectAll
 as
-	select * from PharmaCompany
+select *
+from PharmaCompany
 -- (2.1) Get Company By Name --
 GO
-CREATE  OR ALTER proc usp_PharmaCompany_Select  @compName NVARCHAR(64)
+CREATE  OR ALTER proc usp_PharmaCompany_Select
+	@compName NVARCHAR(64)
 as
-	IF (@compName IS NOT NULL)
+IF (@compName IS NOT NULL)
 	BEGIN
-		select * from PharmaCompany
-		where CompanyName = @compName
-		return 0
-	END
+	select *
+	from PharmaCompany
+	where CompanyName = @compName
+	return 0
+END
 	ELSE 
 		RETURN -1
 -- (2.2) Get Company By ID --
 GO
-create  OR ALTER PROC usp_PharmaCompany_SelectByID @CompID INT
+create  OR ALTER PROC usp_PharmaCompany_SelectByID
+	@CompID INT
 as
-	select * from PharmaCompany
-	where CompanyID = @CompID
+select *
+from PharmaCompany
+where CompanyID = @CompID
 -- (2.3) Get Company By Status --
 GO
-create  OR ALTER proc usp_PharmaCompany_SelectBySts @CompStatus NVARCHAR(64)
+create  OR ALTER proc usp_PharmaCompany_SelectBySts
+	@CompStatus NVARCHAR(64)
 as
-	select * from PharmaCompany
-	where CompanyStatus = @CompStatus
+select *
+from PharmaCompany
+where CompanyStatus = @CompStatus
 -- (3) Insert Company --
 GO
-CREATE  OR ALTER PROC usp_PharmaCompany_Insert 
+CREATE  OR ALTER PROC usp_PharmaCompany_Insert
 	@CompanyName NVARCHAR(64),
-    @ContactPerson NVARCHAR(32) = NULL,
-    @CompanyAddress NVARCHAR(128) = NULL,
-    @CompanyPhone NVARCHAR(32) = NULL,
+	@ContactPerson NVARCHAR(32) = NULL,
+	@CompanyAddress NVARCHAR(128) = NULL,
+	@CompanyPhone NVARCHAR(32) = NULL,
 	@HexCode NVARCHAR(2) OUTPUT
 as
-	IF (@CompanyName IS NOT NULL)
+IF (@CompanyName IS NOT NULL)
 		BEGIN
-			if not exists (select top 1 * from PharmaCompany where PharmaCompany.CompanyName = @CompanyName)
+	if not exists (select top 1
+		*
+	from PharmaCompany
+	where PharmaCompany.CompanyName = @CompanyName)
 			begin
-			INSERT INTO PharmaCompany (CompanyName,ContactPerson,CompanyAddress,CompanyPhone)
-			values (@CompanyName,@ContactPerson,@CompanyAddress,@CompanyPhone)
-			--Insertion Succesful.
-			set @HexCode = '00'
-			RETURN '00'
-			END
+		INSERT INTO PharmaCompany
+			(CompanyName,ContactPerson,CompanyAddress,CompanyPhone)
+		values
+			(@CompanyName, @ContactPerson, @CompanyAddress, @CompanyPhone)
+		--Insertion Succesful.
+		set @HexCode = '00'
+		RETURN '00'
+	END
 			else
 			BEGIN
-			--Pharma Company Already Exists
-			set @HexCode = '01'
-			if((select CompanyStatus from PharmaCompany where CompanyName=@CompanyName)=99)
+		--Pharma Company Already Exists
+		set @HexCode = '01'
+		if((select CompanyStatus
+		from PharmaCompany
+		where CompanyName=@CompanyName)=99)
 			begin
 			update PharmaCompany
 			set CompanyStatus = 2,
@@ -3148,47 +3415,48 @@ as
 			CompanyPhone = ISNULL(@CompanyPhone,CompanyPhone)
 			where CompanyName = @CompanyName
 			RETURN '01'
-			END
-		end
-	END
+		END
+	end
+END
 	ELSE
 	BEGIN
-		--Insertion Failed because Company name is Null.
-		set @HexCode = '02'
-		return '02'
-		END
+	--Insertion Failed because Company name is Null.
+	set @HexCode = '02'
+	return '02'
+END
 -- (4) Update Company By ID --
 GO
-CREATE  OR ALTER PROC usp_PharmaCompany_Update 
+CREATE  OR ALTER PROC usp_PharmaCompany_Update
 	@CompID INT,
 	@CompanyName NVARCHAR(64) = NULL,
-    @ContactPerson NVARCHAR(32) = NULL,
-    @CompanyAddress NVARCHAR(128) = NULL,
-    @CompanyPhone NVARCHAR(32) = NULL,
+	@ContactPerson NVARCHAR(32) = NULL,
+	@CompanyAddress NVARCHAR(128) = NULL,
+	@CompanyPhone NVARCHAR(32) = NULL,
 	@HexCode NVARCHAR(2) OUTPUT
 as
-	IF (@CompID IS NOT NULL)
+IF (@CompID IS NOT NULL)
 		BEGIN
-			UPDATE PharmaCompany
+	UPDATE PharmaCompany
 			SET CompanyName = ISNULL(@CompanyName,CompanyName), 
 			ContactPerson = ISNULL(@ContactPerson,ContactPerson),
 			CompanyAddress = ISNULL(@CompanyAddress,CompanyAddress),
 			CompanyPhone = ISNULL(@CompanyPhone,CompanyPhone),
 			CompanyStatus = 2
 			WHERE CompanyID = @CompID
-			--Data Updated Succesfully
-		set @HexCode = '00'		
-		END
+	--Data Updated Succesfully
+	set @HexCode = '00'
+END
 	ELSE
 	begin
-		--Error in updating, Company ID doesn't exist
-		set @HexCode = '01'
-		
-	END
+	--Error in updating, Company ID doesn't exist
+	set @HexCode = '01'
+
+END
 -- (5) Delete Company By ID --
 GO
-create  OR ALTER PROC usp_PharmaCompany_Delete  @CompID INT,
-@HexCode NVARCHAR(2) OUTPUT
+create  OR ALTER PROC usp_PharmaCompany_Delete
+	@CompID INT,
+	@HexCode NVARCHAR(2) OUTPUT
 as
 begin
 	IF (@CompID IS NOT NULL)
@@ -3208,103 +3476,106 @@ END
 
 --(1) Insert a medicine to a company --
 GO
-CREATE  OR ALTER PROC usp_CompanyMedicineMap_Insert 
-@CompID INT, 
- @MedBCode NVARCHAR(64),
- @responseCode NVARCHAR(2)='FF' OUTPUT,
-@responseMessage NVARCHAR(128)='' OUTPUT
+CREATE  OR ALTER PROC usp_CompanyMedicineMap_Insert
+	@CompID INT,
+	@MedBCode NVARCHAR(64),
+	@responseCode NVARCHAR(2)='FF' OUTPUT,
+	@responseMessage NVARCHAR(128)='' OUTPUT
 
 AS
 
-	BEGIN TRY
+BEGIN TRY
     IF (@CompID IS NOT NULL AND @MedBCode IS NOT NULL)
  	 BEGIN
-		INSERT INTO CompanyMedicineMap (CompID,MedBCode,MapStatus)
-		VALUES (@CompID,@MedBCode,'00')
-		
-		 SELECT @responseCode = '00'
-	     SELECT @responseMessage = 'Success'
-	
-	END
+	INSERT INTO CompanyMedicineMap
+		(CompID,MedBCode,MapStatus)
+	VALUES
+		(@CompID, @MedBCode, '00')
+
+	SELECT @responseCode = '00'
+	SELECT @responseMessage = 'Success'
+
+END
 
 	ELSE
-     	BEGIN 
+     	BEGIN
 
-				SELECT @responseCode = 'FF'
-				SELECT @responseMessage = 'nO PARAMETER'
-				 RETURN -1
-	    END
+	SELECT @responseCode = 'FF'
+	SELECT @responseMessage = 'nO PARAMETER'
+	RETURN -1
+END
 	END TRY
 BEGIN CATCH
 			SELECT @responseCode = 'FF',
-	           	@responseMessage=ERROR_MESSAGE()
+	@responseMessage=ERROR_MESSAGE()
 			return -1;
 	END CATCH
-		
-	return -1
+
+return -1
 --(2) Delete a medicine from a company --
 GO
 CREATE  OR ALTER PROC usp_CompanyMedicineMap_DELETE
-@CompID INT,
-@MedBCode NVARCHAR(64),
-@responseCode NVARCHAR(2)='FF' OUTPUT,
-@responseMessage NVARCHAR(128)='' OUTPUT
+	@CompID INT,
+	@MedBCode NVARCHAR(64),
+	@responseCode NVARCHAR(2)='FF' OUTPUT,
+	@responseMessage NVARCHAR(128)='' OUTPUT
 
 AS
 
-	BEGIN TRY
+BEGIN TRY
     IF (@CompID IS NOT NULL AND @MedBCode IS NOT NULL)
  	 BEGIN
-		UPDATE  CompanyMedicineMap 
+	UPDATE  CompanyMedicineMap 
 		SET MapStatus ='FF'
-		WHERE CompID = @CompID  AND MedBCode = @MedBCode
-		
-		 SELECT @responseCode = '00'
-	     SELECT @responseMessage = 'Success'
-	
-	END
+		WHERE CompID = @CompID AND MedBCode = @MedBCode
+
+	SELECT @responseCode = '00'
+	SELECT @responseMessage = 'Success'
+
+END
 
 	ELSE
-     	BEGIN 
+     	BEGIN
 
-				SELECT @responseCode = 'FF'
-				SELECT @responseMessage = 'nO PARAMETER'
-				 RETURN -1
-	    END
+	SELECT @responseCode = 'FF'
+	SELECT @responseMessage = 'nO PARAMETER'
+	RETURN -1
+END
 	END TRY
 BEGIN CATCH
 			SELECT @responseCode = 'FF',
-	           	@responseMessage=ERROR_MESSAGE()
+	@responseMessage=ERROR_MESSAGE()
 			return -1;
 	END CATCH
-		
-	return -1
+
+return -1
 
 
 	------------------------- get specific  relation----------------------
 		GO
-create  OR ALTER PROC usp_CompanyMedicineMap_Select  
-@CompID INT,
-@MedBCode  NVARCHAR(64)
+create  OR ALTER PROC usp_CompanyMedicineMap_Select
+	@CompID INT,
+	@MedBCode  NVARCHAR(64)
 as
-	 IF (@CompID IS NOT NULL AND @MedBCode IS NOT NULL)
+IF (@CompID IS NOT NULL AND @MedBCode IS NOT NULL)
  	 BEGIN
-	
-		select * from dbo.CompanyMedicineMap
-		where CompID= @CompID
-		AND  MedBCode=@MedBCode
-		return 0
-	END
+
+	select *
+	from dbo.CompanyMedicineMap
+	where CompID= @CompID
+		AND MedBCode=@MedBCode
+	return 0
+END
 	ELSE 
 		RETURN -1
 
-		GO
+GO
 CREATE  OR alter proc usp_CompanyMedicineMap_UpdateStatus
-@CompID INT,
-@MedBCode  NVARCHAR(64),
-@MapStatus NVARCHAR(2),
-@responseCode NVARCHAR(2)='FF' OUTPUT,
-@responseMessage NVARCHAR(128)='' OUTPUT
+	@CompID INT,
+	@MedBCode  NVARCHAR(64),
+	@MapStatus NVARCHAR(2),
+	@responseCode NVARCHAR(2)='FF' OUTPUT,
+	@responseMessage NVARCHAR(128)='' OUTPUT
 
 AS
 BEGIN TRY
@@ -3312,25 +3583,25 @@ if (@CompID IS NOT NULL AND @MedBCode  IS NOT NULL )
 	BEGIN
 	UPDATE dbo.CompanyMedicineMap
 	SET MapStatus = ISNULL (@MapStatus,MapStatus)
-	where MedBCode  = @MedBCode AND  CompID = @CompID
+	where MedBCode  = @MedBCode AND CompID = @CompID
 	SELECT @responseCode = '00'
-		SELECT @responseMessage = 'Success'
-	END
+	SELECT @responseMessage = 'Success'
+END
 	ELSE
-	BEGIN 
+	BEGIN
 
-				SELECT @responseCode = 'FF'
-				SELECT @responseMessage = 'nO PARAMETER'
-				 RETURN -1
-	END
+	SELECT @responseCode = 'FF'
+	SELECT @responseMessage = 'nO PARAMETER'
+	RETURN -1
+END
 	END TRY
 BEGIN CATCH
 			SELECT @responseCode = 'FF',
-	           	@responseMessage=ERROR_MESSAGE()
+	@responseMessage=ERROR_MESSAGE()
 			return -1;
 	END CATCH
-		
-	return -1
+
+return -1
 ----------------------------------------NEW SET OF STORED PROCEDURES--------------------------------------------------------------
 -- Batch SP --
 
@@ -3338,72 +3609,80 @@ BEGIN CATCH
 GO
 Create  OR ALTER PROC usp_Batch_SelectAll
 as
-	select * from Batch
+select *
+from Batch
 -- (2.1) Select Batch By ID --
 GO
-create  OR ALTER PROC usp_Batch_Select  @BatchID INT
+create  OR ALTER PROC usp_Batch_Select
+	@BatchID INT
 as
-	IF (@BatchID IS NOT NULL)
+IF (@BatchID IS NOT NULL)
 	BEGIN
-		select * from Batch
-		where BatchID = @BatchID
-		return 0
-	END
+	select *
+	from Batch
+	where BatchID = @BatchID
+	return 0
+END
 	ELSE 
 		RETURN -1
 -- (2.2) Select Batch By Status --
 GO
-create  OR ALTER PROC usp_Batch_SelectBySts  @BatchSts  NVARCHAR(32)
+create  OR ALTER PROC usp_Batch_SelectBySts
+	@BatchSts  NVARCHAR(32)
 as
-	select * from Batch
-	where BatchStatus = @BatchSts
+select *
+from Batch
+where BatchStatus = @BatchSts
 -- (3) Insert Batch --
 GO
-CREATE  OR ALTER PROC usp_Batch_Insert 
+CREATE  OR ALTER PROC usp_Batch_Insert
 	@BatchID INT,
 	@BatchMedBCode NVARCHAR(64),
 	@Quantity INT = NULL,
 	@ExpiryDate DATE = NULL,
-    @OrderDate DATETIME = NULL
+	@OrderDate DATETIME = NULL
 as
-	BEGIN
-		INSERT INTO Batch (BatchID,ExpiryDate,OrderDate)
-		VALUES (@BatchID,@ExpiryDate,ISNULL(@OrderDate,getdate()))
-	END
+BEGIN
+	INSERT INTO Batch
+		(BatchID,ExpiryDate,OrderDate)
+	VALUES
+		(@BatchID, @ExpiryDate, ISNULL(@OrderDate,getdate()))
+END
 -- (4) Update Batch --
 GO
-CREATE  OR ALTER PROC usp_Batch_Update 
+CREATE  OR ALTER PROC usp_Batch_Update
 	@BatchID INT,
 	@BatchMedBCode NVARCHAR(64) = NULL,
 	@Quantity  NVARCHAR(64) = NULL,
 	@ExpiryDate DATE = NULL,
-    @OrderDate DATETIME = NULL
+	@OrderDate DATETIME = NULL
 as
-	BEGIN
-		UPDATE Batch
+BEGIN
+	UPDATE Batch
 		SET BatchID = ISNULL (@BatchID,BatchID),
 		ExpiryDate = ISNULL (@ExpiryDate,ExpiryDate),
 		OrderDate = ISNULL (@OrderDate,OrderDate),
 		BatchStatus = 2
 		WHERE BatchID = @BatchID
-	END
+END
 -- (5) Delete Batch --
 GO
-create  OR ALTER PROC usp_Batch_Delete  @BatchID INT
+create  OR ALTER PROC usp_Batch_Delete
+	@BatchID INT
 as
-	IF (@BatchID IS NOT NULL)
+IF (@BatchID IS NOT NULL)
 	BEGIN
-		UPDATE Batch
+	UPDATE Batch
 		SET BatchStatus = 99
 		where BatchID = @BatchID
-	END
+END
 	ELSE
 		return -1
 ----------------------------------------NEW SET OF STORED PROCEDURES--------------------------------------------------------------
 
 
 
-GO 
+GO
 CREATE OR ALTER PROC  usp_add_New_Patient
 	@PatientFName VARCHAR(32) = 'john',
 	@PatientLName VARCHAR(32) = 'doe',
@@ -3424,8 +3703,11 @@ CREATE OR ALTER PROC  usp_add_New_Patient
 	@responseMessage NVARCHAR(128)='' OUTPUT
 AS
 BEGIN
-	SET @PatientID = (SELECT TOP 1 dbo.Patient.PatientID FROM dbo.Patient WHERE Age = @Age AND Gender = @Gender AND PatientFName = @PatientFName
-	AND PatientLName = @PatientLName AND Phone = @Phone AND PatientNationalID = @PatientNationalID AND CreationTime = @PatientEntryDate)
+	SET @PatientID = (SELECT TOP 1
+		dbo.Patient.PatientID
+	FROM dbo.Patient
+	WHERE Age = @Age AND Gender = @Gender AND PatientFName = @PatientFName
+		AND PatientLName = @PatientLName AND Phone = @Phone AND PatientNationalID = @PatientNationalID AND CreationTime = @PatientEntryDate)
 	IF (@PatientID IS NOT NULL)
 	BEGIN
 		SET @responseCode = 'EF'
@@ -3437,12 +3719,14 @@ BEGIN
 	END 
 	ELSE
 	BEGIN
-		INSERT INTO Patient ( PatientFName, PatientLName, Gender, Age, Phone, LastBenifitedTime, FirstBenifitedTime, NextOfKenName, NextOfKenPhone, NextOfKenAddress, PatientStatus, PatientNationalID, CreationTime)
-		VALUES (@PatientFName,@PatientLName,ISNULL(@Gender,'M'),ISNULL(@Age,'0'),ISNULL(@Phone,'0'),ISNULL(@LastBenifitedTime,GETDATE()),ISNULL(@FirstBenifitedTime,GETDATE()),ISNULL(@NextOfKenName,'John Doe'),ISNULL(@NextOfKenPhone,'0'),ISNULL(@NextOfKenAddress,'NULL'),@PatientStatus,ISNULL(@PatientNationalID,'-1'), @PatientEntryDate)
+		INSERT INTO Patient
+			( PatientFName, PatientLName, Gender, Age, Phone, LastBenifitedTime, FirstBenifitedTime, NextOfKenName, NextOfKenPhone, NextOfKenAddress, PatientStatus, PatientNationalID, CreationTime)
+		VALUES
+			(@PatientFName, @PatientLName, ISNULL(@Gender,'M'), ISNULL(@Age,'0'), ISNULL(@Phone,'0'), ISNULL(@LastBenifitedTime,GETDATE()), ISNULL(@FirstBenifitedTime,GETDATE()), ISNULL(@NextOfKenName,'John Doe'), ISNULL(@NextOfKenPhone,'0'), ISNULL(@NextOfKenAddress,'NULL'), @PatientStatus, ISNULL(@PatientNationalID,'-1'), @PatientEntryDate)
 		SET @PatientID = (
-			SELECT PatientID 
-			FROM dbo.Patient 
-			WHERE CreationTime = @PatientEntryDate
+			SELECT PatientID
+		FROM dbo.Patient
+		WHERE CreationTime = @PatientEntryDate
 		)
 		IF (@PatientID IS NOT NULL)
 		BEGIN
@@ -3463,7 +3747,7 @@ END
 
 GO
 CREATE OR ALTER PROC usp_Update_Patient
-    @PatientID INT,
+	@PatientID INT,
 	@PatientFName VARCHAR(32),
 	@PatientLName VARCHAR(32),
 	@Gender NVARCHAR(1),
@@ -3480,11 +3764,11 @@ CREATE OR ALTER PROC usp_Update_Patient
 	@responseCode NVARCHAR(2)='FF' OUTPUT,
 	@responseMessage NVARCHAR(128)='' OUTPUT
 as
-	BEGIN TRY
+BEGIN TRY
 	
 	IF (@PatientID IS NOT NULL)
 		Begin
-		UPDATE Patient
+	UPDATE Patient
 		SET PatientFName = ISNULL (@PatientFName,PatientFName),
 		PatientLName = ISNULL (@PatientLName,PatientLName),
 		Gender = ISNULL (@Gender,Gender),
@@ -3498,58 +3782,59 @@ as
 		PatientStatus = ISNULL (@PatientStatus,PatientStatus),
 		PatientNationalID = ISNULL (@PatientNationalID,PatientNationalID)		 
 		WHERE PatientID = @PatientID
-		   
-		 SELECT @responseCode = '00'
-		 SELECT @responseMessage = 'Success'
-	END
+
+	SELECT @responseCode = '00'
+	SELECT @responseMessage = 'Success'
+END
 	ELSE
-	BEGIN 
+	BEGIN
 	return -1
-				SELECT @responseCode = 'FF'
-				SELECT @responseMessage = 'nO PARAMETER'
-	END
+	SELECT @responseCode = 'FF'
+	SELECT @responseMessage = 'nO PARAMETER'
+END
 	END TRY
 BEGIN CATCH
 			SELECT @responseCode = 'FF',
-		@responseMessage=ERROR_MESSAGE()
+	@responseMessage=ERROR_MESSAGE()
 			return -1;
 	END CATCH
-		return -1
+return -1
 GO
-create OR ALTER PROC usp_Delete_Patient 
- @PatientID INT,
- @responseCode NVARCHAR(2)='FF' OUTPUT,
- @responseMessage NVARCHAR(128)='' OUTPUT
+create OR ALTER PROC usp_Delete_Patient
+	@PatientID INT,
+	@responseCode NVARCHAR(2)='FF' OUTPUT,
+	@responseMessage NVARCHAR(128)='' OUTPUT
 as
 BEGIN TRY
 	IF (@PatientID IS NOT NULL)
 	BEGIN
-		UPDATE Patient
+	UPDATE Patient
 		SET PatientStatus = 'FF'
 		where PatientID = @PatientID
-		SELECT @responseCode = '00'
-		SELECT @responseMessage = 'Success'
-	END
+	SELECT @responseCode = '00'
+	SELECT @responseMessage = 'Success'
+END
 		ELSE
-	BEGIN 
+	BEGIN
 	return -1
-				SELECT @responseCode = 'FF'
-				SELECT @responseMessage = 'nO PARAMETER'
-	END
+	SELECT @responseCode = 'FF'
+	SELECT @responseMessage = 'nO PARAMETER'
+END
 	END TRY
 BEGIN CATCH
 			SELECT @responseCode = 'FF',
-		@responseMessage=ERROR_MESSAGE()
+	@responseMessage=ERROR_MESSAGE()
 			return -1;
 	END CATCH
-		return -1
+return -1
 
 			GO
 
 CREATE OR ALTER PROC usp_Patient_getAll
 AS
 BEGIN
-SELECT * FROM Patient
+	SELECT *
+	FROM Patient
 
 
 END
@@ -3557,63 +3842,65 @@ END
 
 GO
 CREATE OR ALTER PROC usp_Patient_getByNID
-@NID NVARCHAR(14)
+	@NID NVARCHAR(14)
 AS
 BEGIN
-SELECT * FROM Patient
-WHERE PatientNationalID  = @NID 
+	SELECT *
+	FROM Patient
+	WHERE PatientNationalID  = @NID
 
 END
 --------------------------------------------------------------------
 
 GO
-create OR ALTER PROC usp_Delete_PatientLoc 
- @PatientID INT,
- @responseCode NVARCHAR(2)='FF' OUTPUT,
- @responseMessage NVARCHAR(128)='' OUTPUT
+create OR ALTER PROC usp_Delete_PatientLoc
+	@PatientID INT,
+	@responseCode NVARCHAR(2)='FF' OUTPUT,
+	@responseMessage NVARCHAR(128)='' OUTPUT
 as
 BEGIN TRY
 	IF (@PatientID IS NOT NULL)
 	BEGIN
-		UPDATE PatientLocations
+	UPDATE PatientLocations
 		SET StatusLocation = 'FF'
 		where PatientID = @PatientID
-		SELECT @responseCode = '00'
-		SELECT @responseMessage = 'Success'
-	END
+	SELECT @responseCode = '00'
+	SELECT @responseMessage = 'Success'
+END
 		ELSE
-	BEGIN 
+	BEGIN
 	return -1
-				SELECT @responseCode = 'FF'
-				SELECT @responseMessage = 'nO PARAMETER'
-	END
+	SELECT @responseCode = 'FF'
+	SELECT @responseMessage = 'nO PARAMETER'
+END
 	END TRY
 BEGIN CATCH
 			SELECT @responseCode = 'FF',
-		@responseMessage=ERROR_MESSAGE()
+	@responseMessage=ERROR_MESSAGE()
 			return -1;
 	END CATCH
-		return -1
+return -1
 	
 	
 		GO
-	CREATE OR ALTER PROC usp_Patient_getByID
+CREATE OR ALTER PROC usp_Patient_getByID
 	@ID int
-	AS
-	BEGIN
-	SELECT * FROM Patient
-	WHERE PatientID  = @ID 
+AS
+BEGIN
+	SELECT *
+	FROM Patient
+	WHERE PatientID  = @ID
 
-	END
+END
 
 ----------------------------------------NEW SET OF STORED PROCEDURES--------------------------------------------------------------
 GO
-CREATE  OR ALTER PROC usp_Feedback_Insert 
+CREATE  OR ALTER PROC usp_Feedback_Insert
 	@SequenceNumber INT,
 	@Rating float,
-    @DriverNote NVARCHAR(500) = NULL,
-    @ParamedicNote NVARCHAR(500) = NULL,
-    @responseCode NVARCHAR(2)='FF' OUTPUT,
+	@DriverNote NVARCHAR(500) = NULL,
+	@ParamedicNote NVARCHAR(500) = NULL,
+	@responseCode NVARCHAR(2)='FF' OUTPUT,
 	@responseMessage NVARCHAR(128)='' OUTPUT
 
 as
@@ -3621,74 +3908,75 @@ BEGIN TRY
 
 	IF (@SequenceNumber IS NOT NULL AND @Rating IS NOT NULL)
  BEGIN
- 
-	  
-          BEGIN
-		        INSERT INTO Feedback
-				 (SequenceNumber,Rating,DriverNote,ParamedicNote,FeedbackStatus)
-			    VALUES (@SequenceNumber,@Rating,@DriverNote,@ParamedicNote,'00')
-		        SELECT @responseCode = '00'
-		        SELECT @responseMessage = 'Success'
-	      END
-	
+
+
+	BEGIN
+		INSERT INTO Feedback
+			(SequenceNumber,Rating,DriverNote,ParamedicNote,FeedbackStatus)
+		VALUES
+			(@SequenceNumber, @Rating, @DriverNote, @ParamedicNote, '00')
+		SELECT @responseCode = '00'
+		SELECT @responseMessage = 'Success'
 	END
+
+END
 ELSE
-       BEGIN      
-				SELECT @responseCode = 'FF'
-				SELECT @responseMessage = 'SequenceNumber IS  NULL or Rating IS NULL'
-			 
-           END
+       BEGIN
+	SELECT @responseCode = 'FF'
+	SELECT @responseMessage = 'SequenceNumber IS  NULL or Rating IS NULL'
+
+END
 
 	END TRY
 BEGIN CATCH
 		 	SELECT @responseCode = 'FF',
-		    @responseMessage=ERROR_MESSAGE()
+	@responseMessage=ERROR_MESSAGE()
 		 
 	END CATCH
 			 
 -- (4) Update Feedback --
 GO
-CREATE  OR ALTER PROC usp_Feedback_Update 
+CREATE  OR ALTER PROC usp_Feedback_Update
 	@FeedbackID INT,
 	@SequenceNumber NVARCHAR(64),
 	@Rating NVARCHAR(64),
-    @DriverNote NVARCHAR(64) = NULL,
-    @ParamedicNote NVARCHAR(32) = NULL,
+	@DriverNote NVARCHAR(64) = NULL,
+	@ParamedicNote NVARCHAR(32) = NULL,
 
-    @responseCode NVARCHAR(2)='FF' OUTPUT,
+	@responseCode NVARCHAR(2)='FF' OUTPUT,
 	@responseMessage NVARCHAR(128)='' OUTPUT
 
 as
 BEGIN TRY	 
 IF (@FeedbackID IS NOT NULL)
 		BEGIN
-			UPDATE Feedback
+	UPDATE Feedback
 			SET SequenceNumber = ISNULL(@SequenceNumber,SequenceNumber),
 			Rating = ISNULL(@Rating,Rating),
 			DriverNote = ISNULL(@DriverNote,DriverNote),
 			ParamedicNote = ISNULL(@ParamedicNote,ParamedicNote)
 			WHERE FeedbackID = @FeedbackID
-		SELECT @responseCode = '00'
-		SELECT @responseMessage = 'Success'
-	END
+	SELECT @responseCode = '00'
+	SELECT @responseMessage = 'Success'
+END
 	ELSE
-	BEGIN 
+	BEGIN
 	return -1
-				SELECT @responseCode = 'FF'
-				SELECT @responseMessage = 'nO PARAMETER'
-	END
+	SELECT @responseCode = 'FF'
+	SELECT @responseMessage = 'nO PARAMETER'
+END
 	END TRY
 BEGIN CATCH
 		 	SELECT @responseCode = 'FF',
-		@responseMessage=ERROR_MESSAGE()
+	@responseMessage=ERROR_MESSAGE()
 			return -1;
 	END CATCH
-		return -1
+return -1
 -- (5) Delete Medicine By Barcode --
 GO
-create  OR ALTER PROC usp_Feedback_Delete  
+create  OR ALTER PROC usp_Feedback_Delete
 	@FeedbackID NVARCHAR(64),
-    @responseCode NVARCHAR(2)='FF' OUTPUT,
+	@responseCode NVARCHAR(2)='FF' OUTPUT,
 	@responseMessage NVARCHAR(128)='' OUTPUT
 
 AS
@@ -3696,36 +3984,38 @@ BEGIN TRY
 IF (@FeedbackID IS NOT NULL)
 	BEGIN
 
-		 IF Exists (Select * from Feedback where FeedbackID=@FeedbackID ) 
-	       BEGIN      
-				UPDATE Feedback
+	IF Exists (Select *
+	from Feedback
+	where FeedbackID=@FeedbackID ) 
+	       BEGIN
+		UPDATE Feedback
 					SET  FeedbackStatus = 'FF'
 					WHERE FeedbackID = @FeedbackID
-				SELECT @responseCode = '00'
-				SELECT @responseMessage = 'Success'
-           END
+		SELECT @responseCode = '00'
+		SELECT @responseMessage = 'Success'
+	END
 		else 
 			begin
-			 SELECT @responseCode = 'FF'
-				SELECT @responseMessage = 'NO Feedback found this this ID '
-			end 
+		SELECT @responseCode = 'FF'
+		SELECT @responseMessage = 'NO Feedback found this this ID '
+	end
 
-			
-	END
+
+END
 	ELSE
-	BEGIN 
-				SELECT @responseCode = 'FF'
-				SELECT @responseMessage = 'nO PARAMETER'
-     	        RETURN -1
+	BEGIN
+	SELECT @responseCode = 'FF'
+	SELECT @responseMessage = 'nO PARAMETER'
+	RETURN -1
 
-	END
+END
 	END TRY
 BEGIN CATCH
 		 	SELECT @responseCode = 'FF',
-		     @responseMessage=ERROR_MESSAGE()
+	@responseMessage=ERROR_MESSAGE()
 			 RETURN -1;
 	END CATCH
-		 RETURN -1
+RETURN -1
 ----------------------------------------NEW SET OF STORED PROCEDURES--------------------------------------------------------------
 
 ----------------------------------------NEW SET OF STORED PROCEDURES--------------------------------------------------------------
