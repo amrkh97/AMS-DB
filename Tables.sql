@@ -154,7 +154,8 @@ CREATE TABLE Medicine
 
 	PRIMARY KEY(BarCode),
 	CHECK (Price > 0),
-	CHECK (CountInStock >= 0)
+	CHECK (CountInStock >= 0),
+	FOREIGN KEY(CompanyID) REFERENCES PharmaCompany(CompanyID)
 
 );
 
