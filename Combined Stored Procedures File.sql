@@ -3221,6 +3221,7 @@ CREATE  OR ALTER PROC usp_Medicine_Insert
 	@MedicineUsage NVARCHAR(MAX) = NULL,
 	@SideEffects NVARCHAR(MAX) = NULL,
 	@ActiveComponent NVARCHAR(MAX) = NULL,
+	@CompanyID INT,
 	@responseCode NVARCHAR(2)='FF' OUTPUT,
 	@responseMessage NVARCHAR(128)='' OUTPUT
 
@@ -3240,9 +3241,9 @@ BEGIN TRY
      ELSE
           BEGIN
 		INSERT INTO Medicine
-			(BarCode,CountInStock,MedicineName,Price,Implications,MedicineUsage,SideEffects,ActiveComponent)
+			(BarCode,CountInStock,MedicineName,Price,Implications,MedicineUsage,SideEffects,ActiveComponent,CompanyID)
 		VALUES
-			(@BarCode, @CountInStock, @Name, @Price, @Implications, @MedicineUsage, @SideEffects, @ActiveComponent)
+			(@BarCode, @CountInStock, @Name, @Price, @Implications, @MedicineUsage, @SideEffects, @ActiveComponent,@CompanyID)
 		SELECT @responseCode = '00'
 		SELECT @responseMessage = 'Success'
 	END
