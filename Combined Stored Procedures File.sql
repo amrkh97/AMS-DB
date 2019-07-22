@@ -3402,58 +3402,61 @@ as
 ----------------------------------------NEW SET OF STORED PROCEDURES--------------------------------------------------------------
 
 
+
 GO 
-Create OR ALTER PROC  usp_add_New_Patient
-	@PatientFName VARCHAR(32),
-	@PatientLName VARCHAR(32),
-	@Gender NVARCHAR(1),
-	@Age NVARCHAR(32),
-	@Phone NVARCHAR(24),
-	@LastBenifitedTime DATETIME  ,
-	@FirstBenifitedTime DATETIME ,
-	@NextOfKenName NVARCHAR(32),
-	@NextOfKenPhone NVARCHAR(24),
-	@NextOfKenAddress NVARCHAR(256),
-	@PatientStatus NVARCHAR(32) ,
-	@PatientNationalID NVARCHAR(14),
+CREATE OR ALTER PROC  usp_add_New_Patient
+	@PatientFName VARCHAR(32) = 'john',
+	@PatientLName VARCHAR(32) = 'doe',
+	@Gender NVARCHAR(1) = 'M',
+	@Age NVARCHAR(32) = '0',
+	@Phone NVARCHAR(24) = '0',
+	@LastBenifitedTime DATETIME = '2019-07-22 12:35:54.170',
+	@FirstBenifitedTime DATETIME = '2019-07-22 12:35:54.170',
+	@NextOfKenName NVARCHAR(32) = 'john',
+	@NextOfKenPhone NVARCHAR(24) = '0',
+	@NextOfKenAddress NVARCHAR(256) = '0',
+	@PatientStatus NVARCHAR(32) = '00',
+	@PatientNationalID NVARCHAR(14) = '-1',
+	@PatientEntryDate BIGINT = 1,
 
 	@PatientID INT = -1 OUTPUT,
 	@responseCode NVARCHAR(2)='FF' OUTPUT,
 	@responseMessage NVARCHAR(128)='' OUTPUT
 AS
 BEGIN
-	SET @PatientID = (SELECT dbo.Patient.PatientID FROM dbo.Patient WHERE Age = @Age AND Gender = @Gender AND PatientFName = @PatientFName
-	AND PatientLName = @PatientLName AND Phone = @Phone AND PatientNationalID = @PatientNationalID)
+	SET @PatientID = (SELECT TOP 1 dbo.Patient.PatientID FROM dbo.Patient WHERE Age = @Age AND Gender = @Gender AND PatientFName = @PatientFName
+	AND PatientLName = @PatientLName AND Phone = @Phone AND PatientNationalID = @PatientNationalID AND CreationTime = @PatientEntryDate)
 	IF (@PatientID IS NOT NULL)
 	BEGIN
 		SET @responseCode = 'EF'
 		SET @responseMessage = 'Patient Already Exist'
 		PRINT @PatientID
-		RETURN
+		PRINT @responseCode
+		PRINT @responseMessage
+		RETURN 1
 	END 
 	ELSE
 	BEGIN
-		INSERT INTO Patient ( PatientFName, PatientLName, Gender, Age, Phone, LastBenifitedTime, FirstBenifitedTime, NextOfKenName, NextOfKenPhone, NextOfKenAddress, PatientStatus, PatientNationalID)
-		VALUES (@PatientFName,@PatientLName,@Gender,@Age,@Phone,@LastBenifitedTime,@FirstBenifitedTime,@NextOfKenName,@NextOfKenPhone,@NextOfKenAddress,@PatientStatus,@PatientNationalID)
+		INSERT INTO Patient ( PatientFName, PatientLName, Gender, Age, Phone, LastBenifitedTime, FirstBenifitedTime, NextOfKenName, NextOfKenPhone, NextOfKenAddress, PatientStatus, PatientNationalID, CreationTime)
+		VALUES (@PatientFName,@PatientLName,ISNULL(@Gender,'M'),ISNULL(@Age,'0'),ISNULL(@Phone,'0'),ISNULL(@LastBenifitedTime,GETDATE()),ISNULL(@FirstBenifitedTime,GETDATE()),ISNULL(@NextOfKenName,'John Doe'),ISNULL(@NextOfKenPhone,'0'),ISNULL(@NextOfKenAddress,'NULL'),@PatientStatus,ISNULL(@PatientNationalID,'-1'), @PatientEntryDate)
 		SET @PatientID = (
 			SELECT PatientID 
 			FROM dbo.Patient 
-			WHERE (Age = @Age AND Gender = @Gender AND PatientFName = @PatientFName AND PatientLName = @PatientLName 
-			AND Phone = @Phone)
+			WHERE CreationTime = @PatientEntryDate
 		)
 		IF (@PatientID IS NOT NULL)
 		BEGIN
 			SET @responseCode = '00'
 			SET @responseMessage = 'Succesfully Added New Patient'
 			PRINT @PatientID
-			RETURN
+			RETURN 0
 		END 
 		ELSE 
 		BEGIN
 			SET @responseCode = 'FF'
 			SET @responseMessage = 'Failed To Add Patient'
 			PRINT @PatientID
-			RETURN
+			RETURN -1
 		END
 	END
 END

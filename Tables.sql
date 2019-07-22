@@ -609,11 +609,16 @@ CREATE TABLE Patient
 	NextOfKenAddress NVARCHAR(256),
 	PatientStatus NVARCHAR(32) DEFAULT '00',
 	PatientNationalID NVARCHAR(14),
+	CreationTime BIGINT
 
 	PRIMARY KEY (PatientID)
 
 );
 
+INSERT INTO Patient
+(PatientFName,PatientLName)
+VALUES
+('john','doe')
 
 CREATE TABLE MedicalRecord
 (
