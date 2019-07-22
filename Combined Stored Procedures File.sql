@@ -3211,6 +3211,7 @@ select *
 from Medicine
 where MedicineStatus = @MStatus
 -- (3) Insert Medicine --
+-- (3) Insert Medicine --
 GO
 CREATE  OR ALTER PROC usp_Medicine_Insert
 	@BarCode NVARCHAR(64),
@@ -3240,12 +3241,22 @@ BEGIN TRY
 	END
      ELSE
           BEGIN
-		INSERT INTO Medicine
-			(BarCode,CountInStock,MedicineName,Price,Implications,MedicineUsage,SideEffects,ActiveComponent,CompanyID)
-		VALUES
-			(@BarCode, @CountInStock, @Name, @Price, @Implications, @MedicineUsage, @SideEffects, @ActiveComponent,@CompanyID)
-		SELECT @responseCode = '00'
-		SELECT @responseMessage = 'Success'
+		IF EXISTS (SELECT *
+		FROM PharmaCompany
+		WHERE CompanyID = @CompanyID)
+		BEGIN
+			INSERT INTO Medicine
+				(BarCode,CountInStock,MedicineName,Price,Implications,MedicineUsage,SideEffects,ActiveComponent,CompanyID)
+			VALUES
+				(@BarCode, @CountInStock, @Name, @Price, @Implications, @MedicineUsage, @SideEffects, @ActiveComponent, @CompanyID)
+			SELECT @responseCode = '00'
+			SELECT @responseMessage = 'Success'
+		END
+		ELSE
+		BEGIN
+			SELECT @responseCode = '02'
+			SELECT @responseMessage = 'The Company You Entered Does not Exist'
+		END
 	END
 
 END
