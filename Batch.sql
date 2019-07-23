@@ -76,7 +76,7 @@ VALUES
 	@batchID,
 	@barCode,
 	@usedAmt,
-	(select VIN from dbo.AmbulanceMap where BatchID = @batchID)
+	(select AssociatedVIN from dbo.AmbulanceBatchesMap where BatchID = @batchID)
 )
 set @HexCode = '00'
 END
@@ -84,5 +84,13 @@ ELSE
 BEGIN
 set @HexCode = '01'
 END
+END
+GO
+
+CREATE OR ALTER PROC usp_AmbulanceMap_getAllBatches
+@VIN INTEGER
+AS
+BEGIN
+SELECT BatchID FROM dbo.AmbulanceBatchesMap WHERE AssociatedVIN = @VIN
 END
 GO

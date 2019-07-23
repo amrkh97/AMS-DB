@@ -150,10 +150,12 @@ CREATE TABLE Medicine
 	ActiveComponent NVARCHAR(MAX),
 	MedicineStatus NVARCHAR(32) DEFAULT '00',
 	ExpirationDate date,
+	CompanyID INT,
 
 	PRIMARY KEY(BarCode),
 	CHECK (Price > 0),
-	CHECK (CountInStock >= 0)
+	CHECK (CountInStock >= 0),
+	FOREIGN KEY(CompanyID) REFERENCES PharmaCompany(CompanyID)
 
 );
 
@@ -194,28 +196,13 @@ CREATE TABLE PharmaCompany
 		PRIMARY key (CompanyID)
 );
 
-CREATE TABLE CompanyMedicineMap
-(
-	CompID INT,
-	MedBCode NVARCHAR(64),
-	MapStatus NVARCHAR(2),
-	PRIMARY key (CompID,MedBCode),
-	FOREIGN KEY (CompID) REFERENCES PharmaCompany (CompanyID),
-	FOREIGN KEY (MedBCode) REFERENCES Medicine (BarCode)
-
-);
 CREATE TABLE Batch
 (
 	BatchID BIGINT,
-	--BatchMedBCode NVARCHAR(64) NOT NULL,
-	--Quantity INT,
 	ExpiryDate DATE,
 	OrderDate DATETIME DEFAULT getdate(),
 	BatchStatus NVARCHAR(32) DEFAULT '00',
-	PRIMARY KEY(BatchID),
-	--FOREIGN KEY (BatchMedBCode) REFERENCES Medicine(BarCode),
-	--CONSTRAINT chk_Batch_QuantityPositive CHECK(Quantity > 0 )
-
+	PRIMARY KEY(BatchID)
 );
 
 CREATE TABLE BatchMedicine
@@ -422,20 +409,6 @@ CREATE TABLE AmbulanceVehicle
 		N'Alin Alingham Mcalin' --OwnerName - NVARCHAR(32)
 	)
 
-
-CREATE TABLE BatchDistributionMap
-(
-	DistributedAmt INT,
-	BID BIGINT,
-	AmbVIN INT
-
-		PRIMARY KEY (BID,AmbVIN),
-	FOREIGN KEY (BID) REFERENCES Batch(BatchID),
-	FOREIGN KEY (AmbVIN) REFERENCES AmbulanceVehicle(VIN),
-	CONSTRAINT chk_BatchDistributionMap_DistributedAmtPositive CHECK(DistributedAmt > 0 )
-
-);
-
 CREATE TABLE Locations
 (
 	LocationID INT IDENTITY,
@@ -628,11 +601,16 @@ CREATE TABLE Patient
 	NextOfKenAddress NVARCHAR(256),
 	PatientStatus NVARCHAR(32) DEFAULT '00',
 	PatientNationalID NVARCHAR(14),
+	CreationTime BIGINT
 
 	PRIMARY KEY (PatientID)
 
 );
 
+INSERT INTO Patient
+(PatientFName,PatientLName)
+VALUES
+('john','doe')
 
 CREATE TABLE MedicalRecord
 (
@@ -758,6 +736,18 @@ CREATE TABLE EmployeeLogs
 	PRIMARY KEY (LogInID),
 	FOREIGN KEY(EmployeeID) REFERENCES dbo.Employee(EID)
 );
+
+--Table to handle multiple Batches on the same car.
+CREATE TABLE AmbulanceBatchesMap
+(
+	EntryID INT IDENTITY,
+	AssociatedVIN INT,
+	BatchID BIGINT,
+	PRIMARY KEY (EntryID),
+	FOREIGN KEY (AssociatedVIN) REFERENCES AmbulanceVehicle(VIN),
+	FOREIGN KEY (BatchID) REFERENCES Batch(BatchID) 
+);
+
 ------------------------------------------------------------------------
 -- Creating Indecies --
 -- (1) Medicine BarCode Unique Index -- 

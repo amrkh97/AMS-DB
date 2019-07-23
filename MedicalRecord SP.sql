@@ -91,7 +91,7 @@ CREATE OR ALTER PROC usp_MedicalRecord_Insert
 	END TRY
 	BEGIN CATCH
 			SELECT @responseCode = 'FF',
-			@responseMessage=ERROR_MESSAGE()
+			@responseMessage = 'This Response Already Has A Medical Record'
 			return -1;
 	END CATCH
 		return -1

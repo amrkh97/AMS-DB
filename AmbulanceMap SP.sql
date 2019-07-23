@@ -71,6 +71,18 @@ begin
 UPDATE dbo.AmbulanceMap
 SET BatchID = @batchID
 where VIN = @VIN and StatusMap = '00'
+
+INSERT INTO AmbulanceBatchesMap
+(
+    AssociatedVIN,
+    BatchID
+)
+VALUES (
+    @VIN,
+    @batchID
+)
+
+
 -- '00' -> updated succesfully
 SET @HexCode = '00'
 end
