@@ -3494,6 +3494,7 @@ BEGIN
 SELECT * FROM Medicine AS M
 INNER JOIN PharmaCompany AS P
 ON M.CompanyID = P.CompanyID
+WHERE P.CompanyID = @companyID
 ORDER BY M.MedicineName
 END
 ----------------------------------------NEW SET OF STORED PROCEDURES--------------------------------------------------------------
