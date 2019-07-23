@@ -148,14 +148,16 @@ END
 GO
 ------------------------------------------------------------------------------------
 -- UPDATE RESPONSE STATUS BY ID --
-CREATE OR ALTER PROC usp_ResponseStatus_UpdateByID 
-@SequenceNumber INT, --1
-@ResponseStatus NVARCHAR(32),--2
-@return_Hex_value NVARCHAR(2)='FF' OUTPUT,--3
-@responseMessage NVARCHAR(128)='' OUTPUT,--4
-@RespStatus NVARCHAR(32) = '' OUTPUT--5
+CREATE OR ALTER PROC usp_ResponseStatus_UpdateByID
+	@SequenceNumber INT,
+	--1
+	@ResponseStatus NVARCHAR(32),--2
+	@return_Hex_value NVARCHAR(2)='FF' OUTPUT,--3
+	@responseMessage NVARCHAR(128)='' OUTPUT,--4
+	@RespStatus NVARCHAR(32) = '' OUTPUT--5
 AS
 BEGIN
+DECLARE @VIN INTEGER
 	IF(@ResponseStatus IS NULL OR @ResponseStatus = '')
 	BEGIN
 		SET @responseMessage = 'MISSING RESPONSE STATUS VALUE TO UPDATED'
@@ -164,12 +166,34 @@ BEGIN
 	END
 	ELSE
 	BEGIN
-		IF EXISTS (SELECT TOP 1 SequenceNumber FROM dbo.Responses WHERE SequenceNumber=@SequenceNumber)
+		IF EXISTS (SELECT TOP 1
+			SequenceNumber
+		FROM dbo.Responses
+		WHERE SequenceNumber=@SequenceNumber)
 		BEGIN
 			UPDATE dbo.Responses
 			SET RespStatus = @ResponseStatus
 			WHERE SequenceNumber = @SequenceNumber
-			SET @RespStatus = (SELECT RespStatus FROM Responses WHERE SequenceNumber=@SequenceNumber)
+			SET @RespStatus = (SELECT RespStatus
+			FROM Responses
+			WHERE SequenceNumber=@SequenceNumber)
+			IF ( @ResponseStatus = '0E')
+			BEGIN
+			SET @VIN = (
+			SELECT VIN FROM dbo.AmbulanceVehicle
+			INNER JOIN dbo.Responses
+			ON AmbulanceVehicle.VIN = Responses.AssociatedVehicleVIN
+			WHERE AssociatedVehicleVIN = @VIN
+				
+			)
+			UPDATE dbo.AmbulanceMap
+			SET StatusMap = '00'
+			WHERE VIN = @VIN AND StatusMap = '01'
+
+			UPDATE dbo.AmbulanceVehicle
+			SET VehicleStatus = '05'
+			WHERE VIN = @VIN AND VehicleStatus = '06'
+			END
 			SET @responseMessage = 'RESPONSE STATUS LOCATED'
 			SELECT @return_Hex_value = '00'
 			RETURN 1
