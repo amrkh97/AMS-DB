@@ -3483,6 +3483,19 @@ begin
 	--Deletion Failed
 	set @HexCode = '01'
 END	
+
+GO
+
+CREATE OR ALTER PROC usp_PharmaCompany_SelectAllMedicines
+@companyID INT
+AS
+BEGIN
+
+SELECT * FROM Medicine AS M
+INNER JOIN PharmaCompany AS P
+ON M.CompanyID = P.CompanyID
+ORDER BY M.MedicineName
+END
 ----------------------------------------NEW SET OF STORED PROCEDURES--------------------------------------------------------------
 -- Batch SP --
 
