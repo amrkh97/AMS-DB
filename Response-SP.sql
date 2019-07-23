@@ -177,7 +177,7 @@ DECLARE @VIN INTEGER
 			SET @RespStatus = (SELECT RespStatus
 			FROM Responses
 			WHERE SequenceNumber=@SequenceNumber)
-			IF ( @ResponseStatus = '0e')
+			IF ( @ResponseStatus = '0E')
 			BEGIN
 			SET @VIN = (
 			SELECT VIN FROM dbo.AmbulanceVehicle
