@@ -3910,6 +3910,12 @@ BEGIN CATCH
 			 RETURN -1;
 	END CATCH
 RETURN -1
+GO
+CREATE OR ALTER PROC usp_Ambulance_GetAll
+AS
+BEGIN
+	SELECT * FROM AmbulanceVehicle
+END
 ----------------------------------------NEW SET OF STORED PROCEDURES--------------------------------------------------------------
 
 ----------------------------------------NEW SET OF STORED PROCEDURES--------------------------------------------------------------
