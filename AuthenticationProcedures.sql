@@ -7,9 +7,6 @@ CREATE OR ALTER PROC usp_Employee_Login
 	@return_Hex_value NVARCHAR(2)='FF' OUTPUT,
 	@responseMessage NVARCHAR(128)='' OUTPUT,
 
-	@firstName NVARCHAR(32)='' OUTPUT,
-	@lastName NVARCHAR(32)='' OUTPUT,
-	@logInTStamp DATETIME='' OUTPUT,
 	@jobID INTEGER = -1 OUTPUT,
 	@title NVARCHAR(256) = '' OUTPUT,
 	@employeeID Integer = -1 OUTPUT,
