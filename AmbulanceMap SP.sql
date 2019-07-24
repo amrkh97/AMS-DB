@@ -12,19 +12,19 @@ CREATE OR ALTER PROC [dbo].[usp_AmbulanceMap_Insert]
 @ParamedicID INT,
 @DriverID INT,
 @YelloPadID INT,
-@HexCode INT OUTPUT
+@HexCode NVARCHAR(2) OUTPUT
 AS
 BEGIN
 if exists(select * from dbo.AmbulanceMap where VIN = @VIN and StatusMap = '00')
 BEGIN
 -- 1 -> Ambulance was already inserted but not assigned.
-Set @HexCode = 1
+Set @HexCode = '01'
 RETURN 1
 END
 ELSE if exists(select * from dbo.AmbulanceMap where VIN = @VIN and StatusMap ='01')
 begin
 -- 2 -> Ambulance is assigned and already in service.
-Set @HexCode = 2
+Set @HexCode = '02'
  RETURN 2
 end 
 else begin
@@ -53,7 +53,7 @@ SET VehicleStatus = '05'
 WHERE VIN = @VIN
 
 -- 0 -> Insertion Successful
-Set @HexCode = 0
+Set @HexCode = '00'
 RETURN 0
 END
 END
@@ -71,6 +71,18 @@ begin
 UPDATE dbo.AmbulanceMap
 SET BatchID = @batchID
 where VIN = @VIN and StatusMap = '00'
+
+INSERT INTO AmbulanceBatchesMap
+(
+    AssociatedVIN,
+    BatchID
+)
+VALUES (
+    @VIN,
+    @batchID
+)
+
+
 -- '00' -> updated succesfully
 SET @HexCode = '00'
 end
@@ -109,5 +121,38 @@ SELECT @DriverFName = Fname, @DriverLName = Lname,@DriverID = EID FROM dbo.Emplo
 INNER JOIN dbo.AmbulanceMap ON AmbulanceMap.DriverID = Employee.EID
 WHERE dbo.AmbulanceMap.VIN = @VIN
 
-SELECT @YelloPadUniqueID= YelloPadID FROM dbo.AmbulanceMap WHERE dbo.AmbulanceMap.VIN = @VIN
+SELECT @YelloPadUniqueID= YelloPadUniqueID FROM dbo.Yellopad
+INNER JOIN dbo.AmbulanceMap ON AmbulanceMap.YelloPadID = Yellopad.YelloPadID
+WHERE dbo.AmbulanceMap.VIN = @VIN
 END
+
+GO
+
+CREATE OR ALTER  Proc usp_deleteAmbulanceMap
+@VIN INT,
+@HexCode NVARCHAR(2) OUTPUT
+AS
+BEGIN
+
+if exists (select * from AmbulanceMap where VIN = @VIN AND (StatusMap='00' OR StatusMap='02'))
+BEGIN
+update dbo.AmbulanceMap
+set StatusMap = '04'
+WHERE VIN = @VIN AND StatusMap='00'
+
+update dbo.AmbulanceMap
+set StatusMap = '04'
+WHERE VIN = @VIN AND StatusMap='02'
+
+UPDATE dbo.AmbulanceVehicle
+SET VehicleStatus = '00'
+WHERE VIN = @VIN
+
+SET @HexCode = '00'
+END
+ELSE
+BEGIN
+SET @HexCode = '01'
+END
+END
+GO

@@ -1,4 +1,5 @@
-USE KAN_AMO;
+USE KAN_AMO
+
 GO
 CREATE OR ALTER PROC usp_getAndroidIncident
 @VIN INT,
@@ -6,7 +7,7 @@ CREATE OR ALTER PROC usp_getAndroidIncident
 @startLocID INT,
 @destLocID INT,
 @alarmLevelID INT,
-@incidentSQN INT,
+@iSQN INT,
 
 @driverFName NVARCHAR(64) OUTPUT,
 @driverLName NVARCHAR(64) OUTPUT,
@@ -34,7 +35,13 @@ CREATE OR ALTER PROC usp_getAndroidIncident
 @alarmLevelName NVARCHAR(64) OUTPUT,
 @alarmLevelNote NVARCHAR(64) OUTPUT,
 
-@batchID BIGINT OUTPUT
+@batchID BIGINT OUTPUT,
+
+@patientID INT = -1 OUTPUT,
+
+@callerFName NVARCHAR(64) OUTPUT,
+@callerLName NVARCHAR(64) OUTPUT,
+@callerMobileNumber NVARCHAR(11) OUTPUT 
 
 AS
 BEGIN
@@ -43,13 +50,13 @@ SELECT @driverFName = Fname,
        @driverLName=Lname
        FROM dbo.Employee 
           INNER  JOIN dbo.AmbulanceMap ON AmbulanceMap.DriverID = Employee.EID 
-          WHERE VIN = @VIN AND StatusMap = '00'
+          WHERE VIN = @VIN AND StatusMap = '01'
 
 SELECT @paramedicFName = Fname,
        @paramedicLName = Lname
           FROM dbo.Employee
        INNER  JOIN dbo.AmbulanceMap ON AmbulanceMap.ParamedicID = Employee.EID 
-          WHERE VIN = @VIN AND StatusMap = '00'
+          WHERE VIN = @VIN AND StatusMap = '01'
 
 SELECT @CarModel = Model,
        @CarBrand = Brand,
@@ -73,14 +80,16 @@ SELECT @incidentTypeName = TypeName,
 
 INNER JOIN dbo.IncidentTypes ON IncidentTypes.IncidentTypeID = Incident.IncidentType
 INNER JOIN dbo.Priorities ON Priorities.PrioritYID = Incident.IncidentPriority
-WHERE  IncidentSequenceNumber = @incidentSQN
+WHERE  IncidentSequenceNumber = @iSQN
 
 SELECT @alarmLevelName = AlarmLevelName,
        @alarmLevelNote = AlarmLevelNote 
        FROM  dbo.AlarmLevels WHERE AlarmLevelID = @alarmLevelID
 
+SELECT @BatchID = BatchID FROM dbo.AmbulanceMap WHERE dbo.AmbulanceMap.VIN = @VIN AND StatusMap = '01'
 
-SELECT @batchID = BatchID from Batch where BatchID = @batchID
+SELECT @callerFName = CallerFName,@callerLName = CallerLName, @callerMobileNumber = CallerMobile
+FROM dbo.IncidentCallers WHERE IncidentSQN = @iSQN
 
 END
 
@@ -95,4 +104,3 @@ SELECT @UniqueID = YelloPadUniqueID FROM dbo.Yellopad
 INNER JOIN dbo.AmbulanceMap ON AmbulanceMap.YelloPadID = Yellopad.YelloPadID
 WHERE dbo.AmbulanceMap.VIN = @VIN AND dbo.AmbulanceMap.StatusMap = '00'
 END
-GO

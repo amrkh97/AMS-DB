@@ -278,4 +278,11 @@ BEGIN CATCH
 	END CATCH
 		
 	return -1
+
+GO
+CREATE OR ALTER PROC usp_Ambulance_GetAll
+AS
+BEGIN
+	SELECT * FROM AmbulanceVehicle
+END
 		

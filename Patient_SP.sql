@@ -1,7 +1,7 @@
 USE KAN_AMO
 GO
 
-CREATE PROC usp_Patient_getAllLocations
+Create OR ALTER PROC usp_Patient_getAllLocations
 @UserID INT
 AS
 BEGIN
@@ -13,7 +13,7 @@ END
 GO
 
 
-CREATE  PROC  usp_Patient_Locations
+Create OR ALTER  PROC  usp_Patient_Locations
 @UserID INT,
 @LocationUser NVARCHAR(100),
 @Lat NVARCHAR(32),
@@ -80,47 +80,64 @@ SET @ID = (select PatientnationalID from Patient where PatientID=@UserID)
 END
 
 GO 
-CREATE PROC  usp_add_New_Patient
-	@PatientFName VARCHAR(32),
-	@PatientLName VARCHAR(32),
-	@Gender NVARCHAR(1),
-	@Age NVARCHAR(32),
-	@Phone NVARCHAR(24),
-	@LastBenifitedTime DATETIME  ,
-	@FirstBenifitedTime DATETIME ,
-	@NextOfKenName NVARCHAR(32),
-	@NextOfKenPhone NVARCHAR(24),
-	@NextOfKenAddress NVARCHAR(256),
-	@PatientStatus NVARCHAR(32) ,
-	@PatientNationalID INT,
+CREATE OR ALTER PROC  usp_add_New_Patient
+	@PatientFName VARCHAR(32) = 'john',
+	@PatientLName VARCHAR(32) = 'doe',
+	@Gender NVARCHAR(1) = 'M',
+	@Age NVARCHAR(32) = '0',
+	@Phone NVARCHAR(24) = '0',
+	@LastBenifitedTime DATETIME = '2019-07-22 12:35:54.170',
+	@FirstBenifitedTime DATETIME = '2019-07-22 12:35:54.170',
+	@NextOfKenName NVARCHAR(32) = 'john',
+	@NextOfKenPhone NVARCHAR(24) = '0',
+	@NextOfKenAddress NVARCHAR(256) = '0',
+	@PatientStatus NVARCHAR(32) = '00',
+	@PatientNationalID NVARCHAR(14) = '-1',
+	@PatientEntryDate BIGINT = 1,
 
-	@PatientID INT OUTPUT,
+	@PatientID INT = -1 OUTPUT,
 	@responseCode NVARCHAR(2)='FF' OUTPUT,
 	@responseMessage NVARCHAR(128)='' OUTPUT
 AS
-	BEGIN TRY
-INSERT INTO Patient ( PatientFName, PatientLName, Gender, Age, Phone, LastBenifitedTime, FirstBenifitedTime, NextOfKenName, NextOfKenPhone, NextOfKenAddress, PatientStatus, PatientNationalID)
-			  VALUES  (@PatientFName,@PatientLName,@Gender,@Age,@Phone,@LastBenifitedTime,@FirstBenifitedTime,@NextOfKenName,@NextOfKenPhone,@NextOfKenAddress,@PatientStatus,@PatientNationalID)
-			    SELECT @responseCode = '00'
-		        SELECT @responseMessage = 'Success'
-		      SET 	@PatientID = (SELECT PatientID 
-				       FROM Patient		
-					WHERE PatientNationalID  =@PatientNationalID
-					AND  PatientFName = @PatientFName  AND  PatientLName = @PatientLName  AND Gender = @Gender AND Age =@Age  AND  Phone = @Phone 
-					 AND LastBenifitedTime  = @LastBenifitedTime   AND FirstBenifitedTime  = @FirstBenifitedTime  AND  NextOfKenName = @NextOfKenName 
-					AND  NextOfKenPhone = @NextOfKenPhone AND NextOfKenAddress= @NextOfKenAddress AND PatientStatus = @PatientStatus)
- 
- 
-				END TRY
-BEGIN CATCH
-			SELECT @responseCode = 'FF',
-		@responseMessage=ERROR_MESSAGE()
-			return -1;
-	END CATCH
-		return -1
-
+BEGIN
+	SET @PatientID = (SELECT TOP 1 dbo.Patient.PatientID FROM dbo.Patient WHERE Age = @Age AND Gender = @Gender AND PatientFName = @PatientFName
+	AND PatientLName = @PatientLName AND Phone = @Phone AND PatientNationalID = @PatientNationalID AND CreationTime = @PatientEntryDate)
+	IF (@PatientID IS NOT NULL)
+	BEGIN
+		SET @responseCode = 'EF'
+		SET @responseMessage = 'Patient Already Exist'
+		PRINT @PatientID
+		PRINT @responseCode
+		PRINT @responseMessage
+		RETURN 1
+	END 
+	ELSE
+	BEGIN
+		INSERT INTO Patient ( PatientFName, PatientLName, Gender, Age, Phone, LastBenifitedTime, FirstBenifitedTime, NextOfKenName, NextOfKenPhone, NextOfKenAddress, PatientStatus, PatientNationalID, CreationTime)
+		VALUES (@PatientFName,@PatientLName,ISNULL(@Gender,'M'),ISNULL(@Age,'0'),ISNULL(@Phone,'0'),ISNULL(@LastBenifitedTime,GETDATE()),ISNULL(@FirstBenifitedTime,GETDATE()),ISNULL(@NextOfKenName,'John Doe'),ISNULL(@NextOfKenPhone,'0'),ISNULL(@NextOfKenAddress,'NULL'),@PatientStatus,ISNULL(@PatientNationalID,'-1'), @PatientEntryDate)
+		SET @PatientID = (
+			SELECT PatientID 
+			FROM dbo.Patient 
+			WHERE CreationTime = @PatientEntryDate
+		)
+		IF (@PatientID IS NOT NULL)
+		BEGIN
+			SET @responseCode = '00'
+			SET @responseMessage = 'Succesfully Added New Patient'
+			PRINT @PatientID
+			RETURN 0
+		END 
+		ELSE 
+		BEGIN
+			SET @responseCode = 'FF'
+			SET @responseMessage = 'Failed To Add Patient'
+			PRINT @PatientID
+			RETURN -1
+		END
+	END
+END
 GO
-CREATE   PROC usp_Update_Patient
+Create OR ALTER   PROC usp_Update_Patient
     @PatientID INT,
 	@PatientFName VARCHAR(32),
 	@PatientLName VARCHAR(32),
@@ -133,7 +150,7 @@ CREATE   PROC usp_Update_Patient
 	@NextOfKenPhone NVARCHAR(24),
 	@NextOfKenAddress NVARCHAR(256),
 	@PatientStatus NVARCHAR(32) ,
-	@PatientNationalID INT,
+	@PatientNationalID NVARCHAR(14),
 
 	@responseCode NVARCHAR(2)='FF' OUTPUT,
 	@responseMessage NVARCHAR(128)='' OUTPUT
@@ -174,7 +191,7 @@ BEGIN CATCH
 	END CATCH
 		return -1
 GO
-create  PROC usp_Delete_Patient 
+Create OR ALTER  PROC usp_Delete_Patient 
  @PatientID INT,
  @responseCode NVARCHAR(2)='FF' OUTPUT,
  @responseMessage NVARCHAR(128)='' OUTPUT
@@ -204,7 +221,7 @@ BEGIN CATCH
 
 			GO
 
-CREATE PROC usp_Patient_getAll
+Create OR ALTER PROC usp_Patient_getAll
 AS
 BEGIN
 SELECT * FROM Patient
@@ -214,7 +231,7 @@ END
 
 
 GO
-CREATE PROC usp_Patient_getByNID
+Create OR ALTER PROC usp_Patient_getByNID
 @NID NVARCHAR(14)
 AS
 BEGIN
@@ -224,7 +241,7 @@ WHERE PatientNationalID  = @NID
 END
 
 GO
-CREATE PROC usp_Patient_getByID
+Create OR ALTER PROC usp_Patient_getByID
 @ID int
 AS
 BEGIN
@@ -235,7 +252,7 @@ END
 --------------------------------------------------------------------
 
 GO
-create  PROC usp_Delete_PatientLoc 
+Create OR ALTER  PROC usp_Delete_PatientLoc 
  @PatientID INT,
  @responseCode NVARCHAR(2)='FF' OUTPUT,
  @responseMessage NVARCHAR(128)='' OUTPUT
