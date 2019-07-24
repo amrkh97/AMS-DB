@@ -308,7 +308,7 @@ BEGIN
 				FROM dbo.AmbulanceVehicle
 					INNER JOIN dbo.Responses
 					ON AmbulanceVehicle.VIN = Responses.AssociatedVehicleVIN
-				WHERE AssociatedVehicleVIN = @VIN
+				WHERE Responses.SequenceNumber = @SequenceNumber
 				
 			)
 				UPDATE dbo.AmbulanceMap
