@@ -1952,22 +1952,22 @@ BEGIN
 			FROM EmployeeRegistration
 			WHERE (Email=@EmailOrPAN OR PAN = @EmailOrPAN OR NationalID=@EmailOrPAN))
 				BEGIN
-					SET @userID = (SELECT EID
-					FROM EmployeeRegistration
-					WHERE (Email=@EmailOrPAN OR PAN = @EmailOrPAN OR NationalID=@EmailOrPAN) AND (HashPassword=@HashPassword))
+				SET @userID = (SELECT EID
+				FROM EmployeeRegistration
+				WHERE (Email=@EmailOrPAN OR PAN = @EmailOrPAN OR NationalID=@EmailOrPAN) AND (HashPassword=@HashPassword))
 
-					SET @status = (SELECT LogInStatus
-					FROM Employee
-					WHERE EID=@userID)
+				SET @status = (SELECT LogInStatus
+				FROM Employee
+				WHERE EID=@userID)
 
-					IF(@status = '02')
+				IF(@status = '02')
 						BEGIN
-						-- Not verrified
-						SET @responseMessage='This user is not verified'
-						SELECT @return_Hex_value = '04'
-						RETURN 4
-					END
+					-- Not verrified
+					SET @responseMessage='This user is not verified'
+					SELECT @return_Hex_value = '04'
+					RETURN 4
 				END
+			END
 				
 				IF EXISTS (SELECT *
 			FROM Employee
@@ -2429,43 +2429,43 @@ BEGIN
 			FROM EmployeeRegistration
 			WHERE (Email=@EmailOrPAN OR PAN = @EmailOrPAN OR NationalID=@EmailOrPAN))
 				BEGIN
-					SET @userID = (SELECT EID
-					FROM EmployeeRegistration
-					WHERE (Email=@EmailOrPAN OR PAN = @EmailOrPAN OR NationalID=@EmailOrPAN) AND (HashPassword=@HashPassword))
+				SET @userID = (SELECT EID
+				FROM EmployeeRegistration
+				WHERE (Email=@EmailOrPAN OR PAN = @EmailOrPAN OR NationalID=@EmailOrPAN) AND (HashPassword=@HashPassword))
 
-					SET @status = (SELECT LogInStatus
-					FROM Employee
-					WHERE EID=@userID)
+				SET @status = (SELECT LogInStatus
+				FROM Employee
+				WHERE EID=@userID)
 
-					IF(@status = '02')
+				IF(@status = '02')
 						BEGIN
-						-- Not verrified
-						SET @responseMessage='This user is not verified'
-						SELECT @return_Hex_value = '04'
-						RETURN 4
-					END
+					-- Not verrified
+					SET @responseMessage='This user is not verified'
+					SELECT @return_Hex_value = '04'
+					RETURN 4
 				END
+			END
 				
 				IF EXISTS (SELECT *
-				FROM EmployeeRegistration
-				WHERE (Email=@EmailOrPAN OR PAN = @EmailOrPAN OR NationalID=@EmailOrPAN))
+			FROM EmployeeRegistration
+			WHERE (Email=@EmailOrPAN OR PAN = @EmailOrPAN OR NationalID=@EmailOrPAN))
 				BEGIN
-					SET @userID = (SELECT EID
-					FROM EmployeeRegistration
-					WHERE (Email=@EmailOrPAN OR PAN = @EmailOrPAN OR NationalID=@EmailOrPAN) AND (HashPassword=@HashPassword))
+				SET @userID = (SELECT EID
+				FROM EmployeeRegistration
+				WHERE (Email=@EmailOrPAN OR PAN = @EmailOrPAN OR NationalID=@EmailOrPAN) AND (HashPassword=@HashPassword))
 
-					SET @status=(SELECT LogInStatus
-					FROM EmployeeRegistration
-					WHERE EID=@userID)
+				SET @status=(SELECT LogInStatus
+				FROM EmployeeRegistration
+				WHERE EID=@userID)
 
-					IF(@status = '02')
+				IF(@status = '02')
 						BEGIN
-						-- Not verrified
-						SET @responseMessage='This user is not verified'
-						SELECT @return_Hex_value = '04'
-						RETURN 4
-					END
+					-- Not verrified
+					SET @responseMessage='This user is not verified'
+					SELECT @return_Hex_value = '04'
+					RETURN 4
 				END
+			END
 
 				IF EXISTS (SELECT *
 			FROM Employee
@@ -4279,6 +4279,18 @@ BEGIN
 	FROM dbo.EmployeeLogs
 	WHERE EmployeeID = @EID
 END
+GO
+
+CREATE OR ALTER PROC get_Employee_getUnverified
+AS
+BEGIN
+	SELECT Emp.EID, Emp.Fname, Emp.Lname, Emp.Email, Emp.ContactNumber,
+		Emp.PAN, Emp.NationalID, Emp.EmployeeStatus, Emp.Photo, Emp.Age,
+		Emp.Gender, Emp.City, Emp.JobID, J.Title
+	FROM dbo.EmployeeRegistration AS Emp
+	INNER JOIN dbo.Jobs AS J ON J.JobID = Emp.JobID
+END
+GO
 
 ----------------------------------------NEW SET OF STORED PROCEDURES--------------------------------------------------------------
 

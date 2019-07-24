@@ -110,3 +110,15 @@ BEGIN
 SELECT LogInTime,ISNULL(LogOutTime,LogInTime),DATEDIFF(MINUTE,LogInTime,ISNULL(LogOutTime,LogInTime)) AS WorkMins FROM dbo.EmployeeLogs
 WHERE EmployeeID = @EID
 END
+GO
+
+CREATE OR ALTER PROC get_Employee_getUnverified
+AS
+BEGIN
+	SELECT Emp.EID, Emp.Fname, Emp.Lname, Emp.Email, Emp.ContactNumber,
+		Emp.PAN, Emp.NationalID, Emp.EmployeeStatus, Emp.Photo, Emp.Age,
+		Emp.Gender, Emp.City, Emp.JobID, J.Title
+	FROM dbo.EmployeeRegistration AS Emp
+	INNER JOIN dbo.Jobs AS J ON J.JobID = Emp.JobID
+END
+GO
