@@ -1935,7 +1935,6 @@ CREATE OR ALTER PROC usp_Employee_Login
 	@title NVARCHAR(256) = '' OUTPUT,
 	@employeeID Integer = -1 OUTPUT,
 	@userPhoto NVARCHAR(MAX) = '' OUTPUT
-WITH ENCRYPTION
 AS
 BEGIN
 	SET NOCOUNT on
@@ -2084,8 +2083,6 @@ CREATE OR ALTER PROC usp_Employee_Logout
 	@dummyToken NVARCHAR(128),
 	@return_Hex_value NVARCHAR(2)='FF' OUTPUT,
 	@responseMessage NVARCHAR(128)='' OUTPUT
-WITH
-	ENCRYPTION
 AS
 BEGIN
 	SET NOCOUNT ON
@@ -2190,8 +2187,6 @@ CREATE OR ALTER PROC usp_Employee_Signup
 
 	@return_Hex_value NVARCHAR(2)='FF' OUTPUT,
 	@responseMessage NVARCHAR(128)='' OUTPUT
-WITH
-	ENCRYPTION
 AS
 BEGIN
 	SET NOCOUNT ON
