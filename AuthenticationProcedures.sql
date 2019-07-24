@@ -284,7 +284,7 @@ BEGIN
 			BEGIN
 				-- Email was not used before
 				-- Insert into DB
-				INSERT INTO Employee (Fname,Lname,BDate,Email,HashPassword,Gender,ContactNumber,Country,City,AddressState,AddressStreet,AddressPcode,PAN,NationalID,JobID,Photo)
+				INSERT INTO EmployeeRegistration (Fname,Lname,BDate,Email,HashPassword,Gender,ContactNumber,Country,City,AddressState,AddressStreet,AddressPcode,PAN,NationalID,JobID,Photo)
 				values (@firstName,@lastName,@dateOfBirth,@email,@password,@gender,@contactNumber,@country,@city,@state,@street,@postalCode,@pan,@nationalID,@jobID,@photo)
 				SET @responseMessage='Signed Up. Check Email for Verification'
 				SELECT @return_Hex_value = '00'
