@@ -150,10 +150,10 @@ CREATE TABLE PharmaCompany
 		PRIMARY key (CompanyID)
 );
 INSERT INTO PharmaCompany
-(CompanyName,ContactPerson,CompanyAddress,CompanyPhone)
+	(CompanyName,ContactPerson,CompanyAddress,CompanyPhone)
 VALUES
-('F1','Amr','18, Ibn Al Nafees','01141837032'),
-('F2','Salah','15, Ibn Al Nafees','01141837032')
+	('F1', 'Amr', '18, Ibn Al Nafees', '01141837032'),
+	('F2', 'Salah', '15, Ibn Al Nafees', '01141837032')
 
 
 CREATE TABLE Medicine
@@ -181,26 +181,26 @@ INSERT INTO Medicine
 	(BarCode,MedicineName,CountInStock,Price,Implications,MedicineUsage,SideEffects,ActiveComponent,ExpirationDate,CompanyID)
 VALUES
 
-	('6221508010313', 'Ranitidine', 50, 22.5, 'For treatment of gastric', 'For treatment of doudenal ulcer', 'Digestive Manifestations', 'H2O', '2025-08-17',1),
-	('3400938341836', 'Daflon500', 36, 33.5, 'For treatment of gastric', 'For treatment of Headache', 'Digestive Manifestations', 'H2O', '2021-12-12',2),
-	('6221043012414', 'VITACID C', 78, 25.00, 'Heart operations', 'For treatment of cold', 'Digestive Manifestations', 'H2O', '2020-04-17',1),
-	('6221060001507', 'Candistan', 15, 33.5, 'Beautify the skin', 'For treatment of skin burning', 'Digestive Manifestations', 'H2O', '2023-03-01',2),
-	('6221180000039', 'ZITHROMAX', 10, 55.45, 'For treatment of gastric', 'For treatment of doudenal ulcer', 'Digestive Manifestations', 'H2O', '2022-02-15',1),
-	('6221508121118', 'Sediproct', 13, 16.8, 'For treatment of haemorrhoids', 'For treatment of haemorrhoids', 'Digestive Manifestations', 'H2O', '2025-05-05',2),
-	('6221077072316', 'Lignocaine', 40, 21.00, 'Local anaesthetic', 'For Analgesia', 'Digestive Manifestations', 'H2O', '2028-10-24',1),
-	('3582910065654', 'No-SPA 40mg', 17, 10.5, 'For treatment of haemorrhoids', 'For treatment of haemorrhoids', 'Digestive Manifestations', 'H2O', '2019-01-01',2),
-	('3400926629526', 'Ketoprofene', 45, 16.36, 'For treatment of gastric', 'For treatment of doudenal ulcer', 'Digestive Manifestations', 'H2O', '2030-10-30',1),
-	('3400939541778', 'Omeprazole', 25, 44.00, 'For treatment of gastric', 'For treatment of doudenal ulcer', 'Digestive Manifestations', 'H2O', '2029-09-22',2),
-	('6224001050381', 'Remowax', 9, 7.5, 'For treatment of gastric', 'For treatment of doudenal ulcer', 'Digestive Manifestations', 'H2O', '2028-08-14',1),
-	('6221050130224', 'Ultracaine', 23, 25.00, 'For treatment of gastric', 'For treatment of doudenal ulcer', 'Digestive Manifestations', 'H2O', '2027-07-07',2),
-	('0123456748795', 'Flagyl', 30, 13.6, 'For treatment of gastric', 'For treatment of doudenal ulcer', 'Digestive Manifestations', 'H2O', '2026-06-19',1),
-	('5879811144556', 'Profen', 50, 22.5, 'For treatment of gastric', 'For treatment of doudenal ulcer', 'Digestive Manifestations', 'H2O', '2024-05-29',2),
-	('8899205597136', 'Cataflam', 29, 15.00, 'For treatment of gastric', 'For treatment of doudenal ulcer', 'Digestive Manifestations', 'H2O', '2023-12-25',1),
-	('4548777410003', 'Ganaton', 10, 80, 'For treatment of gastric', 'For treatment of doudenal ulcer', 'Digestive Manifestations', 'H2O', '2021-03-04',2),
-	('1249878710832', 'Curam', 22, 22.5, 'For treatment of gastric', 'For treatment of doudenal ulcer', 'Digestive Manifestations', 'H2O', '2020-06-08',1),
-	('1147845215499', 'VITAMIN E 400mg', 15, 12.00, 'For treatment of gastric', 'For treatment of doudenal ulcer', 'Digestive Manifestations', 'H2O', '2029-12-25',2),
-	('4815687500000', 'Antinal 200mg', 7, 15.00, 'For treatment of gastric', 'For treatment of doudenal ulcer', 'Digestive Manifestations', 'H2O', '2026-09-11',1),
-	('7700289996335', 'Zithrokan', 13, 18.00, 'For treatment of gastric', 'For treatment of doudenal ulcer', 'Digestive Manifestations', 'H2O', '2022-04-07',2)
+	('6221508010313', 'Ranitidine', 50, 22.5, 'For treatment of gastric', 'For treatment of doudenal ulcer', 'Digestive Manifestations', 'H2O', '2025-08-17', 1),
+	('3400938341836', 'Daflon500', 36, 33.5, 'For treatment of gastric', 'For treatment of Headache', 'Digestive Manifestations', 'H2O', '2021-12-12', 2),
+	('6221043012414', 'VITACID C', 78, 25.00, 'Heart operations', 'For treatment of cold', 'Digestive Manifestations', 'H2O', '2020-04-17', 1),
+	('6221060001507', 'Candistan', 15, 33.5, 'Beautify the skin', 'For treatment of skin burning', 'Digestive Manifestations', 'H2O', '2023-03-01', 2),
+	('6221180000039', 'ZITHROMAX', 10, 55.45, 'For treatment of gastric', 'For treatment of doudenal ulcer', 'Digestive Manifestations', 'H2O', '2022-02-15', 1),
+	('6221508121118', 'Sediproct', 13, 16.8, 'For treatment of haemorrhoids', 'For treatment of haemorrhoids', 'Digestive Manifestations', 'H2O', '2025-05-05', 2),
+	('6221077072316', 'Lignocaine', 40, 21.00, 'Local anaesthetic', 'For Analgesia', 'Digestive Manifestations', 'H2O', '2028-10-24', 1),
+	('3582910065654', 'No-SPA 40mg', 17, 10.5, 'For treatment of haemorrhoids', 'For treatment of haemorrhoids', 'Digestive Manifestations', 'H2O', '2019-01-01', 2),
+	('3400926629526', 'Ketoprofene', 45, 16.36, 'For treatment of gastric', 'For treatment of doudenal ulcer', 'Digestive Manifestations', 'H2O', '2030-10-30', 1),
+	('3400939541778', 'Omeprazole', 25, 44.00, 'For treatment of gastric', 'For treatment of doudenal ulcer', 'Digestive Manifestations', 'H2O', '2029-09-22', 2),
+	('6224001050381', 'Remowax', 9, 7.5, 'For treatment of gastric', 'For treatment of doudenal ulcer', 'Digestive Manifestations', 'H2O', '2028-08-14', 1),
+	('6221050130224', 'Ultracaine', 23, 25.00, 'For treatment of gastric', 'For treatment of doudenal ulcer', 'Digestive Manifestations', 'H2O', '2027-07-07', 2),
+	('0123456748795', 'Flagyl', 30, 13.6, 'For treatment of gastric', 'For treatment of doudenal ulcer', 'Digestive Manifestations', 'H2O', '2026-06-19', 1),
+	('5879811144556', 'Profen', 50, 22.5, 'For treatment of gastric', 'For treatment of doudenal ulcer', 'Digestive Manifestations', 'H2O', '2024-05-29', 2),
+	('8899205597136', 'Cataflam', 29, 15.00, 'For treatment of gastric', 'For treatment of doudenal ulcer', 'Digestive Manifestations', 'H2O', '2023-12-25', 1),
+	('4548777410003', 'Ganaton', 10, 80, 'For treatment of gastric', 'For treatment of doudenal ulcer', 'Digestive Manifestations', 'H2O', '2021-03-04', 2),
+	('1249878710832', 'Curam', 22, 22.5, 'For treatment of gastric', 'For treatment of doudenal ulcer', 'Digestive Manifestations', 'H2O', '2020-06-08', 1),
+	('1147845215499', 'VITAMIN E 400mg', 15, 12.00, 'For treatment of gastric', 'For treatment of doudenal ulcer', 'Digestive Manifestations', 'H2O', '2029-12-25', 2),
+	('4815687500000', 'Antinal 200mg', 7, 15.00, 'For treatment of gastric', 'For treatment of doudenal ulcer', 'Digestive Manifestations', 'H2O', '2026-09-11', 1),
+	('7700289996335', 'Zithrokan', 13, 18.00, 'For treatment of gastric', 'For treatment of doudenal ulcer', 'Digestive Manifestations', 'H2O', '2022-04-07', 2)
 
 CREATE TABLE Batch
 (
@@ -800,6 +800,34 @@ CREATE TABLE AmbulanceBatchesMap
 	FOREIGN KEY (BatchID) REFERENCES Batch(BatchID)
 );
 
+CREATE TABLE EmployeeRegistration
+(
+	EID INT IDENTITY,
+	Fname NVARCHAR(32),
+	Lname NVARCHAR(32),
+	BDate Date,
+	Email NVARCHAR(128) NOT NULL UNIQUE,
+	HashPassword NVARCHAR(128) NOT NULL,
+	Gender NVARCHAR(1),
+	ContactNumber NVARCHAR(64),
+	Country NVARCHAR(32),
+	City NVARCHAR(32),
+	AddressState NVARCHAR(32),
+	AddressStreet NVARCHAR(64),
+	AddressPcode VARCHAR(20),
+	SubscriptionDate DateTime DEFAULT (GETDATE()),
+	PAN NVARCHAR(20),
+	NationalID NVARCHAR(14),
+	LogInStatus NVARCHAR(32) DEFAULT '02',
+	EmployeeStatus NVARCHAR(32) DEFAULT '00',
+	JobID INT,
+	Photo NVARCHAR(MAX),
+	Age as DATEDIFF(YEAR, BDate, GETDATE()),
+
+	FOREIGN KEY (JobID) REFERENCES Jobs(JobID),
+	PRIMARY KEY (EID)
+
+);
 ------------------------------------------------------------------------
 -- Creating Indecies --
 -- (1) Medicine BarCode Unique Index -- 
