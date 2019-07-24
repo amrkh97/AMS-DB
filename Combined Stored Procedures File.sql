@@ -281,7 +281,7 @@ CREATE OR ALTER PROC usp_ResponseStatus_UpdateByID
 	@RespStatus NVARCHAR(32) = '' OUTPUT--5
 AS
 BEGIN
-DECLARE @VIN INTEGER
+	DECLARE @VIN INTEGER
 	IF(@ResponseStatus IS NULL OR @ResponseStatus = '')
 	BEGIN
 		SET @responseMessage = 'MISSING RESPONSE STATUS VALUE TO UPDATED'
@@ -303,18 +303,19 @@ DECLARE @VIN INTEGER
 			WHERE SequenceNumber=@SequenceNumber)
 			IF ( @ResponseStatus = '0E')
 			BEGIN
-			SET @VIN = (
-			SELECT VIN FROM dbo.AmbulanceVehicle
-			INNER JOIN dbo.Responses
-			ON AmbulanceVehicle.VIN = Responses.AssociatedVehicleVIN
-			WHERE AssociatedVehicleVIN = @VIN
+				SET @VIN = (
+			SELECT VIN
+				FROM dbo.AmbulanceVehicle
+					INNER JOIN dbo.Responses
+					ON AmbulanceVehicle.VIN = Responses.AssociatedVehicleVIN
+				WHERE AssociatedVehicleVIN = @VIN
 				
 			)
-			UPDATE dbo.AmbulanceMap
+				UPDATE dbo.AmbulanceMap
 			SET StatusMap = '00'
 			WHERE VIN = @VIN AND StatusMap = '01'
 
-			UPDATE dbo.AmbulanceVehicle
+				UPDATE dbo.AmbulanceVehicle
 			SET VehicleStatus = '05'
 			WHERE VIN = @VIN AND VehicleStatus = '06'
 			END
@@ -2673,7 +2674,7 @@ BEGIN
 	SELECT @UniqueID = YelloPadUniqueID
 	FROM dbo.Yellopad
 		INNER JOIN dbo.AmbulanceMap ON AmbulanceMap.YelloPadID = Yellopad.YelloPadID
-	WHERE dbo.AmbulanceMap.VIN = @VIN AND dbo.AmbulanceMap.StatusMap = '00'
+	WHERE dbo.AmbulanceMap.VIN = @VIN AND dbo.AmbulanceMap.StatusMap = '01'
 END
 ----------------------------------------NEW SET OF STORED PROCEDURES--------------------------------------------------------------
 GO
@@ -3504,15 +3505,16 @@ END
 GO
 
 CREATE OR ALTER PROC usp_PharmaCompany_SelectAllMedicines
-@companyID INT
+	@companyID INT
 AS
 BEGIN
 
-SELECT * FROM Medicine AS M
-INNER JOIN PharmaCompany AS P
-ON M.CompanyID = P.CompanyID
-WHERE P.CompanyID = @companyID
-ORDER BY M.MedicineName
+	SELECT *
+	FROM Medicine AS M
+		INNER JOIN PharmaCompany AS P
+		ON M.CompanyID = P.CompanyID
+	WHERE P.CompanyID = @companyID
+	ORDER BY M.MedicineName
 END
 ----------------------------------------NEW SET OF STORED PROCEDURES--------------------------------------------------------------
 -- Batch SP --
@@ -3932,7 +3934,8 @@ GO
 CREATE OR ALTER PROC usp_Ambulance_GetAll
 AS
 BEGIN
-	SELECT * FROM AmbulanceVehicle
+	SELECT *
+	FROM AmbulanceVehicle
 END
 ----------------------------------------NEW SET OF STORED PROCEDURES--------------------------------------------------------------
 
