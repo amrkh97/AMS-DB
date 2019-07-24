@@ -2168,9 +2168,6 @@ END
 ----------------------------------------NEW SET OF STORED PROCEDURES--------------------------------------------------------------
 -- Employee SP --
 -- Login --
-
--- Employee SP --
--- Login --
 GO
 CREATE OR ALTER PROC usp_Employee_Login
 	@EmailOrPAN NVARCHAR(128),
@@ -2197,6 +2194,27 @@ BEGIN
 		BEGIN
 			BEGIN TRY
 				
+				IF EXISTS (SELECT *
+				FROM EmployeeRegistration
+				WHERE (Email=@EmailOrPAN OR PAN = @EmailOrPAN OR NationalID=@EmailOrPAN))
+				BEGIN
+					SET @userID = (SELECT EID
+					FROM EmployeeRegistration
+					WHERE (Email=@EmailOrPAN OR PAN = @EmailOrPAN OR NationalID=@EmailOrPAN) AND (HashPassword=@HashPassword))
+
+					SET @status=(SELECT LogInStatus
+					FROM EmployeeRegistration
+					WHERE EID=@userID)
+
+					IF(@status = '02')
+						BEGIN
+						-- Not verrified
+						SET @responseMessage='This user is not verified'
+						SELECT @return_Hex_value = '04'
+						RETURN 4
+					END
+				END
+
 				IF EXISTS (SELECT *
 			FROM Employee
 			WHERE (Email=@EmailOrPAN OR PAN = @EmailOrPAN OR NationalID=@EmailOrPAN))
@@ -2508,58 +2526,6 @@ BEGIN
 	END
 END
 
-
---GO
---DECLARE @return_Hex_value NVARCHAR(2),
---        @responseMessage NVARCHAR(128),
---        @jobID NVARCHAR(64),
---        @employeeID NVARCHAR(64);
---EXEC dbo.usp_Employee_Login @EmailOrPAN = N'07810798770078',                            -- nvarchar(128)
---                            @HashPassword = N'Z8Y8IXV7AO8CAI77J1U380ITRONV2SY21MEJW9VFZN0U1I2I',                          -- nvarchar(128)
---                            @return_Hex_value = @return_Hex_value OUTPUT, -- nvarchar(2)
---                            @responseMessage = @responseMessage OUTPUT,   -- nvarchar(128)
---                            @jobID = @jobID OUTPUT,                       -- nvarchar(64)
---                            @employeeID = @employeeID OUTPUT              -- nvarchar(64)
---							PRINT @responseMessage
---							PRINT @return_Hex_value
---							PRINT @jobID
---							PRINT @employeeID
-
---GO
---DECLARE @return_Hex_value NVARCHAR(2),
---        @responseMessage NVARCHAR(128);
---EXEC dbo.usp_Employee_Logout @dummyToken = N'91008004917121647682',                            -- nvarchar(128)
---                             @return_Hex_value = @return_Hex_value OUTPUT, -- nvarchar(2)
---                             @responseMessage = @responseMessage OUTPUT    -- nvarchar(128)
---							 PRINT @responseMessage
---							 PRINT @return_Hex_value
--- END of Employee SP --
-
---GO
---DECLARE @return_Hex_value NVARCHAR(2),
---        @responseMessage NVARCHAR(128),
---        @JobID NVARCHAR(64),
---        @employeeID NVARCHAR(64);
---EXEC dbo.usp_Employee_Login @EmailOrPAN = N'07810798770078',                            -- nvarchar(128)
---                            @HashPassword = N'Z8Y8IXV7AO8CAI77J1U380ITRONV2SY21MEJW9VFZN0U1I2I',                          -- nvarchar(128)
---                            @return_Hex_value = @return_Hex_value OUTPUT, -- nvarchar(2)
---                            @responseMessage = @responseMessage OUTPUT,   -- nvarchar(128)
---                            @JobID = @JobID OUTPUT,                       -- nvarchar(64)
---                            @employeeID = @employeeID OUTPUT              -- nvarchar(64)
---							PRINT @responseMessage
---							PRINT @return_Hex_value
---							PRINT @JobID
---							PRINT @employeeID
-
---GO
---DECLARE @return_Hex_value NVARCHAR(2),
---        @responseMessage NVARCHAR(128);
---EXEC dbo.usp_Employee_Logout @dummyToken = N'91008004917121647682',                            -- nvarchar(128)
---                             @return_Hex_value = @return_Hex_value OUTPUT, -- nvarchar(2)
---                             @responseMessage = @responseMessage OUTPUT    -- nvarchar(128)
---							 PRINT @responseMessage
---							 PRINT @return_Hex_value
--- END of Employee SP --
 ----------------------------------------NEW SET OF STORED PROCEDURES--------------------------------------------------------------
 
 --TODO: Add the PatientID select query to set values.
