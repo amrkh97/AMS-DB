@@ -48,7 +48,7 @@ END
 go
 
 
-CREATE OR ALTER PROC usp_Batch_UsedMedicine
+CREATE OR ALTER PROC usp_Batch_MedicineUsed
 @batchID BIGINT,
 @sequenceNumber INTEGER,
 @barCode NVARCHAR(64),
@@ -63,7 +63,7 @@ if(@QuantityDifference >= 0)
 BEGIN
 Update dbo.BatchMedicine
 set Quantity = @QuantityDifference
-INSERT INTO dbo.MedicineUsedMedicineUsedPerResponse
+INSERT INTO dbo.MedicineUsedPerResponse
 (	RespSQN ,
 	BID,
 	MedBCode,

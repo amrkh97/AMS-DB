@@ -614,7 +614,7 @@ CREATE TABLE MedicineUsedPerResponse
 	UsedAmt INT,
 	AmbVIN INT,
 
-	PRIMARY KEY (RespSQN,BID),
+	--PRIMARY KEY (RespSQN,BID),
 	FOREIGN KEY (BID) REFERENCES Batch(BatchID),
 	FOREIGN KEY (AmbVIN) REFERENCES AmbulanceVehicle(VIN),
 	FOREIGN KEY (RespSQN) REFERENCES Responses(SequenceNumber),
