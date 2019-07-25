@@ -1793,8 +1793,8 @@ BEGIN
 		VALUES
 			(
 				@ISQN,
-				ISNULL(@FName,'UnKnown'),
-				ISNULL(@LName,'UnKnown'),
+				ISNULL(@FName,''),
+				ISNULL(@LName,''),
 				@MobileNumber	
 )
 		SET @HexCode = '00'
