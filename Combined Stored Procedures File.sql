@@ -2340,7 +2340,7 @@ BEGIN
 	DECLARE @QuantityDifference INT
 	set @QuantityDifference = (select Quantity
 	from BatchMedicine
-	WHERE BatchID = @batchID) - @usedAmt
+	WHERE BatchID = @batchID) - ABS(@usedAmt)
 
 	if(@QuantityDifference >= 0)
 BEGIN
@@ -2360,7 +2360,7 @@ BEGIN
 				@sequenceNumber,
 				@batchID,
 				@barCode,
-				@usedAmt,
+				ABS(@usedAmt),
 				(select AssociatedVIN
 				from dbo.AmbulanceBatchesMap
 				where BatchID = @batchID)
