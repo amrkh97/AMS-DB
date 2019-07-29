@@ -2338,14 +2338,16 @@ CREATE OR ALTER PROC usp_Batch_MedicineUsed
 AS
 BEGIN
 	DECLARE @QuantityDifference INT
-	set @QuantityDifference = (select CountInStock
-	from Medicine
-	where BarCode = @barcode) - @usedAmt
+	set @QuantityDifference = (select Quantity
+	from BatchMedicine
+	WHERE BatchID = @batchID) - ABS(@usedAmt)
 
 	if(@QuantityDifference >= 0)
 BEGIN
 		Update dbo.BatchMedicine
-set Quantity = @QuantityDifference
+		set Quantity = @QuantityDifference
+		WHERE BatchID = @batchID
+
 		INSERT INTO dbo.MedicineUsedPerResponse
 			( RespSQN ,
 			BID,
@@ -2358,7 +2360,7 @@ set Quantity = @QuantityDifference
 				@sequenceNumber,
 				@batchID,
 				@barCode,
-				@usedAmt,
+				ABS(@usedAmt),
 				(select AssociatedVIN
 				from dbo.AmbulanceBatchesMap
 				where BatchID = @batchID)
@@ -3453,7 +3455,7 @@ BEGIN
 		dbo.Patient.PatientID
 	FROM dbo.Patient
 	WHERE Age = @Age AND Gender = @Gender AND PatientFName = @PatientFName
-		AND PatientLName = @PatientLName AND Phone = @Phone AND PatientNationalID = @PatientNationalID AND CreationTime = @PatientEntryDate)
+		AND PatientLName = @PatientLName AND Phone = @Phone AND PatientNationalID = @PatientNationalID)
 	IF (@PatientID IS NOT NULL)
 	BEGIN
 		SET @responseCode = 'EF'
@@ -3468,7 +3470,7 @@ BEGIN
 		INSERT INTO Patient
 			( PatientFName, PatientLName, Gender, Age, Phone, LastBenifitedTime, FirstBenifitedTime, NextOfKenName, NextOfKenPhone, NextOfKenAddress, PatientStatus, PatientNationalID, CreationTime)
 		VALUES
-			(@PatientFName, @PatientLName, ISNULL(@Gender,'M'), ISNULL(@Age,'0'), ISNULL(@Phone,'0'), ISNULL(@LastBenifitedTime,GETDATE()), ISNULL(@FirstBenifitedTime,GETDATE()), ISNULL(@NextOfKenName,'John Doe'), ISNULL(@NextOfKenPhone,'0'), ISNULL(@NextOfKenAddress,'NULL'), @PatientStatus, ISNULL(@PatientNationalID,'-1'), @PatientEntryDate)
+			(ISNULL(@PatientFName,'john'), ISNULL(@PatientLName,'Doe'), ISNULL(@Gender,'M'), ISNULL(@Age,'0'), ISNULL(@Phone,'0'), ISNULL(@LastBenifitedTime,GETDATE()), ISNULL(@FirstBenifitedTime,GETDATE()), ISNULL(@NextOfKenName,'John Doe'), ISNULL(@NextOfKenPhone,'0'), ISNULL(@NextOfKenAddress,'NULL'),ISNULL( @PatientStatus,'00'), ISNULL(@PatientNationalID,'-1'), @PatientEntryDate)
 		SET @PatientID = (
 			SELECT PatientID
 		FROM dbo.Patient
