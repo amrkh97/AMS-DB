@@ -2345,7 +2345,8 @@ BEGIN
 	if(@QuantityDifference >= 0)
 BEGIN
 		Update dbo.BatchMedicine
-set Quantity = @QuantityDifference
+		set Quantity = @QuantityDifference
+		WHERE BatchID = @batchID
 		INSERT INTO dbo.MedicineUsedPerResponse
 			( RespSQN ,
 			BID,
