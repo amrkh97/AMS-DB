@@ -2338,16 +2338,16 @@ CREATE OR ALTER PROC usp_Batch_MedicineUsed
 AS
 BEGIN
 	DECLARE @QuantityDifference INT
-	set @QuantityDifference = (select CountInStock
-	from Medicine
-	where BarCode = @barcode) - @usedAmt
+	set @QuantityDifference = (select Quantity
+	from BatchMedicine
+	WHERE BatchID = @batchID) - @usedAmt
 
 	if(@QuantityDifference >= 0)
 BEGIN
 		Update dbo.BatchMedicine
 		set Quantity = @QuantityDifference
 		WHERE BatchID = @batchID
-		
+
 		INSERT INTO dbo.MedicineUsedPerResponse
 			( RespSQN ,
 			BID,
