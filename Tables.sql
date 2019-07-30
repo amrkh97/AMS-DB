@@ -418,7 +418,7 @@ VALUES
 CREATE TABLE Locations
 (
 	LocationID INT IDENTITY,
-	FreeFormatAddress NVARCHAR(256) NOT NULL UNIQUE,
+	FreeFormatAddress NVARCHAR(265) NOT NULL UNIQUE,
 	City NVARCHAR(32),
 	Longitude NVARCHAR(32),
 	Latitude NVARCHAR(32),
@@ -428,7 +428,8 @@ CREATE TABLE Locations
 	FloorLevel NVARCHAR(20),
 	HouseNumber NVARCHAR(12),
 	LocationStatus NVARCHAR(32) DEFAULT '00',
-
+	EncodedFFA NVARCHAR(MAX),
+	
 	PRIMARY KEY (LocationID)
 );
 
@@ -561,9 +562,24 @@ VALUES
 	--44
 	('eman_d@test.com', '12345678', null, null, 43, 3, 'eman', 'eman'),
 	--45
-	('eman_p@test.com', '12345678', null, null, 43, 2, 'eman', 'eman')
---46
-
+	('eman_p@test.com', '12345678', null, null, 43, 2, 'eman', 'eman'),
+	--46
+	('khaled_m@test.com', '12345678', null, null, 1, 1, 'khaled', 'abdallah'),
+	--47
+	('khaled_o@test.com', '12345678', null, null, 47, 4, 'khaled', 'abdallah'),
+	--48
+	('khaled_d1@test.com', '12345678', null, null, 47, 3, 'khaled', 'abdallah'),
+	--49
+	('khaled_p1@test.com', '12345678', null, null, 47, 2, 'khaled', 'abdallah'),
+	--50
+	('khaled_d2@test.com', '12345678', null, null, 47, 3, 'khaled', 'abdallah'),
+	--51
+	('khaled_p2@test.com', '12345678', null, null, 47, 2, 'khaled', 'abdallah'),
+	--52
+	('khaled_d3@test.com', '12345678', null, null, 47, 3, 'khaled', 'abdallah'),
+	--53
+	('khaled_p3@test.com', '12345678', null, null, 47, 2, 'khaled', 'abdallah')
+	--54
 CREATE TABLE Incident
 (
 	IncidentSequenceNumber INT IDENTITY NOT NULL,

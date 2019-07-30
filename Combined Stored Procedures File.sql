@@ -2340,13 +2340,13 @@ BEGIN
 	DECLARE @QuantityDifference INT
 	set @QuantityDifference = (select Quantity
 	from BatchMedicine
-	WHERE BatchID = @batchID) - ABS(@usedAmt)
+	WHERE BatchID = @batchID AND MedicineBCode = @barCode) - ABS(@usedAmt)
 
 	if(@QuantityDifference >= 0)
 BEGIN
 		Update dbo.BatchMedicine
 		set Quantity = @QuantityDifference
-		WHERE BatchID = @batchID
+		WHERE BatchID = @batchID AND MedicineBCode = @barCode
 
 		INSERT INTO dbo.MedicineUsedPerResponse
 			( RespSQN ,

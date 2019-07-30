@@ -56,36 +56,42 @@ CREATE OR ALTER PROC usp_Batch_MedicineUsed
 @HexCode NVARCHAR(2) OUTPUT
 AS
 BEGIN
-DECLARE @QuantityDifference INT
-set @QuantityDifference = (select CountInStock from Medicine where BarCode = @barcode) - @usedAmt
+	DECLARE @QuantityDifference INT
+	set @QuantityDifference = (select Quantity
+	from BatchMedicine
+	WHERE BatchID = @batchID AND MedicineBCode = @barCode) - ABS(@usedAmt)
 
-if(@QuantityDifference >= 0)
+	if(@QuantityDifference >= 0)
 BEGIN
-Update dbo.BatchMedicine
-set Quantity = @QuantityDifference
-INSERT INTO dbo.MedicineUsedPerResponse
-(	RespSQN ,
-	BID,
-	MedBCode,
-	UsedAmt,
-	AmbVIN
+		Update dbo.BatchMedicine
+		set Quantity = @QuantityDifference
+		WHERE BatchID = @batchID AND MedicineBCode = @barCode
+
+		INSERT INTO dbo.MedicineUsedPerResponse
+			( RespSQN ,
+			BID,
+			MedBCode,
+			UsedAmt,
+			AmbVIN
+			)
+		VALUES
+			(
+				@sequenceNumber,
+				@batchID,
+				@barCode,
+				ABS(@usedAmt),
+				(select AssociatedVIN
+				from dbo.AmbulanceBatchesMap
+				where BatchID = @batchID)
 )
-VALUES
-(
-	@sequenceNumber,
-	@batchID,
-	@barCode,
-	@usedAmt,
-	(select AssociatedVIN from dbo.AmbulanceBatchesMap where BatchID = @batchID)
-)
-set @HexCode = '00'
-END
+		set @HexCode = '00'
+	END
 ELSE
 BEGIN
-set @HexCode = '01'
+		set @HexCode = '01'
+	END
 END
-END
-GO
+
 
 CREATE OR ALTER PROC usp_AmbulanceMap_getAllBatches
 @VIN INTEGER
