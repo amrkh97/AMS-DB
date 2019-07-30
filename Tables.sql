@@ -418,7 +418,7 @@ VALUES
 CREATE TABLE Locations
 (
 	LocationID INT IDENTITY,
-	FreeFormatAddress NVARCHAR(256) NOT NULL UNIQUE,
+	FreeFormatAddress NVARCHAR(MAX) NOT NULL UNIQUE,
 	City NVARCHAR(32),
 	Longitude NVARCHAR(32),
 	Latitude NVARCHAR(32),
