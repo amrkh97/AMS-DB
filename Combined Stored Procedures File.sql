@@ -1660,9 +1660,10 @@ CREATE OR ALTER PROC usp_InsertNewLocation
 	@PostalCode NVARCHAR(32),--7
 	@FloorLevel NVARCHAR(32),--8
 	@HouseNumber NVARCHAR(12),--9
-	@return_Hex_value NVARCHAR(2)='FF' OUTPUT,--10
-	@responseMessage NVARCHAR(128)='' OUTPUT,--11
-	@LocationID INT= 0 OUTPUT--12
+	@encodedFFA NVARCHAR(MAX), --10
+	@return_Hex_value NVARCHAR(2)='FF' OUTPUT,--11
+	@responseMessage NVARCHAR(128)='' OUTPUT,--12
+	@LocationID INT= 0 OUTPUT--13
 AS
 BEGIN
 	SET NOCOUNT ON
@@ -1686,6 +1687,7 @@ BEGIN
 			INSERT INTO dbo.Locations
 				(
 				FreeFormatAddress,
+				EncodedFFA,
 				City,
 				Longitude,
 				Latitude,
@@ -1697,7 +1699,8 @@ BEGIN
 				LocationStatus
 				)
 			VALUES
-				( @FreeFormatAddress, -- FreeFormatAddress - nvarchar(256)
+				( @FreeFormatAddress, -- FreeFormatAddress - nvarchar(265)
+					@encodedFFA, -- EncodedFFA -NVARCHAR(MAX)
 					@City, -- City - nvarchar(32)
 					@Longitude, -- Longitude - decimal(9, 6)
 					@Latitude, -- Latitude - decimal(9, 6)
