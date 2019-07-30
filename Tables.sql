@@ -418,7 +418,7 @@ VALUES
 CREATE TABLE Locations
 (
 	LocationID INT IDENTITY,
-	FreeFormatAddress NVARCHAR(MAX) NOT NULL UNIQUE,
+	FreeFormatAddress NVARCHAR(265) NOT NULL UNIQUE,
 	City NVARCHAR(32),
 	Longitude NVARCHAR(32),
 	Latitude NVARCHAR(32),
@@ -428,7 +428,8 @@ CREATE TABLE Locations
 	FloorLevel NVARCHAR(20),
 	HouseNumber NVARCHAR(12),
 	LocationStatus NVARCHAR(32) DEFAULT '00',
-
+	EncodedFFA NVARCHAR(MAX),
+	
 	PRIMARY KEY (LocationID)
 );
 
