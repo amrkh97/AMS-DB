@@ -2466,13 +2466,13 @@ BEGIN
 
 	SELECT @startLocLong =  Longitude,
 		@startLocLat = Latitude,
-		@startLocFFA=FreeFormatAddress
+		@startLocFFA=EncodedFFA
 	FROM dbo.Locations
 	WHERE LocationID = @startLocID
 
 	SELECT @destLocLong =  Longitude,
 		@destLocLat = Latitude,
-		@destLocFFA=FreeFormatAddress
+		@destLocFFA=EncodedFFA
 	FROM dbo.Locations
 	WHERE LocationID = @destLocID
 
