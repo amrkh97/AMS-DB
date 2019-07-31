@@ -428,7 +428,7 @@ CREATE TABLE Locations
 	FloorLevel NVARCHAR(20),
 	HouseNumber NVARCHAR(12),
 	LocationStatus NVARCHAR(32) DEFAULT '00',
-	EncodedFFA NVARCHAR(MAX),
+	FFAEncoded NVARCHAR(MAX),
 	
 	PRIMARY KEY (LocationID)
 );

@@ -1687,7 +1687,7 @@ BEGIN
 			INSERT INTO dbo.Locations
 				(
 				FreeFormatAddress,
-				EncodedFFA,
+				FFAEncoded,
 				City,
 				Longitude,
 				Latitude,
@@ -2466,13 +2466,13 @@ BEGIN
 
 	SELECT @startLocLong =  Longitude,
 		@startLocLat = Latitude,
-		@startLocFFA=EncodedFFA
+		@startLocFFA=FFAEncoded
 	FROM dbo.Locations
 	WHERE LocationID = @startLocID
 
 	SELECT @destLocLong =  Longitude,
 		@destLocLat = Latitude,
-		@destLocFFA=EncodedFFA
+		@destLocFFA=FFAEncoded
 	FROM dbo.Locations
 	WHERE LocationID = @destLocID
 
