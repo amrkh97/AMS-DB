@@ -837,7 +837,7 @@ CREATE TABLE EmployeeRegistration
 	LogInStatus NVARCHAR(32) DEFAULT '02',
 	EmployeeStatus NVARCHAR(32) DEFAULT '00',
 	JobID INT,
-	Photo NVARCHAR(MAX),
+	Photo NVARCHAR(MAX) DEFAULT 'https://i.ibb.co/rGVwt7P/user-default.jpg',
 	Age as DATEDIFF(YEAR, BDate, GETDATE()),
 
 	FOREIGN KEY (JobID) REFERENCES Jobs(JobID),
