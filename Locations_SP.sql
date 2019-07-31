@@ -270,7 +270,7 @@ BEGIN
 			INSERT INTO dbo.Locations
 				(
 				FreeFormatAddress,
-				EncodedFFA,
+				FFAEncoded,
 				City,
 				Longitude,
 				Latitude,
@@ -283,7 +283,7 @@ BEGIN
 				)
 			VALUES
 				( @FreeFormatAddress, -- FreeFormatAddress - nvarchar(265)
-					@encodedFFA, -- EncodedFFA -NVARCHAR(MAX)
+					@encodedFFA, -- FFAEncoded -NVARCHAR(MAX)
 					@City, -- City - nvarchar(32)
 					@Longitude, -- Longitude - decimal(9, 6)
 					@Latitude, -- Latitude - decimal(9, 6)
