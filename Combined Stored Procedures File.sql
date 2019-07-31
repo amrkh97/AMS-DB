@@ -3031,7 +3031,16 @@ as
 select *
 from Medicine
 WHERE  MedicineStatus <>'FF'
-	OR CountInStock <> 0
+OR CountInStock <> 0
+
+GO
+Create  OR ALTER PROC usp_Medicines_SelectThreshold
+@threshold INT
+as
+select *
+from Medicine
+WHERE  MedicineStatus <>'FF'
+AND CountInStock < @threshold
 -- (2.1) Get Medicine By Name --
 GO
 create  OR ALTER PROC usp_Medicine_SelectByName

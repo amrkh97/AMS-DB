@@ -844,6 +844,12 @@ CREATE TABLE EmployeeRegistration
 	PRIMARY KEY (EID)
 
 );
+
+CREATE TABLE Parameters
+(
+	MedicineThreshold INT DEFAULT 0,
+	AlgoEncryption NVARCHAR(64)
+);
 ------------------------------------------------------------------------
 -- Creating Indecies --
 -- (1) Medicine BarCode Unique Index -- 
