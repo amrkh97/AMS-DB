@@ -253,47 +253,66 @@ VALUES
 	( N'1d11c1d4ea9b8e5b', -- YelloPadUniqueID - nvarchar(16)
 		N'1', -- YellopadNetworkcardNo - nvarchar(64)
 		'device 6' -- Yellopad device Number 
-	    ),
+	),
 	( N'1c05a1d4ea9b8e5b', -- YelloPadUniqueID - nvarchar(16)
 		N'2', -- YellopadNetworkcardNo - nvarchar(64)
 		'device 5' -- Yellopad device Number 
-		),
+	),
 	( N'151ba1d4ea9b8e5b', -- YelloPadUniqueID - nvarchar(16)
 		N'3', -- YellopadNetworkcardNo - nvarchar(64)
 		'device 8' -- Yellopad device Number 
-		),
+	),
 	( N'1b06a1d4ea9b8e5b', -- YelloPadUniqueID - nvarchar(16)
 		N'4', -- YellopadNetworkcardNo - nvarchar(64)
 		'device 3' -- Yellopad device Number 
-		),
+	),
 	( N'1b18a1d4ea9b8e5b', -- YelloPadUniqueID - nvarchar(16)
 		N'5', -- YellopadNetworkcardNo - nvarchar(64)
 		'device 7' -- Yellopad device Number 
-		),
+	),
 	( N'1208a1d4ea9b8e5b', -- YelloPadUniqueID - nvarchar(16)
 		N'6', -- YellopadNetworkcardNo - nvarchar(64)
 		'device 11' -- Yellopad device Number 
-		),
+	),
 	( N'1f16a1d4ea9b8e5b', -- YelloPadUniqueID - nvarchar(16)
 		N'7', -- YellopadNetworkcardNo - nvarchar(64)
 		'device 2' -- Yellopad device Number
-		),
+	),
 	( N'190209d4e3167aba', -- YelloPadUniqueID - nvarchar(16)
 		N'8', -- YellopadNetworkcardNo - nvarchar(64)
 		'device 1' -- Yellopad device Number
-		),
+	),
 	( N'0a0d11d4e3167aba', -- YelloPadUniqueID - nvarchar(16)
 		N'9', -- YellopadNetworkcardNo - nvarchar(64)
 		'device 10' -- Yellopad device Number
-		),
+	),
 	( N'1702c1d4ea9b8e5b', -- YelloPadUniqueID - nvarchar(16)
 		N'10', -- YellopadNetworkcardNo - nvarchar(64)
 		'device 4' -- Yellopad device Number
-		),
+	),
 	( N'240d11d4e3167aba', -- YelloPadUniqueID - nvarchar(16)
 		N'11', -- YellopadNetworkcardNo - nvarchar(64)
 		'device 9' -- Yellopad device Number
-		)
+	),
+	(
+		--For Test Purposes Only
+		N'Amr', -- YelloPadUniqueID - nvarchar(16)
+		N'12', -- YellopadNetworkcardNo - nvarchar(64)
+		'Amr' -- Yellopad device Number
+	
+	),
+	(
+		--For Test Purposes Only
+		N'Kanda', -- YelloPadUniqueID - nvarchar(16)
+		N'13', -- YellopadNetworkcardNo - nvarchar(64)
+		'Kanda' -- Yellopad device Number
+	),
+	(
+		--For Test Purposes Only
+		N'Salah', -- YelloPadUniqueID - nvarchar(16)
+		N'14', -- YellopadNetworkcardNo - nvarchar(64)
+		'Salah' -- Yellopad device Number
+	)
 
 --TODO: Discuss the Vehicle Location Entry
 CREATE TABLE AmbulanceVehicle
@@ -429,7 +448,7 @@ CREATE TABLE Locations
 	HouseNumber NVARCHAR(12),
 	LocationStatus NVARCHAR(32) DEFAULT '00',
 	FFAEncoded NVARCHAR(MAX),
-	
+
 	PRIMARY KEY (LocationID)
 );
 
@@ -460,7 +479,7 @@ CREATE TABLE Employee
 	EmployeeStatus NVARCHAR(32) DEFAULT '00',
 	SuperSSN INT,
 	JobID INT,
-	Photo NVARCHAR(MAX)  DEFAULT 'https://i.ibb.co/rGVwt7P/user-default.jpg',
+	Photo NVARCHAR(MAX) DEFAULT 'https://i.ibb.co/rGVwt7P/user-default.jpg',
 	Age as DATEDIFF(YEAR, BDate, GETDATE()),
 
 	FOREIGN KEY (SuperSSN) REFERENCES Employee(EID),
@@ -595,7 +614,7 @@ VALUES
 	('sameh_d3@test.com', '12345678', null, null, 55, 3, 'Sameh', 'Bedir'),
 	--61
 	('sameh_p3@test.com', '12345678', null, null, 55, 2, 'Sameh', 'Bedir')
-	--62
+--62
 CREATE TABLE Incident
 (
 	IncidentSequenceNumber INT IDENTITY NOT NULL,
@@ -874,22 +893,22 @@ CREATE TABLE Equipment
 );
 
 INSERT INTO Equipment
-(
+	(
 	EquipmentName,
 	EquipmentDescription
-)
+	)
 VALUES
-(
-	N'حضانة',
-	N'حضانة اطفال'
+	(
+		N'حضانة',
+		N'حضانة اطفال'
 ),
-(
-	N' جهازانعاش',
-	N'جهاز انعاش'
+	(
+		N' جهازانعاش',
+		N'جهاز انعاش'
 ),
-(
-	N'جهاز تنفس',
-	N'جهاز تنفس'
+	(
+		N'جهاز تنفس',
+		N'جهاز تنفس'
 )
 
 CREATE TABLE EquipmentOnCar
@@ -897,7 +916,7 @@ CREATE TABLE EquipmentOnCar
 	VIN INT,
 	EquipmentName NVARCHAR(200)
 
-	FOREIGN KEY (VIN) REFERENCES AmbulanceVehicle(VIN),
+		FOREIGN KEY (VIN) REFERENCES AmbulanceVehicle(VIN),
 	FOREIGN KEY (EquipmentName) REFERENCES Equipment(EquipmentName)
 );
 ------------------------------------------------------------------------
