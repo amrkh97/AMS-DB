@@ -866,6 +866,39 @@ CREATE TABLE Parameters
 	MedicineThreshold INT DEFAULT 0,
 	AlgoEncryption NVARCHAR(64)
 );
+
+CREATE TABLE Equipment
+(
+	EquipmentName NVARCHAR(200),
+	EquipmentDescription NVARCHAR(MAX)
+);
+
+INSERT INTO Equipment
+(
+	EquipmentName,
+	EquipmentDescription
+)
+VALUES
+(
+	N'حضانة',
+	N'حضانة اطفال'
+),
+(
+	N' جهازانعاش',
+	N'جهاز انعاش'
+),
+(
+	N'جهاز تنفس',
+	N'جهاز تنفس'
+)
+
+CREATE TABLE EquipmentOnCar
+(
+	VIN INT,
+	EquipmentName NVARCHAR(200)
+
+	FOREIGN KEY (VIN) REFERENCES AmbulanceVehicle(VIN)
+);
 ------------------------------------------------------------------------
 -- Creating Indecies --
 -- (1) Medicine BarCode Unique Index -- 
