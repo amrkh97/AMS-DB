@@ -100,3 +100,59 @@ BEGIN
 SELECT BatchID FROM dbo.AmbulanceBatchesMap WHERE AssociatedVIN = @VIN
 END
 GO
+
+CREATE OR ALTER PROC usp_BatchMedicine_Update
+@BatchID bigint,
+@MedicineBarcode nvarchar(64),
+@MedicineQuantity integer,
+@HexCode nvarchar(2) OUTPUT
+AS
+BEGIN
+  DECLARE @OldQuantity INT
+  DECLARE @QuantityDifference INT
+  DECLARE @QuantityFinal INT
+  SET @QuantityDifference = (SELECT
+    CountInStock
+  FROM Medicine
+  WHERE BarCode = @MedicineBarcode)
+  - @MedicineQuantity
+
+  IF (@QuantityDifference >= 0)
+  BEGIN
+
+    IF NOT EXISTS (SELECT
+        *
+      FROM dbo.Batch
+      WHERE dbo.Batch.BatchID = @BatchID)
+    BEGIN
+      -- '01' -> Update Failed
+    SET @HexCode = '01'
+	RETURN 1
+    END
+
+	SET @OldQuantity = (
+	SELECT bm.Quantity FROM BatchMedicine bm
+	WHERE bm.BatchID = @BatchID AND bm.MedicineBCode = @MedicineBarcode
+	)
+
+	UPDATE BatchMedicine
+	SET Quantity = @MedicineQuantity
+	WHERE BatchID = @BatchID AND MedicineBCode = @MedicineBarcode
+	
+	SET @QuantityFinal = @QuantityDifference + @OldQuantity - @MedicineQuantity 
+
+    UPDATE dbo.Medicine
+    SET CountInStock = @QuantityFinal
+    WHERE BarCode = @MedicineBarcode;
+    -- '00' -> Update Successful    
+    SET @HexCode = '00'
+	RETURN 0
+  END
+  ELSE
+  BEGIN
+    -- '01' -> Update Failed
+    SET @HexCode = '01'
+	RETURN 1
+  END
+END
+GO
