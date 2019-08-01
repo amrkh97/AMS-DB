@@ -491,73 +491,73 @@ VALUES
 	--1
 	('move_manager1@test.com', '91234567', null, '0121212121212', 1, 1, 'Amr', 'Khaled'),
 	--2
-	('move_manager2@test.com', '89123456', '0123456789012345', '', 1, 1, 'Mostafa', 'Mufeed'),
+	('move_manager2@test.com', '89123456', '0123456789012345', null, 1, 1, 'Mostafa', 'Mufeed'),
 	--3
-	('move_manager3@test.com', '78912345', '01234567890123', '', 1, 1, 'Ahmed', 'Salah'),
+	('move_manager3@test.com', '78912345', '01234567890123', null, 1, 1, 'Ahmed', 'Salah'),
 	--4
 	('move_manager4@test.com', '67891234', '9876543210987654', '01234567890125', 1, 1, 'Mohamed', 'Sherif'),
 	--5
-	('rashad_m@test.com', '53513676', null, '', 1, 1, 'Mahmoud', 'Rashad'),
+	('rashad_m@test.com', '53513676', null, null, 1, 1, 'Mahmoud', 'Rashad'),
 	--6
-	('dewidar_manager@test.com', '1234567890mo', null, '', 1, 1, 'mohamed', 'dewidar'),
+	('dewidar_manager@test.com', '1234567890mo', null, null, 1, 1, 'mohamed', 'dewidar'),
 	--7
-	('operator1@test.com', '91234567', '', '29704090101857', 2, 4, 'Hossam', 'Hassan'),
+	('operator1@test.com', '91234567', null, '29704090101857', 2, 4, 'Hossam', 'Hassan'),
 	--8
 	('operator2@test.com', '89123456', null, null, 3, 4, 'Ibrahim', 'Hassan'),
 	--9
-	('operator3@test.com', '78912345', null, '', 4, 4, 'Mohamed', 'El-Sokkary'),
+	('operator3@test.com', '78912345', null, null, 4, 4, 'Mohamed', 'El-Sokkary'),
 	--10
-	('operator4@test.com', '67891234', null, '', 4, 4, 'Mohamed', 'Said'),
+	('operator4@test.com', '67891234', null, null, 4, 4, 'Mohamed', 'Said'),
 	--11
-	('rashad_o@test.com', '53513676', '', '29704090101931', 6, 4, 'Mahmoud', 'Rashad'),
+	('rashad_o@test.com', '53513676', null, '29704090101931', 6, 4, 'Mahmoud', 'Rashad'),
 	--12
-	('dewidar_operator@test.com', '1234567890mo', null, '', 7, 4, 'mohamed', 'dewidar'),
+	('dewidar_operator@test.com', '1234567890mo', null, null, 7, 4, 'mohamed', 'dewidar'),
 	--13
-	('driver1@test.com', '91234567', '', null, 2, 3, 'Anas', 'Mohamed'),
+	('driver1@test.com', '91234567', null, null, 2, 3, 'Anas', 'Mohamed'),
 	--14
-	('driver2@test.com', '12588888', '1010101010101010', '', 3, 3, 'Ahmed', 'Amrawy'),
+	('driver2@test.com', '12588888', '1010101010101010', null, 3, 3, 'Ahmed', 'Amrawy'),
 	--15
-	('driver3@test.com', '78912345', '', '11112222333344', 4, 3, 'Kamel', 'Mohsen'),
+	('driver3@test.com', '78912345', null, '11112222333344', 4, 3, 'Kamel', 'Mohsen'),
 	--16
-	('driver4@test.com', '67891234', '', '12345678978945', 2, 3, 'Ahmed', 'Elgohary'),
+	('driver4@test.com', '67891234', null, '12345678978945', 2, 3, 'Ahmed', 'Elgohary'),
 	--17
-	('driver5@test.com', '56789123', '', '55555669933214', 3, 3, 'Ahmed', 'Zaki'),
+	('driver5@test.com', '56789123', null, '55555669933214', 3, 3, 'Ahmed', 'Zaki'),
 	--18
-	('driver6@test.com', '45678912', '', '77715892541359', 4, 3, 'Mohamed', 'Abdelhady'),
+	('driver6@test.com', '45678912', null, '77715892541359', 4, 3, 'Mohamed', 'Abdelhady'),
 	--19
-	('driver7@test.com', '34567891', '', '01258963271408', 2, 3, 'Mahmoud', 'Rashad'),
+	('driver7@test.com', '34567891', null, '01258963271408', 2, 3, 'Mahmoud', 'Rashad'),
 	--20
-	('driver8@test.com', '23456789', '', '40489305967281', 5, 3, 'Eman', 'Mohamed'),
+	('driver8@test.com', '23456789', null, '40489305967281', 5, 3, 'Eman', 'Mohamed'),
 	--21
-	('driver9@test.com', '12345678', '', '12302020363699', 2, 3, 'Aya', 'Mohamed'),
+	('driver9@test.com', '12345678', null, '12302020363699', 2, 3, 'Aya', 'Mohamed'),
 	--22
-	('driver10@test.com', '01234567', '', '89887744252664', 5, 3, 'Noha', 'Ezzat'),
+	('driver10@test.com', '01234567', null, '89887744252664', 5, 3, 'Noha', 'Ezzat'),
 	--23
-	('rashad_d@test.com', '53513676', '', null, 6, 3, 'Mahmoud', 'Rashad'),
+	('rashad_d@test.com', '53513676', null, null, 6, 3, 'Mahmoud', 'Rashad'),
 	--24
-	('dewidar_driver@test.com', '1234567890mo', '', '', 7, 3, 'mohamed', 'dewidar'),
+	('dewidar_driver@test.com', '1234567890mo', null, null, 7, 3, 'mohamed', 'dewidar'),
 	--25
-	('paramedic1@test.com', '91234567', null, '', 2, 2, 'Mohamed', 'Salah'),
+	('paramedic1@test.com', '91234567', null, null, 2, 2, 'Mohamed', 'Salah'),
 	--26
-	('paramedic2@test.com', '89123456', null, '', 3, 2, 'Abdelrahman', 'Ahmed'),
+	('paramedic2@test.com', '89123456', null, null, 3, 2, 'Abdelrahman', 'Ahmed'),
 	--27
-	('paramedic3@test.com', '78912345', '4017772008280452', '', 4, 2, 'Omar', 'Mohamed'),
+	('paramedic3@test.com', '78912345', '4017772008280452', null, 4, 2, 'Omar', 'Mohamed'),
 	--28
-	('paramedic4@test.com', '67891234', '4918012011072830', '', 2, 2, 'Hussien', 'Khaled'),
+	('paramedic4@test.com', '67891234', '4918012011072830', null, 2, 2, 'Hussien', 'Khaled'),
 	--29
-	('paramedic5@test.com', '56789123', '4325885600298917', '', 3, 2, 'Ahmed', 'Al-Gohary'),
+	('paramedic5@test.com', '56789123', '4325885600298917', null, 3, 2, 'Ahmed', 'Al-Gohary'),
 	--30
-	('paramedic6@test.com', '45678912', '1233555889966004', '', 4, 2, 'Mohamed', 'Dwidar'),
+	('paramedic6@test.com', '45678912', '1233555889966004', null, 4, 2, 'Mohamed', 'Dwidar'),
 	--31
-	('paramedic7@test.com', '34567891', '3366998855001258', '', 5, 2, 'Dina', 'Jouda'),
+	('paramedic7@test.com', '34567891', '3366998855001258', null, 5, 2, 'Dina', 'Jouda'),
 	--32
-	('paramedic8@test.com', '23456789', '6699874890125969', '', 2, 2, 'Nehal', 'Hegazy'),
+	('paramedic8@test.com', '23456789', '6699874890125969', null, 2, 2, 'Nehal', 'Hegazy'),
 	--33
-	('paramedic9@test.com', '12345678', '0189720283374105', '', 3, 2, 'Khalid', 'Abdalla'),
+	('paramedic9@test.com', '12345678', '0189720283374105', null, 3, 2, 'Khalid', 'Abdalla'),
 	--34
-	('paramedic10@test.com', '01234567', '9874502983497779', '', 2, 2, 'Walid', 'Mohamd'),
+	('paramedic10@test.com', '01234567', '9874502983497779', null, 2, 2, 'Walid', 'Mohamd'),
 	--35
-	('rashad_p@test.com', '53513676', null, '', 6, 2, 'Mahmoud', 'Rashad'),
+	('rashad_p@test.com', '53513676', null, null, 6, 2, 'Mahmoud', 'Rashad'),
 	--36
 	('dewidar_paramedic@test.com', '1234567890mo', '9874502983497779', '', 7, 2, 'mohamed', 'dewidar'),
 	--37
