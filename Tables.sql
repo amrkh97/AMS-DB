@@ -323,7 +323,7 @@ CREATE TABLE AmbulanceVehicle
 	[Type] NVARCHAR(32) ,
 	ProductionYear NVARCHAR(32) ,
 	RegYear NVARCHAR(32),
-	LicencePlate NVARCHAR(32),
+	LicencePlate NVARCHAR(4),
 	OwnerName NVARCHAR(128),
 	LicenceStateOrProvince NVARCHAR(32),
 	ServiceStartDate NVARCHAR(32),
@@ -354,7 +354,7 @@ VALUES
 	( 1, -- VIN - int
 		N'Mercedes', -- Make - nvarchar(32)
 		N'Mercedes',--Brand - nvarchar(32)
-		N'3D0979',--LicencePlate - NVARCHAR(32)
+		N'0000',--LicencePlate - NVARCHAR(4)
 		N'BENZ', -- MODEL - NVARCHAR(32)
 		N'Mohamed Hamed Madkor' --OwnerName - NVARCHAR(32)
 
@@ -364,7 +364,7 @@ VALUES
 		2,
 		N'BMW',-- Make - nvarchar(32)
 		N'BMW',--Brand - nvarchar(32)
-		N'3D0587',--LicencePlate - NVARCHAR(32)
+		N'0001',--LicencePlate - NVARCHAR(4)
 		N'6 Series Coupe', -- MODEL - NVARCHAR(32)
 		N'Samer Mohamed Kabel' --OwnerName - NVARCHAR(32)
 	),
@@ -380,7 +380,7 @@ VALUES
 		4,
 		N'Fiat',-- Make - nvarchar(32)
 		N'Fiat',--Brand - nvarchar(32)
-		N'41286L',--LicencePlate - NVARCHAR(32)
+		N'4128',--LicencePlate - NVARCHAR(32)
 		N'124 Spider', -- MODEL - NVARCHAR(32)
 		N'Amgad Amit Caren' --OwnerName - NVARCHAR(32)
 	),
@@ -388,14 +388,14 @@ VALUES
 		5,
 		N'Nissan',-- Make - nvarchar(32)
 		N'Nissan',--Brand - nvarchar(32)
-		N'53298L',--LicencePlate - NVARCHAR(32)
+		N'5329',--LicencePlate - NVARCHAR(32)
 		N'Armada', -- MODEL - NVARCHAR(32)
 		N'poe poeingham Mcpoe' --OwnerName - NVARCHAR(32)
 	),
 	( 6, -- VIN - int
 		N'Mercedes', -- Make - nvarchar(32)
 		N'Mercedes',--Brand - nvarchar(32)
-		N'307BBD',--LicencePlate - NVARCHAR(32)
+		N'307B',--LicencePlate - NVARCHAR(32)
 		N'BENZ', -- MODEL - NVARCHAR(32)
 		N'Samer Hamed Mohamed' --OwnerName - NVARCHAR(32)
 
@@ -405,7 +405,7 @@ VALUES
 		7,
 		N'BMW',-- Make - nvarchar(32)
 		N'BMW',--Brand - nvarchar(32)
-		N'6FGR999',--LicencePlate - NVARCHAR(32)
+		N'6FGR',--LicencePlate - NVARCHAR(32)
 		N'6 Series Coupe', -- MODEL - NVARCHAR(32)
 		N'Kabel Mohamed Madkor' --OwnerName - NVARCHAR(32)
 	),
@@ -413,7 +413,7 @@ VALUES
 		8,
 		N'renault',-- Make - nvarchar(32)
 		N'renault',--Brand - nvarchar(32)
-		N'904AFL',--LicencePlate - NVARCHAR(32)
+		N'904A',--LicencePlate - NVARCHAR(32)
 		N'Megane', -- MODEL - NVARCHAR(32)
 		N'Mohamed Nael Samer' --OwnerName - NVARCHAR(32)
 	),
@@ -421,7 +421,7 @@ VALUES
 		9,
 		N'Fiat',-- Make - nvarchar(32)
 		N'Fiat',--Brand - nvarchar(32)
-		N'6FGR987',--LicencePlate - NVARCHAR(32)
+		N'6FGR',--LicencePlate - NVARCHAR(32)
 		N'124 Spider', -- MODEL - NVARCHAR(32)
 		N'Emma Takin Tomenger' --OwnerName - NVARCHAR(32)
 	),
@@ -429,7 +429,7 @@ VALUES
 		10,
 		N'Nissan',-- Make - nvarchar(32)
 		N'Nissan',--Brand - nvarchar(32)
-		N'86315L',--LicencePlate - NVARCHAR(32)
+		N'8631',--LicencePlate - NVARCHAR(32)
 		N'Armada', -- MODEL - NVARCHAR(32)
 		N'Alin Alingham Mcalin' --OwnerName - NVARCHAR(32)
 	)
@@ -613,8 +613,35 @@ VALUES
 	--60
 	('sameh_d3@test.com', '12345678', null, null, 55, 3, 'Sameh', 'Bedir'),
 	--61
-	('sameh_p3@test.com', '12345678', null, null, 55, 2, 'Sameh', 'Bedir')
---62
+	('sameh_p3@test.com', '12345678', null, null, 55, 2, 'Sameh', 'Bedir'),
+	--62
+	('amr_m@test.com','12345678',null,null,1,1,'Amr','Khaled'),
+	--63
+	('amr_o@test.com','12345678',null,null,63,4,'Amr','Khaled'),
+	--64
+	('amr_d@test.com','12345678',null,null,63,3,'Amr','Khaled'),
+	--65
+	('amr_p@test.com','12345678',null,null,63,2,'Amr','Khaled'),
+	--66
+	('kanda_m@test.com','12345678',null,null,1,1,'Mustafa','Kanda'),
+	--67
+	('kanda_o@test.com','12345678',null,null,67,4,'Mustafa','Kanda'),
+	--68
+	('kanda_d@test.com','12345678',null,null,67,3,'Mustafa','Kanda'),
+	--69
+	('kanda_p@test.com','12345678',null,null,67,2,'Mustafa','Kanda'),
+	--70
+	('salah_m@test.com','12345678',null,null,1,1,'Ahmed','Salah'),
+	--71
+	('salah_o@test.com','12345678',null,null,71,4,'Ahmed','Salah'),
+	--72
+	('salah_d@test.com','12345678',null,null,71,3,'Ahmed','Salah'),
+	--73
+	('salah_p@test.com','12345678',null,null,71,2,'Ahmed','Salah')
+	--74
+
+
+
 CREATE TABLE Incident
 (
 	IncidentSequenceNumber INT IDENTITY NOT NULL,
