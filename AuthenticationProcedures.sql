@@ -219,7 +219,7 @@ BEGIN
 				-- Found the user using email or PAN or National ID
 				
 				SET @jobIDCheck = (SELECT JobID
-				FROM EmployeeRegistration
+				FROM Employee
 				WHERE (Email=@EmailOrPAN OR PAN = @EmailOrPAN OR NationalID=@EmailOrPAN) AND (HashPassword=@HashPassword))
 					
 				IF(@jobIDCheck = 2 OR @jobIDCheck = 3)
@@ -399,7 +399,7 @@ BEGIN
 				-- Found the user using email or PAN or National ID
 				
 				SET @jobIDCheck = (SELECT JobID
-				FROM EmployeeRegistration
+				FROM Employee
 				WHERE (Email=@EmailOrPAN OR PAN = @EmailOrPAN OR NationalID=@EmailOrPAN) AND (HashPassword=@HashPassword))
 					
 				IF(@jobIDCheck = 0 OR @jobIDCheck = 1 OR @jobIDCheck = 4)
