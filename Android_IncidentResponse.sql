@@ -65,12 +65,12 @@ SELECT @CarModel = Model,
 
 SELECT @startLocLong =  Longitude,
        @startLocLat = Latitude,
-       @startLocFFA=FreeFormatAddress
+       @startLocFFA=FFAEncoded
        FROM dbo.Locations WHERE LocationID = @startLocID
 
 SELECT @destLocLong =  Longitude,
        @destLocLat = Latitude,
-       @destLocFFA=FreeFormatAddress
+       @destLocFFA= FFAEncoded
        FROM dbo.Locations WHERE LocationID = @destLocID
 
 SELECT @incidentTypeName = TypeName,

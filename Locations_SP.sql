@@ -232,9 +232,8 @@ as
 --EXEC usp_Location_Update @LocationID = 1, @FreeFormatAddress = 'adsdasdfsa', @Longitude = 25.334,
 --@Latitude = 65.32, @Street = 'Tahrir',  @HouseNumber = '7'
 -----------------------------------------
-
 GO
-CREATE OR ALTER PROC usp_InsertNewLocation 
+CREATE OR ALTER PROC usp_InsertNewLocation
 	@FreeFormatAddress NVARCHAR(256),--1
 	@City NVARCHAR(32),--2
 	@Longitude NVARCHAR(32),--3
@@ -244,76 +243,83 @@ CREATE OR ALTER PROC usp_InsertNewLocation
 	@PostalCode NVARCHAR(32),--7
 	@FloorLevel NVARCHAR(32),--8
 	@HouseNumber NVARCHAR(12),--9
-	@return_Hex_value NVARCHAR(2)='FF' OUTPUT,--10
-	@responseMessage NVARCHAR(128)='' OUTPUT,--11
-	@LocationID INT= 0 OUTPUT--12
-	AS
-	BEGIN
+	@encodedFFA NVARCHAR(MAX), --10
+	@return_Hex_value NVARCHAR(2)='FF' OUTPUT,--11
+	@responseMessage NVARCHAR(128)='' OUTPUT,--12
+	@LocationID INT= 0 OUTPUT--13
+AS
+BEGIN
 	SET NOCOUNT ON
 	DECLARE @locID INT
 	DECLARE @LocationStatus NVARCHAR(32)
 	IF (@FreeFormatAddress IS NOT NULL AND @Longitude IS NOT NULL AND @Latitude IS NOT NULL)
 		BEGIN
-			SET @locID = (SELECT LocationID FROM dbo.Locations WHERE (Longitude = @Longitude AND Latitude = @Latitude AND FreeFormatAddress = @FreeFormatAddress))
-			IF(@locID IS NOT NULL)
+		SET @locID = (SELECT LocationID
+		FROM dbo.Locations
+		WHERE (Longitude = @Longitude AND Latitude = @Latitude AND FreeFormatAddress = @FreeFormatAddress))
+		IF(@locID IS NOT NULL)
 			BEGIN
-				SET @LocationID = @locID
-				SET @responseMessage = 'LOCATION ALREADY EXIST'
-				SELECT @return_Hex_value = 'EF'
-				RETURN -1
-			END
+			SET @LocationID = @locID
+			SET @responseMessage = 'LOCATION ALREADY EXIST'
+			SELECT @return_Hex_value = 'EF'
+			RETURN -1
+		END
 			ELSE
 				BEGIN
-				SELECT @LocationStatus = '00'
-				INSERT INTO dbo.Locations
+			SELECT @LocationStatus = '00'
+			INSERT INTO dbo.Locations
 				(
-					FreeFormatAddress,
-					City,
-					Longitude,
-					Latitude,
-					Street,
-					Apartement,
-					PostalCode,
-					FloorLevel,
-					HouseNumber,
-					LocationStatus
+				FreeFormatAddress,
+				FFAEncoded,
+				City,
+				Longitude,
+				Latitude,
+				Street,
+				Apartement,
+				PostalCode,
+				FloorLevel,
+				HouseNumber,
+				LocationStatus
 				)
-				VALUES
-				(   @FreeFormatAddress,  -- FreeFormatAddress - nvarchar(256)
-					@City,  -- City - nvarchar(32)
+			VALUES
+				( @FreeFormatAddress, -- FreeFormatAddress - nvarchar(265)
+					@encodedFFA, -- FFAEncoded -NVARCHAR(MAX)
+					@City, -- City - nvarchar(32)
 					@Longitude, -- Longitude - decimal(9, 6)
 					@Latitude, -- Latitude - decimal(9, 6)
-					@Street,  -- Street - nvarchar(32)
-					@Apartement,  -- Apartement - nvarchar(32)
-					@PostalCode,  -- PostalCode - nvarchar(20)
-					@FloorLevel,  -- FloorLevel - nvarchar(20)
-					@HouseNumber,  -- HouseNumber - nvarchar(12)
+					@Street, -- Street - nvarchar(32)
+					@Apartement, -- Apartement - nvarchar(32)
+					@PostalCode, -- PostalCode - nvarchar(20)
+					@FloorLevel, -- FloorLevel - nvarchar(20)
+					@HouseNumber, -- HouseNumber - nvarchar(12)
 					@LocationStatus     -- LocationStatus - int
 					)
-				END	
-		END
-		ELSE 
-		BEGIN
-			SET @responseMessage = 'FAILED TO ADD LOCATION'
-			SELECT @return_Hex_value = 'FF'
-			RETURN -1
-		END
-		SET @locID = (SELECT LocationID FROM dbo.Locations WHERE (Longitude = @Longitude AND Latitude = @Latitude AND FreeFormatAddress = @FreeFormatAddress))
-		IF (@locID IS NULL)
-		BEGIN
-			SET @responseMessage = 'FAILED TO FIND LOCATION'
-			SELECT @return_Hex_value = 'FF'
-			RETURN -1
-		END 
-		ELSE
-		BEGIN
-			SET @responseMessage = 'LOCATION ADDED SUCCESFULLY'
-			SELECT @return_Hex_value = '00'
-			SET @LocationID = @locID
-			PRINT @locID
-			RETURN 1
 		END
 	END
+		ELSE 
+		BEGIN
+		SET @responseMessage = 'FAILED TO ADD LOCATION'
+		SELECT @return_Hex_value = 'FF'
+		RETURN -1
+	END
+	SET @locID = (SELECT LocationID
+	FROM dbo.Locations
+	WHERE (Longitude = @Longitude AND Latitude = @Latitude AND FreeFormatAddress = @FreeFormatAddress))
+	IF (@locID IS NULL)
+		BEGIN
+		SET @responseMessage = 'FAILED TO FIND LOCATION'
+		SELECT @return_Hex_value = 'FF'
+		RETURN -1
+	END 
+		ELSE
+		BEGIN
+		SET @responseMessage = 'LOCATION ADDED SUCCESFULLY'
+		SELECT @return_Hex_value = '00'
+		SET @LocationID = @locID
+		PRINT @locID
+		RETURN 1
+	END
+END
 	GO
 	--EXEC usp_InsertNewLocation  @FreeFormatAddress='FGDG', @City=NULL,
 	--@Longitude='45.3313',

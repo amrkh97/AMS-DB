@@ -1660,9 +1660,11 @@ CREATE OR ALTER PROC usp_InsertNewLocation
 	@PostalCode NVARCHAR(32),--7
 	@FloorLevel NVARCHAR(32),--8
 	@HouseNumber NVARCHAR(12),--9
-	@return_Hex_value NVARCHAR(2)='FF' OUTPUT,--10
-	@responseMessage NVARCHAR(128)='' OUTPUT,--11
-	@LocationID INT= 0 OUTPUT--12
+	@encodedFFA NVARCHAR(MAX),
+	--10
+	@return_Hex_value NVARCHAR(2)='FF' OUTPUT,--11
+	@responseMessage NVARCHAR(128)='' OUTPUT,--12
+	@LocationID INT= 0 OUTPUT--13
 AS
 BEGIN
 	SET NOCOUNT ON
@@ -1686,6 +1688,7 @@ BEGIN
 			INSERT INTO dbo.Locations
 				(
 				FreeFormatAddress,
+				FFAEncoded,
 				City,
 				Longitude,
 				Latitude,
@@ -1697,7 +1700,8 @@ BEGIN
 				LocationStatus
 				)
 			VALUES
-				( @FreeFormatAddress, -- FreeFormatAddress - nvarchar(256)
+				( @FreeFormatAddress, -- FreeFormatAddress - nvarchar(265)
+					@encodedFFA, -- EncodedFFA -NVARCHAR(MAX)
 					@City, -- City - nvarchar(32)
 					@Longitude, -- Longitude - decimal(9, 6)
 					@Latitude, -- Latitude - decimal(9, 6)
@@ -2463,13 +2467,13 @@ BEGIN
 
 	SELECT @startLocLong =  Longitude,
 		@startLocLat = Latitude,
-		@startLocFFA=FreeFormatAddress
+		@startLocFFA=FFAEncoded
 	FROM dbo.Locations
 	WHERE LocationID = @startLocID
 
 	SELECT @destLocLong =  Longitude,
 		@destLocLat = Latitude,
-		@destLocFFA=FreeFormatAddress
+		@destLocFFA=FFAEncoded
 	FROM dbo.Locations
 	WHERE LocationID = @destLocID
 
@@ -3027,7 +3031,16 @@ as
 select *
 from Medicine
 WHERE  MedicineStatus <>'FF'
-	OR CountInStock <> 0
+OR CountInStock <> 0
+
+GO
+Create  OR ALTER PROC usp_Medicines_SelectThreshold
+@threshold INT
+as
+select *
+from Medicine
+WHERE  MedicineStatus <>'FF'
+AND CountInStock < @threshold
 -- (2.1) Get Medicine By Name --
 GO
 create  OR ALTER PROC usp_Medicine_SelectByName
@@ -3470,7 +3483,7 @@ BEGIN
 		INSERT INTO Patient
 			( PatientFName, PatientLName, Gender, Age, Phone, LastBenifitedTime, FirstBenifitedTime, NextOfKenName, NextOfKenPhone, NextOfKenAddress, PatientStatus, PatientNationalID, CreationTime)
 		VALUES
-			(ISNULL(@PatientFName,'john'), ISNULL(@PatientLName,'Doe'), ISNULL(@Gender,'M'), ISNULL(@Age,'0'), ISNULL(@Phone,'0'), ISNULL(@LastBenifitedTime,GETDATE()), ISNULL(@FirstBenifitedTime,GETDATE()), ISNULL(@NextOfKenName,'John Doe'), ISNULL(@NextOfKenPhone,'0'), ISNULL(@NextOfKenAddress,'NULL'),ISNULL( @PatientStatus,'00'), ISNULL(@PatientNationalID,'-1'), @PatientEntryDate)
+			(ISNULL(@PatientFName,'john'), ISNULL(@PatientLName,'Doe'), ISNULL(@Gender,'M'), ISNULL(@Age,'0'), ISNULL(@Phone,'0'), ISNULL(@LastBenifitedTime,GETDATE()), ISNULL(@FirstBenifitedTime,GETDATE()), ISNULL(@NextOfKenName,'John Doe'), ISNULL(@NextOfKenPhone,'0'), ISNULL(@NextOfKenAddress,'NULL'), ISNULL( @PatientStatus,'00'), ISNULL(@PatientNationalID,'-1'), @PatientEntryDate)
 		SET @PatientID = (
 			SELECT PatientID
 		FROM dbo.Patient
@@ -3904,103 +3917,116 @@ BEGIN
 		Emp.PAN, Emp.NationalID, Emp.EmployeeStatus, Emp.Photo, Emp.Age,
 		Emp.Gender, Emp.City, Emp.JobID, J.Title
 	FROM dbo.EmployeeRegistration AS Emp
-	INNER JOIN dbo.Jobs AS J ON J.JobID = Emp.JobID
+		INNER JOIN dbo.Jobs AS J ON J.JobID = Emp.JobID
 END
 GO
 
 CREATE OR ALTER PROC usp_Employee_Verify
-@EmployeeID INT,
-@SuperSSN INT,
-@HexCode NVARCHAR(2) OUTPUT
+	@EmployeeID INT,
+	@SuperSSN INT,
+	@HexCode NVARCHAR(2) OUTPUT
 AS
 BEGIN
 
-Declare @Fname NVARCHAR(32)
-Declare @Lname NVARCHAR(32)
-Declare @BDate DATE
-Declare @Email NVARCHAR(128)
-Declare @HashPassword NVARCHAR(128)
-Declare @Gender NVARCHAR(1)
-Declare @ContactNumber NVARCHAR(64)
-Declare @Country NVARCHAR(32)
-Declare @City NVARCHAR(32)
-Declare @AddressState NVARCHAR(32)
-Declare @AddressStreet NVARCHAR(64)
-Declare @AddressPcode VARCHAR(20)
-Declare @SubscriptionDate DATETIME
-Declare @PAN NVARCHAR(20)
-Declare @NationalID	NVARCHAR(14)
-Declare @JobID INT
-Declare @Photo NVARCHAR(MAX)
+	Declare @Fname NVARCHAR(32)
+	Declare @Lname NVARCHAR(32)
+	Declare @BDate DATE
+	Declare @Email NVARCHAR(128)
+	Declare @HashPassword NVARCHAR(128)
+	Declare @Gender NVARCHAR(1)
+	Declare @ContactNumber NVARCHAR(64)
+	Declare @Country NVARCHAR(32)
+	Declare @City NVARCHAR(32)
+	Declare @AddressState NVARCHAR(32)
+	Declare @AddressStreet NVARCHAR(64)
+	Declare @AddressPcode VARCHAR(20)
+	Declare @SubscriptionDate DATETIME
+	Declare @PAN NVARCHAR(20)
+	Declare @NationalID	NVARCHAR(14)
+	Declare @JobID INT
+	Declare @Photo NVARCHAR(MAX)
 
 
-SELECT @Fname = er.Fname,@Lname = er.Lname,@BDate = er.BDate,
-@Email= er.Email, @HashPassword = er.HashPassword, @Gender = er.Gender, @ContactNumber = er.ContactNumber,
-@Country = er.Country, @City = er.City, @AddressState = er.AddressState, @AddressStreet = er.AddressStreet,
-@AddressPcode = er.AddressPcode, @SubscriptionDate = er.SubscriptionDate,
-@PAN = er.PAN, @NationalID = er.NationalID, @JobID = er.JobID, @Photo = er.Photo FROM EmployeeRegistration AS er
-WHERE er.EID = @EmployeeID
+	SELECT @Fname = er.Fname, @Lname = er.Lname, @BDate = er.BDate,
+		@Email= er.Email, @HashPassword = er.HashPassword, @Gender = er.Gender, @ContactNumber = er.ContactNumber,
+		@Country = er.Country, @City = er.City, @AddressState = er.AddressState, @AddressStreet = er.AddressStreet,
+		@AddressPcode = er.AddressPcode, @SubscriptionDate = er.SubscriptionDate,
+		@PAN = er.PAN, @NationalID = er.NationalID, @JobID = er.JobID, @Photo = er.Photo
+	FROM EmployeeRegistration AS er
+	WHERE er.EID = @EmployeeID
 
-IF EXISTS(SELECT * FROM Employee WHERE (Employee.Email = @Email OR Employee.PAN = @PAN OR Employee.NationalID = @NationalID))
+	IF EXISTS(SELECT *
+	FROM Employee
+	WHERE (Employee.Email = @Email OR Employee.PAN = @PAN OR Employee.NationalID = @NationalID))
 BEGIN
-SET @HexCode = '01' --Email Already Exists.
-END
+		SET @HexCode = '01'
+	--Email Already Exists.
+	END
 ELSE
 BEGIN
-SET @HexCode = '00'
-DELETE FROM EmployeeRegistration
+		SET @HexCode = '00'
+		DELETE FROM EmployeeRegistration
 WHERE EID = @EmployeeID
 
-INSERT INTO Employee
-(   
-    Fname
-   ,Lname
-   ,BDate
-   ,Email
-   ,HashPassword
-   ,Gender
-   ,ContactNumber
-   ,Country
-   ,City
-   ,AddressState
-   ,AddressStreet
-   ,AddressPcode
-   ,SubscriptionDate
-   ,PAN
-   ,NationalID
-   ,SuperSSN
-   ,JobID
-   ,Photo
-   )
-   VALUES
-   (
-		@Fname,
-		@Lname,
-		@BDate,
-		@Email,
-		@HashPassword,
-		@Gender,
-		@ContactNumber,
-		@Country,
-		@City,
-		@AddressState,
-		@AddressStreet,
-		@AddressPcode,
-		@SubscriptionDate,
-		@PAN,
-		@NationalID,
-		@SuperSSN,
-		@JobID,
-		@Photo
+		INSERT INTO Employee
+			(
+			Fname
+			,Lname
+			,BDate
+			,Email
+			,HashPassword
+			,Gender
+			,ContactNumber
+			,Country
+			,City
+			,AddressState
+			,AddressStreet
+			,AddressPcode
+			,SubscriptionDate
+			,PAN
+			,NationalID
+			,SuperSSN
+			,JobID
+			,Photo
+			)
+		VALUES
+			(
+				@Fname,
+				@Lname,
+				@BDate,
+				@Email,
+				@HashPassword,
+				@Gender,
+				@ContactNumber,
+				@Country,
+				@City,
+				@AddressState,
+				@AddressStreet,
+				@AddressPcode,
+				@SubscriptionDate,
+				@PAN,
+				@NationalID,
+				@SuperSSN,
+				@JobID,
+				@Photo
    )
 
-END
+	END
 
 END
 GO
 
 ----------------------------------------NEW SET OF STORED PROCEDURES--------------------------------------------------------------
-
+CREATE OR ALTER PROC get_Employee_getEmployeeWithPassword
+AS
+BEGIN
+	SELECT Emp.EID, Emp.Fname, Emp.Lname, Emp.Email, Emp.ContactNumber,
+		Emp.PAN, Emp.NationalID, Emp.EmployeeStatus, Emp.Photo, Emp.Age,
+		Emp.Gender, Emp.City, Emp.JobID, J.Title, Emp.LogInStatus, Emp.HashPassword
+	FROM dbo.Employee AS Emp
+		INNER JOIN dbo.Jobs AS J ON J.JobID = Emp.JobID
+END
+GO
 ----------------------------------------NEW SET OF STORED PROCEDURES--------------------------------------------------------------
 
 ----------------------------------------NEW SET OF STORED PROCEDURES--------------------------------------------------------------

@@ -212,3 +212,14 @@ END
 
 END
 GO
+
+CREATE OR ALTER PROC get_Employee_getEmployeeWithPassword
+AS
+BEGIN
+	SELECT Emp.EID, Emp.Fname, Emp.Lname, Emp.Email, Emp.ContactNumber,
+		Emp.PAN, Emp.NationalID, Emp.EmployeeStatus, Emp.Photo, Emp.Age,
+		Emp.Gender, Emp.City, Emp.JobID, J.Title, Emp.LogInStatus, Emp.HashPassword
+	FROM dbo.Employee AS Emp
+		INNER JOIN dbo.Jobs AS J ON J.JobID = Emp.JobID
+END
+GO

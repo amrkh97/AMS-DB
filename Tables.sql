@@ -428,7 +428,7 @@ CREATE TABLE Locations
 	FloorLevel NVARCHAR(20),
 	HouseNumber NVARCHAR(12),
 	LocationStatus NVARCHAR(32) DEFAULT '00',
-	EncodedFFA NVARCHAR(MAX),
+	FFAEncoded NVARCHAR(MAX),
 	
 	PRIMARY KEY (LocationID)
 );
@@ -853,12 +853,51 @@ CREATE TABLE EmployeeRegistration
 	LogInStatus NVARCHAR(32) DEFAULT '02',
 	EmployeeStatus NVARCHAR(32) DEFAULT '00',
 	JobID INT,
-	Photo NVARCHAR(MAX),
+	Photo NVARCHAR(MAX) DEFAULT 'https://i.ibb.co/rGVwt7P/user-default.jpg',
 	Age as DATEDIFF(YEAR, BDate, GETDATE()),
 
 	FOREIGN KEY (JobID) REFERENCES Jobs(JobID),
 	PRIMARY KEY (EID)
 
+);
+
+CREATE TABLE Parameters
+(
+	MedicineThreshold INT DEFAULT 0,
+	AlgoEncryption NVARCHAR(64)
+);
+
+CREATE TABLE Equipment
+(
+	EquipmentName NVARCHAR(200),
+	EquipmentDescription NVARCHAR(MAX)
+);
+
+INSERT INTO Equipment
+(
+	EquipmentName,
+	EquipmentDescription
+)
+VALUES
+(
+	N'حضانة',
+	N'حضانة اطفال'
+),
+(
+	N' جهازانعاش',
+	N'جهاز انعاش'
+),
+(
+	N'جهاز تنفس',
+	N'جهاز تنفس'
+)
+
+CREATE TABLE EquipmentOnCar
+(
+	VIN INT,
+	EquipmentName NVARCHAR(200)
+
+	FOREIGN KEY (VIN) REFERENCES AmbulanceVehicle(VIN)
 );
 ------------------------------------------------------------------------
 -- Creating Indecies --

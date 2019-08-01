@@ -91,7 +91,7 @@ BEGIN
 		set @HexCode = '01'
 	END
 END
-
+GO
 
 CREATE OR ALTER PROC usp_AmbulanceMap_getAllBatches
 @VIN INTEGER
