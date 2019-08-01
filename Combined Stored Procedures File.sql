@@ -2759,6 +2759,63 @@ BEGIN
 		ON BatchMedicine.MedicineBCode = Medicine.BarCode
 	WHERE dbo.BatchMedicine.BatchID = @BatchID
 END
+GO
+@BatchID bigint,
+@MedicineBarcode nvarchar(64),
+@MedicineQuantity integer,
+@HexCode nvarchar(2) OUTPUT
+AS
+BEGIN
+  DECLARE @OldQuantity INT
+  DECLARE @QuantityDifference INT
+  DECLARE @QuantityFinal INT
+  DECLARE @CountInStock INT
+  SET @CountInStock = (SELECT
+    CountInStock
+  FROM Medicine
+  WHERE BarCode = @MedicineBarcode)
+  SET @QuantityDifference = @CountInStock
+  - @MedicineQuantity
+
+  IF (@QuantityDifference >= 0)
+  BEGIN
+
+    IF NOT EXISTS (SELECT
+        *
+      FROM dbo.Batch
+      WHERE dbo.Batch.BatchID = @BatchID)
+    BEGIN
+      -- '01' -> Update Failed
+    SET @HexCode = '01'
+	RETURN 1
+    END
+
+	SET @OldQuantity = (
+	SELECT bm.Quantity FROM BatchMedicine bm
+	WHERE bm.BatchID = @BatchID AND bm.MedicineBCode = @MedicineBarcode
+	)
+
+	UPDATE BatchMedicine
+	SET Quantity = @MedicineQuantity
+	WHERE BatchID = @BatchID AND MedicineBCode = @MedicineBarcode
+	
+	SET @QuantityFinal = @CountInStock + @OldQuantity - @MedicineQuantity 
+
+    UPDATE dbo.Medicine
+    SET CountInStock = @QuantityFinal
+    WHERE BarCode = @MedicineBarcode;
+    -- '00' -> Update Successful    
+    SET @HexCode = '00'
+	RETURN 0
+  END
+  ELSE
+  BEGIN
+    -- '01' -> Update Failed
+    SET @HexCode = '01'
+	RETURN 1
+  END
+END
+GO
 ----------------------------------------NEW SET OF STORED PROCEDURES--------------------------------------------------------------
 
 --TODO: Add the PatientID select query to set values.
@@ -4389,7 +4446,8 @@ BEGIN
 END
 GO
 ----------------------------------------NEW SET OF STORED PROCEDURES--------------------------------------------------------------
-
+--EXEC usp_AmbulanceMap_Insert 1,50,49,1
+--EXEC usp_AmbulanceMap_Insert 2,52,51,2
 ----------------------------------------NEW SET OF STORED PROCEDURES--------------------------------------------------------------
 
 ----------------------------------------NEW SET OF STORED PROCEDURES--------------------------------------------------------------
