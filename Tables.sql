@@ -460,7 +460,7 @@ CREATE TABLE Employee
 	EmployeeStatus NVARCHAR(32) DEFAULT '00',
 	SuperSSN INT,
 	JobID INT,
-	Photo NVARCHAR(MAX),
+	Photo NVARCHAR(MAX)  DEFAULT 'https://i.ibb.co/rGVwt7P/user-default.jpg',
 	Age as DATEDIFF(YEAR, BDate, GETDATE()),
 
 	FOREIGN KEY (SuperSSN) REFERENCES Employee(EID),
@@ -897,7 +897,8 @@ CREATE TABLE EquipmentOnCar
 	VIN INT,
 	EquipmentName NVARCHAR(200)
 
-	FOREIGN KEY (VIN) REFERENCES AmbulanceVehicle(VIN)
+	FOREIGN KEY (VIN) REFERENCES AmbulanceVehicle(VIN),
+	FOREIGN KEY (EquipmentName) REFERENCES Equipment(EquipmentName)
 );
 ------------------------------------------------------------------------
 -- Creating Indecies --
