@@ -405,7 +405,7 @@ VALUES
 		7,
 		N'BMW',-- Make - nvarchar(32)
 		N'BMW',--Brand - nvarchar(32)
-		N'6FGR',--LicencePlate - NVARCHAR(32)
+		N'6FR1',--LicencePlate - NVARCHAR(32)
 		N'6 Series Coupe', -- MODEL - NVARCHAR(32)
 		N'Kabel Mohamed Madkor' --OwnerName - NVARCHAR(32)
 	),
