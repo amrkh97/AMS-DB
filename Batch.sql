@@ -111,10 +111,12 @@ BEGIN
   DECLARE @OldQuantity INT
   DECLARE @QuantityDifference INT
   DECLARE @QuantityFinal INT
-  SET @QuantityDifference = (SELECT
+  DECLARE @CountInStock INT
+  SET @CountInStock = (SELECT
     CountInStock
   FROM Medicine
   WHERE BarCode = @MedicineBarcode)
+  SET @QuantityDifference = @CountInStock
   - @MedicineQuantity
 
   IF (@QuantityDifference >= 0)
@@ -139,7 +141,7 @@ BEGIN
 	SET Quantity = @MedicineQuantity
 	WHERE BatchID = @BatchID AND MedicineBCode = @MedicineBarcode
 	
-	SET @QuantityFinal = @QuantityDifference + @OldQuantity - @MedicineQuantity 
+	SET @QuantityFinal = @CountInStock + @OldQuantity - @MedicineQuantity 
 
     UPDATE dbo.Medicine
     SET CountInStock = @QuantityFinal
@@ -154,5 +156,4 @@ BEGIN
     SET @HexCode = '01'
 	RETURN 1
   END
-END
-GO
+ENDGO
