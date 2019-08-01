@@ -2080,6 +2080,367 @@ BEGIN
 	END
 END
 
+-- Login (Frontend) Only Admin[0], Manager[4], and Operator Allowed --
+GO
+CREATE OR ALTER PROC usp_Employee_Login_Frontend
+	@EmailOrPAN NVARCHAR(128),
+	@HashPassword NVARCHAR(128),
+
+	@return_Hex_value NVARCHAR(2)='FF' OUTPUT,
+	@responseMessage NVARCHAR(128)='' OUTPUT,
+
+	@jobID INTEGER = -1 OUTPUT,
+	@title NVARCHAR(256) = '' OUTPUT,
+	@employeeID Integer = -1 OUTPUT,
+	@userPhoto NVARCHAR(MAX) = '' OUTPUT
+AS
+BEGIN
+	SET NOCOUNT on
+	DECLARE @jobIDCheck INT
+	DECLARE @userID INT
+	DECLARE @status NVARCHAR(32)
+	Declare @inStamp DATETIME
+
+	IF (@EmailOrPAN IS NOT NULL AND @HashPassword IS NOT NULL)
+	BEGIN
+		IF ((SELECT(LEN(@HashPassword))) > 7 )
+		BEGIN
+			BEGIN TRY
+
+			IF EXISTS (SELECT *
+			FROM EmployeeRegistration
+			WHERE (Email=@EmailOrPAN OR PAN = @EmailOrPAN OR NationalID=@EmailOrPAN))
+				BEGIN
+					SET @jobIDCheck = (SELECT JobID
+					FROM EmployeeRegistration
+					WHERE (Email=@EmailOrPAN OR PAN = @EmailOrPAN OR NationalID=@EmailOrPAN) AND (HashPassword=@HashPassword))
+					
+					IF(@jobIDCheck = 2 OR @jobIDCheck = 3)
+					BEGIN
+						-- Not Allowed (Paramedic or Driver)
+						SET @responseMessage='This user is not allowed to login'
+						SELECT @return_Hex_value = '01'
+						RETURN 1
+					END
+					
+					SET @userID = (SELECT EID
+					FROM EmployeeRegistration
+					WHERE (Email=@EmailOrPAN OR PAN = @EmailOrPAN OR NationalID=@EmailOrPAN) AND (HashPassword=@HashPassword))
+
+					SET @status = (SELECT LogInStatus
+					FROM Employee
+					WHERE EID=@userID)
+
+					IF(@status = '02')
+					BEGIN
+						-- Not verrified
+						SET @responseMessage='This user is not verified'
+						SELECT @return_Hex_value = '04'
+						RETURN 4
+					END
+				END
+				
+			IF EXISTS (SELECT *
+			FROM Employee
+			WHERE (Email=@EmailOrPAN OR PAN = @EmailOrPAN OR NationalID=@EmailOrPAN))
+				BEGIN
+				-- Found the user using email or PAN or National ID
+				
+				SET @jobIDCheck = (SELECT JobID
+				FROM Employee
+				WHERE (Email=@EmailOrPAN OR PAN = @EmailOrPAN OR NationalID=@EmailOrPAN) AND (HashPassword=@HashPassword))
+					
+				IF(@jobIDCheck = 2 OR @jobIDCheck = 3)
+				BEGIN
+					-- Not Allowed (Paramedic or Driver)
+					SET @responseMessage='This user is not allowed to login'
+					SELECT @return_Hex_value = '01'
+					RETURN 1
+				END
+				
+				SET @userID = (SELECT EID
+				FROM Employee
+				WHERE (Email=@EmailOrPAN OR PAN = @EmailOrPAN OR NationalID=@EmailOrPAN) AND (HashPassword=@HashPassword))
+				IF(@userID IS NULL)
+					BEGIN
+					-- Wrong Password
+					SET @responseMessage='Incorrect password'
+					SELECT @return_Hex_value = '02'
+					RETURN -1;
+				END
+					
+					ELSE
+					BEGIN
+					-- @userID IS NOT NULL
+					-- Correct password, so check if he's already logged in
+					SET @status=(SELECT LogInStatus
+					FROM Employee
+					WHERE EID=@userID)
+					IF(@status = '00')
+						BEGIN
+						-- Not logged in, so login successful, send his type to backend and jobID
+						-- And set status to 1
+						SET @responseMessage='User logged in successfully'
+						SELECT @return_Hex_value = '00'
+						SET @jobID = (SELECT JobID
+						FROM Employee
+						WHERE EID = @userID)
+						SET @title = (SELECT Title
+						FROM Jobs
+						WHERE JobID = @jobID)
+						SET @employeeID = @userID
+						SET @userPhoto = (SELECT Photo
+						FROM Employee
+						WHERE EID = @userID)
+						UPDATE Employee SET LogInStatus = '01' WHERE EID = @userID
+						SET @inStamp = GETDATE()
+						UPDATE Employee SET LogInTStamp = @inStamp WHERE EID = @userID
+						INSERT INTO dbo.EmployeeLogs
+							(
+							EmployeeID,
+							LogInTime
+							)
+						VALUES(
+								@userID,
+								@inStamp
+							)
+
+						RETURN 0
+					END
+					IF(@status = '01')
+						BEGIN
+						-- Already logged in, so can't continue
+						SET @responseMessage='User is logged in somewhere'
+						SELECT @return_Hex_value = '03'
+						RETURN 3
+					END
+					IF(@status = '02')
+						BEGIN
+						-- Not verrified
+						SET @responseMessage='This user is not verified'
+						SELECT @return_Hex_value = '04'
+						RETURN 4
+					END
+						ELSE
+						BEGIN
+						-- Unknown status
+						SET @responseMessage='User status undefined'
+						SELECT @return_Hex_value = 'FE'
+						RETURN -1
+					END
+				END
+			END
+				ELSE
+				BEGIN
+				-- Didn't find the user using Email or PAN or National ID
+				-- Wrong Email
+				SET @responseMessage='No user found with given Email or PAN or National ID'
+				SELECT @return_Hex_value = 'FF'
+				RETURN -1
+
+			END
+			END TRY
+			
+			BEGIN CATCH
+				SELECT @return_Hex_value='FC', @responseMessage='CATCH BLOCK: ' + ERROR_MESSAGE()
+				RETURN -1
+			END CATCH
+		END
+		ELSE
+		BEGIN
+			SELECT @return_Hex_value='FB', @responseMessage='Password length is less than 8'
+			RETURN -1
+		END
+	END
+	
+	ELSE
+	BEGIN
+		SELECT @return_Hex_value='FD', @responseMessage='FAILED: Email or Password is NULL'
+		RETURN -1
+	END
+END
+
+-- Login (Android) Only Driver and Paramedic Allowed --
+GO
+CREATE OR ALTER PROC usp_Employee_Login_Android
+	@EmailOrPAN NVARCHAR(128),
+	@HashPassword NVARCHAR(128),
+
+	@return_Hex_value NVARCHAR(2)='FF' OUTPUT,
+	@responseMessage NVARCHAR(128)='' OUTPUT,
+
+	@jobID INTEGER = -1 OUTPUT,
+	@title NVARCHAR(256) = '' OUTPUT,
+	@employeeID Integer = -1 OUTPUT,
+	@userPhoto NVARCHAR(MAX) = '' OUTPUT
+AS
+BEGIN
+	SET NOCOUNT on
+	DECLARE @jobIDCheck INT
+	DECLARE @userID INT
+	DECLARE @status NVARCHAR(32)
+	Declare @inStamp DATETIME
+
+	IF (@EmailOrPAN IS NOT NULL AND @HashPassword IS NOT NULL)
+	BEGIN
+		IF ((SELECT(LEN(@HashPassword))) > 7 )
+		BEGIN
+			BEGIN TRY
+
+			IF EXISTS (SELECT *
+			FROM EmployeeRegistration
+			WHERE (Email=@EmailOrPAN OR PAN = @EmailOrPAN OR NationalID=@EmailOrPAN))
+				BEGIN
+					SET @jobIDCheck = (SELECT JobID
+					FROM EmployeeRegistration
+					WHERE (Email=@EmailOrPAN OR PAN = @EmailOrPAN OR NationalID=@EmailOrPAN) AND (HashPassword=@HashPassword))
+					
+					IF(@jobIDCheck = 0 OR @jobIDCheck = 1 OR @jobIDCheck = 4)
+					BEGIN
+						-- Not Allowed (Admin or Manager or Operator)
+						SET @responseMessage='This user is not allowed to login'
+						SELECT @return_Hex_value = '01'
+						RETURN 1
+					END
+					
+					SET @userID = (SELECT EID
+					FROM EmployeeRegistration
+					WHERE (Email=@EmailOrPAN OR PAN = @EmailOrPAN OR NationalID=@EmailOrPAN) AND (HashPassword=@HashPassword))
+
+					SET @status = (SELECT LogInStatus
+					FROM Employee
+					WHERE EID=@userID)
+
+					IF(@status = '02')
+					BEGIN
+						-- Not verrified
+						SET @responseMessage='This user is not verified'
+						SELECT @return_Hex_value = '04'
+						RETURN 4
+					END
+				END
+				
+			IF EXISTS (SELECT *
+			FROM Employee
+			WHERE (Email=@EmailOrPAN OR PAN = @EmailOrPAN OR NationalID=@EmailOrPAN))
+				BEGIN
+				-- Found the user using email or PAN or National ID
+				
+				SET @jobIDCheck = (SELECT JobID
+				FROM Employee
+				WHERE (Email=@EmailOrPAN OR PAN = @EmailOrPAN OR NationalID=@EmailOrPAN) AND (HashPassword=@HashPassword))
+					
+				IF(@jobIDCheck = 0 OR @jobIDCheck = 1 OR @jobIDCheck = 4)
+				BEGIN
+					-- Not Allowed (Admin or Manager or Operator)
+					SET @responseMessage='This user is not allowed to login'
+					SELECT @return_Hex_value = '01'
+					RETURN 1
+				END
+				
+				SET @userID = (SELECT EID
+				FROM Employee
+				WHERE (Email=@EmailOrPAN OR PAN = @EmailOrPAN OR NationalID=@EmailOrPAN) AND (HashPassword=@HashPassword))
+				IF(@userID IS NULL)
+					BEGIN
+					-- Wrong Password
+					SET @responseMessage='Incorrect password'
+					SELECT @return_Hex_value = '02'
+					RETURN -1;
+				END
+					
+					ELSE
+					BEGIN
+					-- @userID IS NOT NULL
+					-- Correct password, so check if he's already logged in
+					SET @status=(SELECT LogInStatus
+					FROM Employee
+					WHERE EID=@userID)
+					IF(@status = '00')
+						BEGIN
+						-- Not logged in, so login successful, send his type to backend and jobID
+						-- And set status to 1
+						SET @responseMessage='User logged in successfully'
+						SELECT @return_Hex_value = '00'
+						SET @jobID = (SELECT JobID
+						FROM Employee
+						WHERE EID = @userID)
+						SET @title = (SELECT Title
+						FROM Jobs
+						WHERE JobID = @jobID)
+						SET @employeeID = @userID
+						SET @userPhoto = (SELECT Photo
+						FROM Employee
+						WHERE EID = @userID)
+						UPDATE Employee SET LogInStatus = '01' WHERE EID = @userID
+						SET @inStamp = GETDATE()
+						UPDATE Employee SET LogInTStamp = @inStamp WHERE EID = @userID
+						INSERT INTO dbo.EmployeeLogs
+							(
+							EmployeeID,
+							LogInTime
+							)
+						VALUES(
+								@userID,
+								@inStamp
+							)
+
+						RETURN 0
+					END
+					IF(@status = '01')
+						BEGIN
+						-- Already logged in, so can't continue
+						SET @responseMessage='User is logged in somewhere'
+						SELECT @return_Hex_value = '03'
+						RETURN 3
+					END
+					IF(@status = '02')
+						BEGIN
+						-- Not verrified
+						SET @responseMessage='This user is not verified'
+						SELECT @return_Hex_value = '04'
+						RETURN 4
+					END
+						ELSE
+						BEGIN
+						-- Unknown status
+						SET @responseMessage='User status undefined'
+						SELECT @return_Hex_value = 'FE'
+						RETURN -1
+					END
+				END
+			END
+				ELSE
+				BEGIN
+				-- Didn't find the user using Email or PAN or National ID
+				-- Wrong Email
+				SET @responseMessage='No user found with given Email or PAN or National ID'
+				SELECT @return_Hex_value = 'FF'
+				RETURN -1
+
+			END
+			END TRY
+			
+			BEGIN CATCH
+				SELECT @return_Hex_value='FC', @responseMessage='CATCH BLOCK: ' + ERROR_MESSAGE()
+				RETURN -1
+			END CATCH
+		END
+		ELSE
+		BEGIN
+			SELECT @return_Hex_value='FB', @responseMessage='Password length is less than 8'
+			RETURN -1
+		END
+	END
+	
+	ELSE
+	BEGIN
+		SELECT @return_Hex_value='FD', @responseMessage='FAILED: Email or Password is NULL'
+		RETURN -1
+	END
+END
+
+
 -- Logout --
 GO
 CREATE OR ALTER PROC usp_Employee_Logout

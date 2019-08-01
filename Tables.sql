@@ -253,47 +253,66 @@ VALUES
 	( N'1d11c1d4ea9b8e5b', -- YelloPadUniqueID - nvarchar(16)
 		N'1', -- YellopadNetworkcardNo - nvarchar(64)
 		'device 6' -- Yellopad device Number 
-	    ),
+	),
 	( N'1c05a1d4ea9b8e5b', -- YelloPadUniqueID - nvarchar(16)
 		N'2', -- YellopadNetworkcardNo - nvarchar(64)
 		'device 5' -- Yellopad device Number 
-		),
+	),
 	( N'151ba1d4ea9b8e5b', -- YelloPadUniqueID - nvarchar(16)
 		N'3', -- YellopadNetworkcardNo - nvarchar(64)
 		'device 8' -- Yellopad device Number 
-		),
+	),
 	( N'1b06a1d4ea9b8e5b', -- YelloPadUniqueID - nvarchar(16)
 		N'4', -- YellopadNetworkcardNo - nvarchar(64)
 		'device 3' -- Yellopad device Number 
-		),
+	),
 	( N'1b18a1d4ea9b8e5b', -- YelloPadUniqueID - nvarchar(16)
 		N'5', -- YellopadNetworkcardNo - nvarchar(64)
 		'device 7' -- Yellopad device Number 
-		),
+	),
 	( N'1208a1d4ea9b8e5b', -- YelloPadUniqueID - nvarchar(16)
 		N'6', -- YellopadNetworkcardNo - nvarchar(64)
 		'device 11' -- Yellopad device Number 
-		),
+	),
 	( N'1f16a1d4ea9b8e5b', -- YelloPadUniqueID - nvarchar(16)
 		N'7', -- YellopadNetworkcardNo - nvarchar(64)
 		'device 2' -- Yellopad device Number
-		),
+	),
 	( N'190209d4e3167aba', -- YelloPadUniqueID - nvarchar(16)
 		N'8', -- YellopadNetworkcardNo - nvarchar(64)
 		'device 1' -- Yellopad device Number
-		),
+	),
 	( N'0a0d11d4e3167aba', -- YelloPadUniqueID - nvarchar(16)
 		N'9', -- YellopadNetworkcardNo - nvarchar(64)
 		'device 10' -- Yellopad device Number
-		),
+	),
 	( N'1702c1d4ea9b8e5b', -- YelloPadUniqueID - nvarchar(16)
 		N'10', -- YellopadNetworkcardNo - nvarchar(64)
 		'device 4' -- Yellopad device Number
-		),
+	),
 	( N'240d11d4e3167aba', -- YelloPadUniqueID - nvarchar(16)
 		N'11', -- YellopadNetworkcardNo - nvarchar(64)
 		'device 9' -- Yellopad device Number
-		)
+	),
+	(
+		--For Test Purposes Only
+		N'Amr', -- YelloPadUniqueID - nvarchar(16)
+		N'12', -- YellopadNetworkcardNo - nvarchar(64)
+		'Amr' -- Yellopad device Number
+	
+	),
+	(
+		--For Test Purposes Only
+		N'Kanda', -- YelloPadUniqueID - nvarchar(16)
+		N'13', -- YellopadNetworkcardNo - nvarchar(64)
+		'Kanda' -- Yellopad device Number
+	),
+	(
+		--For Test Purposes Only
+		N'Salah', -- YelloPadUniqueID - nvarchar(16)
+		N'14', -- YellopadNetworkcardNo - nvarchar(64)
+		'Salah' -- Yellopad device Number
+	)
 
 --TODO: Discuss the Vehicle Location Entry
 CREATE TABLE AmbulanceVehicle
@@ -304,7 +323,7 @@ CREATE TABLE AmbulanceVehicle
 	[Type] NVARCHAR(32) ,
 	ProductionYear NVARCHAR(32) ,
 	RegYear NVARCHAR(32),
-	LicencePlate NVARCHAR(32),
+	LicencePlate NVARCHAR(4),
 	OwnerName NVARCHAR(128),
 	LicenceStateOrProvince NVARCHAR(32),
 	ServiceStartDate NVARCHAR(32),
@@ -332,20 +351,18 @@ INSERT INTO dbo.AmbulanceVehicle
 	OwnerName
 	)
 VALUES
-	( 1, -- VIN - int
+	( 	1, -- VIN - int
 		N'Mercedes', -- Make - nvarchar(32)
 		N'Mercedes',--Brand - nvarchar(32)
-		N'3D0979',--LicencePlate - NVARCHAR(32)
+		N'0000',--LicencePlate - NVARCHAR(4)
 		N'BENZ', -- MODEL - NVARCHAR(32)
 		N'Mohamed Hamed Madkor' --OwnerName - NVARCHAR(32)
-
-
-	    ),
+	),
 	(
 		2,
 		N'BMW',-- Make - nvarchar(32)
 		N'BMW',--Brand - nvarchar(32)
-		N'3D0587',--LicencePlate - NVARCHAR(32)
+		N'0001',--LicencePlate - NVARCHAR(4)
 		N'6 Series Coupe', -- MODEL - NVARCHAR(32)
 		N'Samer Mohamed Kabel' --OwnerName - NVARCHAR(32)
 	),
@@ -353,7 +370,7 @@ VALUES
 		3,
 		N'renault',-- Make - nvarchar(32)
 		N'renault',--Brand - nvarchar(32)
-		N'7588',--LicencePlate - NVARCHAR(32)
+		N'7588',--LicencePlate - NVARCHAR(4)
 		N'Megane', -- MODEL - NVARCHAR(32)
 		N'Kabel Nael Makdor' --OwnerName - NVARCHAR(32)
 	),
@@ -361,7 +378,7 @@ VALUES
 		4,
 		N'Fiat',-- Make - nvarchar(32)
 		N'Fiat',--Brand - nvarchar(32)
-		N'41286L',--LicencePlate - NVARCHAR(32)
+		N'4128',--LicencePlate - NVARCHAR(4)
 		N'124 Spider', -- MODEL - NVARCHAR(32)
 		N'Amgad Amit Caren' --OwnerName - NVARCHAR(32)
 	),
@@ -369,14 +386,14 @@ VALUES
 		5,
 		N'Nissan',-- Make - nvarchar(32)
 		N'Nissan',--Brand - nvarchar(32)
-		N'53298L',--LicencePlate - NVARCHAR(32)
+		N'5329',--LicencePlate - NVARCHAR(4)
 		N'Armada', -- MODEL - NVARCHAR(32)
 		N'poe poeingham Mcpoe' --OwnerName - NVARCHAR(32)
 	),
 	( 6, -- VIN - int
 		N'Mercedes', -- Make - nvarchar(32)
 		N'Mercedes',--Brand - nvarchar(32)
-		N'307BBD',--LicencePlate - NVARCHAR(32)
+		N'307B',--LicencePlate - NVARCHAR(4)
 		N'BENZ', -- MODEL - NVARCHAR(32)
 		N'Samer Hamed Mohamed' --OwnerName - NVARCHAR(32)
 
@@ -386,7 +403,7 @@ VALUES
 		7,
 		N'BMW',-- Make - nvarchar(32)
 		N'BMW',--Brand - nvarchar(32)
-		N'6FGR999',--LicencePlate - NVARCHAR(32)
+		N'6FR1',--LicencePlate - NVARCHAR(4)
 		N'6 Series Coupe', -- MODEL - NVARCHAR(32)
 		N'Kabel Mohamed Madkor' --OwnerName - NVARCHAR(32)
 	),
@@ -394,7 +411,7 @@ VALUES
 		8,
 		N'renault',-- Make - nvarchar(32)
 		N'renault',--Brand - nvarchar(32)
-		N'904AFL',--LicencePlate - NVARCHAR(32)
+		N'904A',--LicencePlate - NVARCHAR(4)
 		N'Megane', -- MODEL - NVARCHAR(32)
 		N'Mohamed Nael Samer' --OwnerName - NVARCHAR(32)
 	),
@@ -402,7 +419,7 @@ VALUES
 		9,
 		N'Fiat',-- Make - nvarchar(32)
 		N'Fiat',--Brand - nvarchar(32)
-		N'6FGR987',--LicencePlate - NVARCHAR(32)
+		N'6FGR',--LicencePlate - NVARCHAR(4)
 		N'124 Spider', -- MODEL - NVARCHAR(32)
 		N'Emma Takin Tomenger' --OwnerName - NVARCHAR(32)
 	),
@@ -410,7 +427,7 @@ VALUES
 		10,
 		N'Nissan',-- Make - nvarchar(32)
 		N'Nissan',--Brand - nvarchar(32)
-		N'86315L',--LicencePlate - NVARCHAR(32)
+		N'8631',--LicencePlate - NVARCHAR(4)
 		N'Armada', -- MODEL - NVARCHAR(32)
 		N'Alin Alingham Mcalin' --OwnerName - NVARCHAR(32)
 	)
@@ -429,11 +446,9 @@ CREATE TABLE Locations
 	HouseNumber NVARCHAR(12),
 	LocationStatus NVARCHAR(32) DEFAULT '00',
 	FFAEncoded NVARCHAR(MAX),
-	
+
 	PRIMARY KEY (LocationID)
 );
-
---TODO: Change LogInStatus -> 02 after providing verification mail service.
 
 CREATE TABLE Employee
 (
@@ -460,7 +475,7 @@ CREATE TABLE Employee
 	EmployeeStatus NVARCHAR(32) DEFAULT '00',
 	SuperSSN INT,
 	JobID INT,
-	Photo NVARCHAR(MAX),
+	Photo NVARCHAR(MAX) DEFAULT 'https://i.ibb.co/rGVwt7P/user-default.jpg',
 	Age as DATEDIFF(YEAR, BDate, GETDATE()),
 
 	FOREIGN KEY (SuperSSN) REFERENCES Employee(EID),
@@ -474,75 +489,75 @@ INSERT INTO Employee
 VALUES
 	('admin@test.com', '12345678', null, null, 1, 0, 'Ahmed', 'Al-Gohary') ,
 	--1
-	('move_manager1@test.com', '91234567', null, '', 1, 1, 'Amr', 'Khaled'),
+	('move_manager1@test.com', '91234567', null, '0121212121212', 1, 1, 'Amr', 'Khaled'),
 	--2
-	('move_manager2@test.com', '89123456', '0123456789012345', '', 1, 1, 'Mostafa', 'Mufeed'),
+	('move_manager2@test.com', '89123456', '0123456789012345', null, 1, 1, 'Mostafa', 'Mufeed'),
 	--3
-	('move_manager3@test.com', '78912345', '01234567890123', '', 1, 1, 'Ahmed', 'Salah'),
+	('move_manager3@test.com', '78912345', '01234567890123', null, 1, 1, 'Ahmed', 'Salah'),
 	--4
-	('move_manager4@test.com', '67891234', '9876543210987654', '01234567890123', 1, 1, 'Mohamed', 'Sherif'),
+	('move_manager4@test.com', '67891234', '9876543210987654', '01234567890125', 1, 1, 'Mohamed', 'Sherif'),
 	--5
-	('rashad_m@test.com', '53513676', null, '', 1, 1, 'Mahmoud', 'Rashad'),
+	('rashad_m@test.com', '53513676', null, null, 1, 1, 'Mahmoud', 'Rashad'),
 	--6
-	('dewidar_manager@test.com', '1234567890mo', null, '', 1, 1, 'mohamed', 'dewidar'),
+	('dewidar_manager@test.com', '1234567890mo', null, null, 1, 1, 'mohamed', 'dewidar'),
 	--7
-	('operator1@test.com', '91234567', '', '29704090101857', 2, 4, 'Hossam', 'Hassan'),
+	('operator1@test.com', '91234567', null, '29704090101857', 2, 4, 'Hossam', 'Hassan'),
 	--8
 	('operator2@test.com', '89123456', null, null, 3, 4, 'Ibrahim', 'Hassan'),
 	--9
-	('operator3@test.com', '78912345', null, '', 4, 4, 'Mohamed', 'El-Sokkary'),
+	('operator3@test.com', '78912345', null, null, 4, 4, 'Mohamed', 'El-Sokkary'),
 	--10
-	('operator4@test.com', '67891234', null, '', 4, 4, 'Mohamed', 'Said'),
+	('operator4@test.com', '67891234', null, null, 4, 4, 'Mohamed', 'Said'),
 	--11
-	('rashad_o@test.com', '53513676', '', '29704090101931', 6, 4, 'Mahmoud', 'Rashad'),
+	('rashad_o@test.com', '53513676', null, '29704090101931', 6, 4, 'Mahmoud', 'Rashad'),
 	--12
-	('dewidar_operator@test.com', '1234567890mo', null, '', 7, 4, 'mohamed', 'dewidar'),
+	('dewidar_operator@test.com', '1234567890mo', null, null, 7, 4, 'mohamed', 'dewidar'),
 	--13
-	('driver1@test.com', '91234567', '', null, 2, 3, 'Anas', 'Mohamed'),
+	('driver1@test.com', '91234567', null, null, 2, 3, 'Anas', 'Mohamed'),
 	--14
-	('driver2@test.com', '12588888', '1010101010101010', '', 3, 3, 'Ahmed', 'Amrawy'),
+	('driver2@test.com', '12588888', '1010101010101010', null, 3, 3, 'Ahmed', 'Amrawy'),
 	--15
-	('driver3@test.com', '78912345', '', '11112222333344', 4, 3, 'Kamel', 'Mohsen'),
+	('driver3@test.com', '78912345', null, '11112222333344', 4, 3, 'Kamel', 'Mohsen'),
 	--16
-	('driver4@test.com', '67891234', '', '12345678978945', 2, 3, 'Ahmed', 'Elgohary'),
+	('driver4@test.com', '67891234', null, '12345678978945', 2, 3, 'Ahmed', 'Elgohary'),
 	--17
-	('driver5@test.com', '56789123', '', '55555669933214', 3, 3, 'Ahmed', 'Zaki'),
+	('driver5@test.com', '56789123', null, '55555669933214', 3, 3, 'Ahmed', 'Zaki'),
 	--18
-	('driver6@test.com', '45678912', '', '77715892541359', 4, 3, 'Mohamed', 'Abdelhady'),
+	('driver6@test.com', '45678912', null, '77715892541359', 4, 3, 'Mohamed', 'Abdelhady'),
 	--19
-	('driver7@test.com', '34567891', '', '01258963271408', 2, 3, 'Mahmoud', 'Rashad'),
+	('driver7@test.com', '34567891', null, '01258963271408', 2, 3, 'Mahmoud', 'Rashad'),
 	--20
-	('driver8@test.com', '23456789', '', '40489305967281', 5, 3, 'Eman', 'Mohamed'),
+	('driver8@test.com', '23456789', null, '40489305967281', 5, 3, 'Eman', 'Mohamed'),
 	--21
-	('driver9@test.com', '12345678', '', '12302020363699', 2, 3, 'Aya', 'Mohamed'),
+	('driver9@test.com', '12345678', null, '12302020363699', 2, 3, 'Aya', 'Mohamed'),
 	--22
-	('driver10@test.com', '01234567', '', '89887744252664', 5, 3, 'Noha', 'Ezzat'),
+	('driver10@test.com', '01234567', null, '89887744252664', 5, 3, 'Noha', 'Ezzat'),
 	--23
-	('rashad_d@test.com', '53513676', '', null, 6, 3, 'Mahmoud', 'Rashad'),
+	('rashad_d@test.com', '53513676', null, null, 6, 3, 'Mahmoud', 'Rashad'),
 	--24
-	('dewidar_driver@test.com', '1234567890mo', '', '', 7, 3, 'mohamed', 'dewidar'),
+	('dewidar_driver@test.com', '1234567890mo', null, null, 7, 3, 'mohamed', 'dewidar'),
 	--25
-	('paramedic1@test.com', '91234567', null, '', 2, 2, 'Mohamed', 'Salah'),
+	('paramedic1@test.com', '91234567', null, null, 2, 2, 'Mohamed', 'Salah'),
 	--26
-	('paramedic2@test.com', '89123456', null, '', 3, 2, 'Abdelrahman', 'Ahmed'),
+	('paramedic2@test.com', '89123456', null, null, 3, 2, 'Abdelrahman', 'Ahmed'),
 	--27
-	('paramedic3@test.com', '78912345', '4017772008280452', '', 4, 2, 'Omar', 'Mohamed'),
+	('paramedic3@test.com', '78912345', '4017772008280452', null, 4, 2, 'Omar', 'Mohamed'),
 	--28
-	('paramedic4@test.com', '67891234', '4918012011072830', '', 2, 2, 'Hussien', 'Khaled'),
+	('paramedic4@test.com', '67891234', '4918012011072830', null, 2, 2, 'Hussien', 'Khaled'),
 	--29
-	('paramedic5@test.com', '56789123', '4325885600298917', '', 3, 2, 'Ahmed', 'Al-Gohary'),
+	('paramedic5@test.com', '56789123', '4325885600298917', null, 3, 2, 'Ahmed', 'Al-Gohary'),
 	--30
-	('paramedic6@test.com', '45678912', '1233555889966004', '', 4, 2, 'Mohamed', 'Dwidar'),
+	('paramedic6@test.com', '45678912', '1233555889966004', null, 4, 2, 'Mohamed', 'Dwidar'),
 	--31
-	('paramedic7@test.com', '34567891', '3366998855001258', '', 5, 2, 'Dina', 'Jouda'),
+	('paramedic7@test.com', '34567891', '3366998855001258', null, 5, 2, 'Dina', 'Jouda'),
 	--32
-	('paramedic8@test.com', '23456789', '6699874890125969', '', 2, 2, 'Nehal', 'Hegazy'),
+	('paramedic8@test.com', '23456789', '6699874890125969', null, 2, 2, 'Nehal', 'Hegazy'),
 	--33
-	('paramedic9@test.com', '12345678', '0189720283374105', '', 3, 2, 'Khalid', 'Abdalla'),
+	('paramedic9@test.com', '12345678', '0189720283374105', null, 3, 2, 'Khalid', 'Abdalla'),
 	--34
-	('paramedic10@test.com', '01234567', '9874502983497779', '', 2, 2, 'Walid', 'Mohamd'),
+	('paramedic10@test.com', '01234567', '9874502983497779', null, 2, 2, 'Walid', 'Mohamd'),
 	--35
-	('rashad_p@test.com', '53513676', null, '', 6, 2, 'Mahmoud', 'Rashad'),
+	('rashad_p@test.com', '53513676', null, null, 6, 2, 'Mahmoud', 'Rashad'),
 	--36
 	('dewidar_paramedic@test.com', '1234567890mo', '9874502983497779', '', 7, 2, 'mohamed', 'dewidar'),
 	--37
@@ -566,36 +581,61 @@ VALUES
 	--46
 	('khaled_m@test.com', '12345678', null, null, 1, 1, 'khaled', 'abdallah'),
 	--47
-	('khaled_o@test.com', '12345678', null, null, 47, 4, 'khaled', 'abdallah'),
+	('khaled_o@test.com', '12345678', null, null, 47, 4, 'khaled', 'Hassan'),
 	--48
-	('khaled_d1@test.com', '12345678', null, null, 47, 3, 'khaled', 'abdallah'),
+	('khaled_d1@test.com', '12345678', null, null, 47, 3, 'khaled', 'Mostafa'),
 	--49
-	('khaled_p1@test.com', '12345678', null, null, 47, 2, 'khaled', 'abdallah'),
+	('khaled_p1@test.com', '12345678', null, null, 47, 2, 'khaled', 'Ahmed'),
 	--50
-	('khaled_d2@test.com', '12345678', null, null, 47, 3, 'khaled', 'abdallah'),
+	('khaled_d2@test.com', '12345678', null, null, 47, 3, 'khaled', 'Zaky'),
 	--51
-	('khaled_p2@test.com', '12345678', null, null, 47, 2, 'khaled', 'abdallah'),
+	('khaled_p2@test.com', '12345678', null, null, 47, 2, 'khaled', 'Hussien'),
 	--52
-	('khaled_d3@test.com', '12345678', null, null, 47, 3, 'khaled', 'abdallah'),
+	('khaled_d3@test.com', '12345678', null, null, 47, 3, 'khaled', 'Hasabelnaby'),
 	--53
-	('khaled_p3@test.com', '12345678', null, null, 47, 2, 'khaled', 'abdallah'),
+	('khaled_p3@test.com', '12345678', null, null, 47, 2, 'khaled', 'Amr'),
 	--54
 	('sameh_m@test.com', '12345678', null, null, 1, 1, 'Sameh', 'Bedir'),
 	--55
-	('sameh_o@test.com', '12345678', null, null, 55, 4, 'Sameh', 'Bedir'),
+	('sameh_o@test.com', '12345678', null, null, 55, 4, 'Sameh', 'Khaled'),
 	--56
-	('sameh_d1@test.com', '12345678', null, null, 55, 3, 'Sameh', 'Bedir'),
+	('sameh_d1@test.com', '12345678', null, null, 55, 3, 'Sameh', 'Farouk'),
 	--57
-	('sameh_p1@test.com', '12345678', null, null, 55, 2, 'Sameh', 'Bedir'),
+	('sameh_p1@test.com', '12345678', null, null, 55, 2, 'Sameh', 'Salah'),
 	--58
-	('sameh_d2@test.com', '12345678', null, null, 55, 3, 'Sameh', 'Bedir'),
+	('sameh_d2@test.com', '12345678', null, null, 55, 3, 'Sameh', 'Mostafa'),
 	--59
-	('sameh_p2@test.com', '12345678', null, null, 55, 2, 'Sameh', 'Bedir'),
+	('sameh_p2@test.com', '12345678', null, null, 55, 2, 'Sameh', 'Mohamed'),
 	--60
-	('sameh_d3@test.com', '12345678', null, null, 55, 3, 'Sameh', 'Bedir'),
+	('sameh_d3@test.com', '12345678', null, null, 55, 3, 'Sameh', 'Salah'),
 	--61
-	('sameh_p3@test.com', '12345678', null, null, 55, 2, 'Sameh', 'Bedir')
+	('sameh_p3@test.com', '12345678', null, null, 55, 2, 'Sameh', 'Ahmed'),
 	--62
+	('amr_m@test.com','12345678',null,null,1,1,'Amr','Khaled'),
+	--63
+	('amr_o@test.com','12345678',null,null,63,4,'Amr','Khaled'),
+	--64
+	('amr_d@test.com','12345678',null,null,63,3,'Amr','Khaled'),
+	--65
+	('amr_p@test.com','12345678',null,null,63,2,'Amr','Khaled'),
+	--66
+	('kanda_m@test.com','12345678',null,null,1,1,'Mustafa','Kanda'),
+	--67
+	('kanda_o@test.com','12345678',null,null,67,4,'Mustafa','Kanda'),
+	--68
+	('kanda_d@test.com','12345678',null,null,67,3,'Mustafa','Kanda'),
+	--69
+	('kanda_p@test.com','12345678',null,null,67,2,'Mustafa','Kanda'),
+	--70
+	('salah_m@test.com','12345678',null,null,1,1,'Ahmed','Salah'),
+	--71
+	('salah_o@test.com','12345678',null,null,71,4,'Ahmed','Salah'),
+	--72
+	('salah_d@test.com','12345678',null,null,71,3,'Ahmed','Salah'),
+	--73
+	('salah_p@test.com','12345678',null,null,71,2,'Ahmed','Salah')
+	--74
+
 CREATE TABLE Incident
 (
 	IncidentSequenceNumber INT IDENTITY NOT NULL,
@@ -609,7 +649,6 @@ CREATE TABLE Incident
 	FOREIGN KEY (IncidentLocationID) REFERENCES Locations(LocationID),
 	PRIMARY KEY(IncidentSequenceNumber)
 );
-
 
 
 CREATE TABLE Responses
@@ -687,7 +726,7 @@ CREATE TABLE Patient
 	PatientNationalID NVARCHAR(14),
 	CreationTime BIGINT
 
-		PRIMARY KEY (PatientID)
+	PRIMARY KEY (PatientID)
 
 );
 
@@ -795,7 +834,7 @@ CREATE TABLE Feedback
 --(
 --	RespSQN INT NOT NULL,
 --	RespStatusMap NVARCHAR(64),
---		RespStatusTime DATETIME DEFAULT (GETDATE())
+--	RespStatusTime DATETIME DEFAULT (GETDATE())
 
 --	FOREIGN KEY (RespSQN) REFERENCES dbo.Responses(PrimaryResponseSQN)
 --);
@@ -874,22 +913,22 @@ CREATE TABLE Equipment
 );
 
 INSERT INTO Equipment
-(
+	(
 	EquipmentName,
 	EquipmentDescription
-)
+	)
 VALUES
-(
-	N'حضانة',
-	N'حضانة اطفال'
+	(
+		N'حضانة',
+		N'حضانة اطفال'
 ),
-(
-	N' جهازانعاش',
-	N'جهاز انعاش'
+	(
+		N' جهازانعاش',
+		N'جهاز انعاش'
 ),
-(
-	N'جهاز تنفس',
-	N'جهاز تنفس'
+	(
+		N'جهاز تنفس',
+		N'جهاز تنفس'
 )
 
 CREATE TABLE EquipmentOnCar
@@ -897,7 +936,8 @@ CREATE TABLE EquipmentOnCar
 	VIN INT,
 	EquipmentName NVARCHAR(200)
 
-	FOREIGN KEY (VIN) REFERENCES AmbulanceVehicle(VIN)
+		FOREIGN KEY (VIN) REFERENCES AmbulanceVehicle(VIN),
+	FOREIGN KEY (EquipmentName) REFERENCES Equipment(EquipmentName)
 );
 ------------------------------------------------------------------------
 -- Creating Indecies --
