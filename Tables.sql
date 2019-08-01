@@ -370,7 +370,7 @@ VALUES
 		3,
 		N'renault',-- Make - nvarchar(32)
 		N'renault',--Brand - nvarchar(32)
-		N'7588',--LicencePlate - NVARCHAR(32)
+		N'7588',--LicencePlate - NVARCHAR(4)
 		N'Megane', -- MODEL - NVARCHAR(32)
 		N'Kabel Nael Makdor' --OwnerName - NVARCHAR(32)
 	),
@@ -378,7 +378,7 @@ VALUES
 		4,
 		N'Fiat',-- Make - nvarchar(32)
 		N'Fiat',--Brand - nvarchar(32)
-		N'4128',--LicencePlate - NVARCHAR(32)
+		N'4128',--LicencePlate - NVARCHAR(4)
 		N'124 Spider', -- MODEL - NVARCHAR(32)
 		N'Amgad Amit Caren' --OwnerName - NVARCHAR(32)
 	),
@@ -386,14 +386,14 @@ VALUES
 		5,
 		N'Nissan',-- Make - nvarchar(32)
 		N'Nissan',--Brand - nvarchar(32)
-		N'5329',--LicencePlate - NVARCHAR(32)
+		N'5329',--LicencePlate - NVARCHAR(4)
 		N'Armada', -- MODEL - NVARCHAR(32)
 		N'poe poeingham Mcpoe' --OwnerName - NVARCHAR(32)
 	),
 	( 6, -- VIN - int
 		N'Mercedes', -- Make - nvarchar(32)
 		N'Mercedes',--Brand - nvarchar(32)
-		N'307B',--LicencePlate - NVARCHAR(32)
+		N'307B',--LicencePlate - NVARCHAR(4)
 		N'BENZ', -- MODEL - NVARCHAR(32)
 		N'Samer Hamed Mohamed' --OwnerName - NVARCHAR(32)
 
@@ -403,7 +403,7 @@ VALUES
 		7,
 		N'BMW',-- Make - nvarchar(32)
 		N'BMW',--Brand - nvarchar(32)
-		N'6FR1',--LicencePlate - NVARCHAR(32)
+		N'6FR1',--LicencePlate - NVARCHAR(4)
 		N'6 Series Coupe', -- MODEL - NVARCHAR(32)
 		N'Kabel Mohamed Madkor' --OwnerName - NVARCHAR(32)
 	),
@@ -411,7 +411,7 @@ VALUES
 		8,
 		N'renault',-- Make - nvarchar(32)
 		N'renault',--Brand - nvarchar(32)
-		N'904A',--LicencePlate - NVARCHAR(32)
+		N'904A',--LicencePlate - NVARCHAR(4)
 		N'Megane', -- MODEL - NVARCHAR(32)
 		N'Mohamed Nael Samer' --OwnerName - NVARCHAR(32)
 	),
@@ -419,7 +419,7 @@ VALUES
 		9,
 		N'Fiat',-- Make - nvarchar(32)
 		N'Fiat',--Brand - nvarchar(32)
-		N'6FGR',--LicencePlate - NVARCHAR(32)
+		N'6FGR',--LicencePlate - NVARCHAR(4)
 		N'124 Spider', -- MODEL - NVARCHAR(32)
 		N'Emma Takin Tomenger' --OwnerName - NVARCHAR(32)
 	),
@@ -427,7 +427,7 @@ VALUES
 		10,
 		N'Nissan',-- Make - nvarchar(32)
 		N'Nissan',--Brand - nvarchar(32)
-		N'8631',--LicencePlate - NVARCHAR(32)
+		N'8631',--LicencePlate - NVARCHAR(4)
 		N'Armada', -- MODEL - NVARCHAR(32)
 		N'Alin Alingham Mcalin' --OwnerName - NVARCHAR(32)
 	)
