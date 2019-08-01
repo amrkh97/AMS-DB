@@ -489,13 +489,13 @@ INSERT INTO Employee
 VALUES
 	('admin@test.com', '12345678', null, null, 1, 0, 'Ahmed', 'Al-Gohary') ,
 	--1
-	('move_manager1@test.com', '91234567', null, '', 1, 1, 'Amr', 'Khaled'),
+	('move_manager1@test.com', '91234567', null, '0121212121212', 1, 1, 'Amr', 'Khaled'),
 	--2
 	('move_manager2@test.com', '89123456', '0123456789012345', '', 1, 1, 'Mostafa', 'Mufeed'),
 	--3
 	('move_manager3@test.com', '78912345', '01234567890123', '', 1, 1, 'Ahmed', 'Salah'),
 	--4
-	('move_manager4@test.com', '67891234', '9876543210987654', '01234567890123', 1, 1, 'Mohamed', 'Sherif'),
+	('move_manager4@test.com', '67891234', '9876543210987654', '01234567890125', 1, 1, 'Mohamed', 'Sherif'),
 	--5
 	('rashad_m@test.com', '53513676', null, '', 1, 1, 'Mahmoud', 'Rashad'),
 	--6
@@ -581,35 +581,35 @@ VALUES
 	--46
 	('khaled_m@test.com', '12345678', null, null, 1, 1, 'khaled', 'abdallah'),
 	--47
-	('khaled_o@test.com', '12345678', null, null, 47, 4, 'khaled', 'abdallah'),
+	('khaled_o@test.com', '12345678', null, null, 47, 4, 'khaled', 'Hassan'),
 	--48
-	('khaled_d1@test.com', '12345678', null, null, 47, 3, 'khaled', 'abdallah'),
+	('khaled_d1@test.com', '12345678', null, null, 47, 3, 'khaled', 'Mostafa'),
 	--49
-	('khaled_p1@test.com', '12345678', null, null, 47, 2, 'khaled', 'abdallah'),
+	('khaled_p1@test.com', '12345678', null, null, 47, 2, 'khaled', 'Ahmed'),
 	--50
-	('khaled_d2@test.com', '12345678', null, null, 47, 3, 'khaled', 'abdallah'),
+	('khaled_d2@test.com', '12345678', null, null, 47, 3, 'khaled', 'Zaky'),
 	--51
-	('khaled_p2@test.com', '12345678', null, null, 47, 2, 'khaled', 'abdallah'),
+	('khaled_p2@test.com', '12345678', null, null, 47, 2, 'khaled', 'Hussien'),
 	--52
-	('khaled_d3@test.com', '12345678', null, null, 47, 3, 'khaled', 'abdallah'),
+	('khaled_d3@test.com', '12345678', null, null, 47, 3, 'khaled', 'Hasabelnaby'),
 	--53
-	('khaled_p3@test.com', '12345678', null, null, 47, 2, 'khaled', 'abdallah'),
+	('khaled_p3@test.com', '12345678', null, null, 47, 2, 'khaled', 'Amr'),
 	--54
 	('sameh_m@test.com', '12345678', null, null, 1, 1, 'Sameh', 'Bedir'),
 	--55
-	('sameh_o@test.com', '12345678', null, null, 55, 4, 'Sameh', 'Bedir'),
+	('sameh_o@test.com', '12345678', null, null, 55, 4, 'Sameh', 'Khaled'),
 	--56
-	('sameh_d1@test.com', '12345678', null, null, 55, 3, 'Sameh', 'Bedir'),
+	('sameh_d1@test.com', '12345678', null, null, 55, 3, 'Sameh', 'Farouk'),
 	--57
-	('sameh_p1@test.com', '12345678', null, null, 55, 2, 'Sameh', 'Bedir'),
+	('sameh_p1@test.com', '12345678', null, null, 55, 2, 'Sameh', 'Salah'),
 	--58
-	('sameh_d2@test.com', '12345678', null, null, 55, 3, 'Sameh', 'Bedir'),
+	('sameh_d2@test.com', '12345678', null, null, 55, 3, 'Sameh', 'Mostafa'),
 	--59
-	('sameh_p2@test.com', '12345678', null, null, 55, 2, 'Sameh', 'Bedir'),
+	('sameh_p2@test.com', '12345678', null, null, 55, 2, 'Sameh', 'Mohamed'),
 	--60
-	('sameh_d3@test.com', '12345678', null, null, 55, 3, 'Sameh', 'Bedir'),
+	('sameh_d3@test.com', '12345678', null, null, 55, 3, 'Sameh', 'Salah'),
 	--61
-	('sameh_p3@test.com', '12345678', null, null, 55, 2, 'Sameh', 'Bedir'),
+	('sameh_p3@test.com', '12345678', null, null, 55, 2, 'Sameh', 'Ahmed'),
 	--62
 	('amr_m@test.com','12345678',null,null,1,1,'Amr','Khaled'),
 	--63
