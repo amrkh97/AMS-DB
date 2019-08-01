@@ -351,15 +351,13 @@ INSERT INTO dbo.AmbulanceVehicle
 	OwnerName
 	)
 VALUES
-	( 1, -- VIN - int
+	( 	1, -- VIN - int
 		N'Mercedes', -- Make - nvarchar(32)
 		N'Mercedes',--Brand - nvarchar(32)
 		N'0000',--LicencePlate - NVARCHAR(4)
 		N'BENZ', -- MODEL - NVARCHAR(32)
 		N'Mohamed Hamed Madkor' --OwnerName - NVARCHAR(32)
-
-
-	    ),
+	),
 	(
 		2,
 		N'BMW',-- Make - nvarchar(32)
@@ -451,8 +449,6 @@ CREATE TABLE Locations
 
 	PRIMARY KEY (LocationID)
 );
-
---TODO: Change LogInStatus -> 02 after providing verification mail service.
 
 CREATE TABLE Employee
 (
@@ -640,8 +636,6 @@ VALUES
 	('salah_p@test.com','12345678',null,null,71,2,'Ahmed','Salah')
 	--74
 
-
-
 CREATE TABLE Incident
 (
 	IncidentSequenceNumber INT IDENTITY NOT NULL,
@@ -655,7 +649,6 @@ CREATE TABLE Incident
 	FOREIGN KEY (IncidentLocationID) REFERENCES Locations(LocationID),
 	PRIMARY KEY(IncidentSequenceNumber)
 );
-
 
 
 CREATE TABLE Responses
@@ -733,7 +726,7 @@ CREATE TABLE Patient
 	PatientNationalID NVARCHAR(14),
 	CreationTime BIGINT
 
-		PRIMARY KEY (PatientID)
+	PRIMARY KEY (PatientID)
 
 );
 
@@ -841,7 +834,7 @@ CREATE TABLE Feedback
 --(
 --	RespSQN INT NOT NULL,
 --	RespStatusMap NVARCHAR(64),
---		RespStatusTime DATETIME DEFAULT (GETDATE())
+--	RespStatusTime DATETIME DEFAULT (GETDATE())
 
 --	FOREIGN KEY (RespSQN) REFERENCES dbo.Responses(PrimaryResponseSQN)
 --);
