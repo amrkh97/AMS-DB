@@ -45,7 +45,7 @@ BEGIN
 					END
 				END
 				
-				IF EXISTS (SELECT *
+			IF EXISTS (SELECT *
 			FROM Employee
 			WHERE (Email=@EmailOrPAN OR PAN = @EmailOrPAN OR NationalID=@EmailOrPAN))
 				BEGIN
@@ -613,6 +613,7 @@ CREATE OR ALTER PROC usp_Employee_Signup
 	@contactNumber NVARCHAR(64),
 	@country NVARCHAR(32),
 	@city NVARCHAR(32),
+	-- TODO: Review --
 	@state NVARCHAR(32),
 	@street NVARCHAR(64),
 	@postalCode VARCHAR(20),
