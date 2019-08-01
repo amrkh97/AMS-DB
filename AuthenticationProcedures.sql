@@ -187,7 +187,7 @@ BEGIN
 					FROM EmployeeRegistration
 					WHERE (Email=@EmailOrPAN OR PAN = @EmailOrPAN OR NationalID=@EmailOrPAN) AND (HashPassword=@HashPassword))
 					
-					IF(@jobIDCheck == 2 || @jobIDCheck == 3)
+					IF(@jobIDCheck = 2 OR @jobIDCheck = 3)
 					BEGIN
 						-- Not Allowed (Paramedic or Driver)
 						SET @responseMessage='This user is not allowed to login'
@@ -222,7 +222,7 @@ BEGIN
 				FROM EmployeeRegistration
 				WHERE (Email=@EmailOrPAN OR PAN = @EmailOrPAN OR NationalID=@EmailOrPAN) AND (HashPassword=@HashPassword))
 					
-				IF(@jobIDCheck == 2 || @jobIDCheck == 3)
+				IF(@jobIDCheck = 2 OR @jobIDCheck = 3)
 				BEGIN
 					-- Not Allowed (Paramedic or Driver)
 					SET @responseMessage='This user is not allowed to login'
@@ -367,7 +367,7 @@ BEGIN
 					FROM EmployeeRegistration
 					WHERE (Email=@EmailOrPAN OR PAN = @EmailOrPAN OR NationalID=@EmailOrPAN) AND (HashPassword=@HashPassword))
 					
-					IF(@jobIDCheck == 0 || @jobIDCheck == 1 || @jobIDCheck == 4)
+					IF(@jobIDCheck = 0 OR @jobIDCheck = 1 OR @jobIDCheck = 4)
 					BEGIN
 						-- Not Allowed (Admin or Manager or Operator)
 						SET @responseMessage='This user is not allowed to login'
@@ -402,7 +402,7 @@ BEGIN
 				FROM EmployeeRegistration
 				WHERE (Email=@EmailOrPAN OR PAN = @EmailOrPAN OR NationalID=@EmailOrPAN) AND (HashPassword=@HashPassword))
 					
-				IF(@jobIDCheck == 0 || @jobIDCheck == 1 || @jobIDCheck == 4)
+				IF(@jobIDCheck = 0 OR @jobIDCheck = 1 OR @jobIDCheck = 4)
 				BEGIN
 					-- Not Allowed (Admin or Manager or Operator)
 					SET @responseMessage='This user is not allowed to login'
