@@ -154,7 +154,7 @@ END
 
 -- Login (Frontend) Only Admin[0], Manager[4], and Operator Allowed --
 GO
-CREATE OR ALTER PROC usp_Employee_Login_FE
+CREATE OR ALTER PROC usp_Employee_Login_Frontend
 	@EmailOrPAN NVARCHAR(128),
 	@HashPassword NVARCHAR(128),
 
