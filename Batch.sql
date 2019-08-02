@@ -156,4 +156,5 @@ BEGIN
     SET @HexCode = '01'
 	RETURN 1
   END
-ENDGO
+END
+GO

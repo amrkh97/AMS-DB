@@ -2760,6 +2760,8 @@ BEGIN
 	WHERE dbo.BatchMedicine.BatchID = @BatchID
 END
 GO
+
+CREATE OR ALTER PROC usp_BatchMedicine_Update
 @BatchID bigint,
 @MedicineBarcode nvarchar(64),
 @MedicineQuantity integer,
