@@ -2779,6 +2779,13 @@ BEGIN
   SET @QuantityDifference = @CountInStock
   - @MedicineQuantity
 
+	IF NOT EXISTS(SELECT * FROM BatchMedicine bm WHERE bm.MedicineBCode = @MedicineBarcode)
+		BEGIN
+		EXEC usp_BatchMedicine_Insert @BatchID ,@MedicineBarcode, @MedicineQuantity, @HexCode OUTPUT
+		PRINT @HexCode
+		RETURN
+	END
+
   IF (@QuantityDifference >= 0)
   BEGIN
 
