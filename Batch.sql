@@ -158,3 +158,22 @@ BEGIN
   END
 END
 GO
+
+
+CREATE OR ALTER PROC usp_Batch_getAllByMedName
+@MedName NVARCHAR(100)
+AS
+BEGIN
+
+SELECT b.BatchID FROM Batch b
+LEFT JOIN AmbulanceMap am
+ON b.BatchID = am.BatchID
+INNER JOIN BatchMedicine bm
+ON b.BatchID = bm.BatchID
+INNER JOIN Medicine M
+ON bm.MedicineBCode = M.BarCode
+WHERE am.BatchID IS NULL
+AND M.MedicineName = @MedName
+
+END
+GO
