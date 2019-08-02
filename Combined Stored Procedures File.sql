@@ -4508,9 +4508,7 @@ GO
 --EXEC usp_AmbulanceMap_Insert 1,50,49,1
 --EXEC usp_AmbulanceMap_Insert 2,52,51,2
 ----------------------------------------NEW SET OF STORED PROCEDURES--------------------------------------------------------------
-USE KAN_AMO
 GO
-
 CREATE OR ALTER TRIGGER onLogOut 
 ON Employee
 AFTER UPDATE
