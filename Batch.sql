@@ -165,7 +165,7 @@ CREATE OR ALTER PROC usp_Batch_getAllByMedName
 AS
 BEGIN
 
-SELECT b.BatchID FROM Batch b
+SELECT DISTINCT b.BatchID FROM Batch b
 LEFT JOIN AmbulanceMap am
 ON b.BatchID = am.BatchID
 INNER JOIN BatchMedicine bm
@@ -173,7 +173,7 @@ ON b.BatchID = bm.BatchID
 INNER JOIN Medicine M
 ON bm.MedicineBCode = M.BarCode
 WHERE am.BatchID IS NULL
-AND M.MedicineName = @MedName
+AND M.MedicineName LIKE '%' + @MedName + '%'
 
 END
 GO
