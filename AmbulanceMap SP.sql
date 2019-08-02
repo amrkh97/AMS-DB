@@ -66,11 +66,11 @@ CREATE OR ALTER PROC usp_AmbulanceMap_Insert_Batch
 @HexCode NVARCHAR(2) OUTPUT
 AS
 BEGIN
-if exists(select * from dbo.AmbulanceMap where  VIN = @VIN and StatusMap = '00')
+if exists(select * from dbo.AmbulanceMap where  VIN = @VIN and (StatusMap = '00' OR StatusMap = '02'))
 begin
 UPDATE dbo.AmbulanceMap
 SET BatchID = @batchID
-where VIN = @VIN and StatusMap = '00'
+where (VIN = @VIN and (StatusMap = '00' OR StatusMap = '02'))
 
 INSERT INTO AmbulanceBatchesMap
 (

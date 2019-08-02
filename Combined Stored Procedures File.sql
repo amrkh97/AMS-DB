@@ -3351,43 +3351,39 @@ WHERE VIN = @VIN
 		RETURN 0
 	end
 END
+
 GO
-
-
 CREATE OR ALTER PROC usp_AmbulanceMap_Insert_Batch
-	@VIN INT,
-	@batchID BIGINT,
-	@HexCode NVARCHAR(2) OUTPUT
+@VIN INT,
+@batchID BIGINT,
+@HexCode NVARCHAR(2) OUTPUT
 AS
 BEGIN
-	if exists(select *
-	from dbo.AmbulanceMap
-	where  VIN = @VIN and StatusMap = '00')
+if exists(select * from dbo.AmbulanceMap where  VIN = @VIN and (StatusMap = '00' OR StatusMap = '02'))
 begin
-		UPDATE dbo.AmbulanceMap
+UPDATE dbo.AmbulanceMap
 SET BatchID = @batchID
-where VIN = @VIN and StatusMap = '00'
+where (VIN = @VIN and (StatusMap = '00' OR StatusMap = '02'))
 
-		INSERT INTO AmbulanceBatchesMap
-			(
-			AssociatedVIN,
-			BatchID
-			)
-		VALUES
-			(
-				@VIN,
-				@batchID
+INSERT INTO AmbulanceBatchesMap
+(
+    AssociatedVIN,
+    BatchID
+)
+VALUES (
+    @VIN,
+    @batchID
 )
 
 
-		-- '00' -> updated succesfully
-		SET @HexCode = '00'
-	end
+-- '00' -> updated succesfully
+SET @HexCode = '00'
+end
 else
 BEGIN
-		-- '01' -> Failure to add because a vehicle with these conditions doesn't exist
-		SET @HexCode = '01'
-	END
+-- '01' -> Failure to add because a vehicle with these conditions doesn't exist
+SET @HexCode = '01'
+END
 END
 GO
 
