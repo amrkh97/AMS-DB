@@ -2836,6 +2836,42 @@ AND M.MedicineName = @MedName
 
 END
 GO
+
+CREATE OR ALTER PROC usp_Batch_getAllBatches
+AS
+BEGIN
+
+SELECT am.VIN,b.BatchID FROM Batch b
+LEFT JOIN AmbulanceMap am
+ON b.BatchID = am.BatchID
+
+END
+
+GO
+
+CREATE OR ALTER PROC usp_Batch_getAllAssigned
+AS
+BEGIN
+
+SELECT am.VIN,b.BatchID FROM Batch b
+LEFT JOIN AmbulanceMap am
+ON b.BatchID = am.BatchID
+WHERE am.VIN IS NOT NULL
+
+END
+
+GO
+
+CREATE OR ALTER PROC usp_Batch_getAllUnAssigned
+AS
+BEGIN
+
+SELECT am.VIN, b.BatchID FROM Batch b
+LEFT JOIN AmbulanceMap am
+ON b.BatchID = am.BatchID
+WHERE am.BatchID IS NULL
+
+END
 ----------------------------------------NEW SET OF STORED PROCEDURES--------------------------------------------------------------
 
 --TODO: Add the PatientID select query to set values.
@@ -4446,7 +4482,7 @@ WHERE EID = @EmployeeID
 				@NationalID,
 				@SuperSSN,
 				@JobID,
-				@Photo
+				ISNULL(@Photo,'https://i.ibb.co/rGVwt7P/user-default.jpg')
    )
 
 	END

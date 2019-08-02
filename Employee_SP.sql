@@ -205,7 +205,7 @@ INSERT INTO Employee
 		@NationalID,
 		@SuperSSN,
 		@JobID,
-		@Photo
+		ISNULL(@Photo,'https://i.ibb.co/rGVwt7P/user-default.jpg')
    )
 
 END
