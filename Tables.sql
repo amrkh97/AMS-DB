@@ -910,6 +910,8 @@ CREATE TABLE Equipment
 (
 	EquipmentName NVARCHAR(200),
 	EquipmentDescription NVARCHAR(MAX)
+
+	PRIMARY KEY(EquipmentName)
 );
 
 INSERT INTO Equipment
@@ -936,7 +938,7 @@ CREATE TABLE EquipmentOnCar
 	VIN INT,
 	EquipmentName NVARCHAR(200)
 
-		FOREIGN KEY (VIN) REFERENCES AmbulanceVehicle(VIN),
+	FOREIGN KEY (VIN) REFERENCES AmbulanceVehicle(VIN),
 	FOREIGN KEY (EquipmentName) REFERENCES Equipment(EquipmentName)
 );
 ------------------------------------------------------------------------

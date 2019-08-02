@@ -7,18 +7,14 @@ AFTER UPDATE
 AS
 BEGIN
 
-	IF((SELECT TOP 1 e.LogInStatus FROM Employee e WHERE (e.JobID = 3 OR e.JobID = 2) AND e.EmployeeStatus = '05') = '00') --User Has Logged Out
-	BEGIN
-	
 	UPDATE AmbulanceMap
 	SET StatusMap = '02'
-	WHERE (DriverID = (SELECT e.EID FROM Employee e
-	INNER JOIN AmbulanceMap am ON e.EID = am.DriverID
-	AND am.StatusMap <> 04))
-	OR (ParamedicID = (SELECT e.EID FROM Employee e
-	INNER JOIN AmbulanceMap am ON e.EID = am.ParamedicID
-	AND am.StatusMap <> 04))
-	END
+	FROM AmbulanceMap am
+	INNER JOIN Employee e ON am.ParamedicID = e.EID
+	INNER JOIN Employee e1 ON am.DriverID = e1.EID
+	WHERE ((e1.EmployeeStatus = '05' AND e1.LogInStatus = '00') OR (e.LogInStatus = '00' AND e.EmployeeStatus = '05')
+	AND am.StatusMap <> 04)
+
 END
 
 GO
@@ -29,18 +25,14 @@ AFTER UPDATE
 AS
 BEGIN
 
-	IF((SELECT TOP 1 e.LogInStatus FROM Employee e WHERE (e.JobID = 3 OR e.JobID = 2) AND e.EmployeeStatus = '05') = '01') --User Has Logged In
-	BEGIN
-	
 	UPDATE AmbulanceMap
 	SET StatusMap = '00'
-	WHERE (DriverID = (SELECT e.EID FROM Employee e
-	INNER JOIN AmbulanceMap am ON e.EID = am.DriverID
-	AND am.StatusMap <> 04))
-	OR (ParamedicID = (SELECT e.EID FROM Employee e
-	INNER JOIN AmbulanceMap am ON e.EID = am.ParamedicID
-	AND am.StatusMap <> 04))
-	END
+	FROM AmbulanceMap am
+	INNER JOIN Employee e ON am.ParamedicID = e.EID
+	INNER JOIN Employee e1 ON am.DriverID = e1.EID
+	WHERE ((e1.EmployeeStatus = '05' AND e1.LogInStatus = '01') OR (e.LogInStatus = '01' AND e.EmployeeStatus = '05')
+	AND am.StatusMap <> 04)
+
 END
 GO
 
@@ -50,14 +42,14 @@ AFTER INSERT
 AS
 BEGIN
 
-UPDATE AmbulanceMap
-SET StatusMap = '02'
-WHERE (DriverID = (SELECT e.EID FROM Employee e
-	INNER JOIN AmbulanceMap am ON e.EID = am.DriverID
-	AND am.StatusMap <> 04 AND e.LogInStatus <> '00'))
-	OR (ParamedicID = (SELECT e.EID FROM Employee e
-	INNER JOIN AmbulanceMap am ON e.EID = am.ParamedicID
-	AND am.StatusMap <> 04 AND e.LogInStatus <> '00'))
+	UPDATE AmbulanceMap
+	SET StatusMap = '02'
+	FROM AmbulanceMap am
+	INNER JOIN Employee e ON am.ParamedicID = e.EID
+	INNER JOIN Employee e1 ON am.DriverID = e1.EID
+	WHERE ((e1.EmployeeStatus = '05' AND e1.LogInStatus = '00') OR (e.LogInStatus = '00' AND e.EmployeeStatus = '05')
+	AND am.StatusMap <> 04)
+
 
 END
 

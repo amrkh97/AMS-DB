@@ -3306,7 +3306,7 @@ AS
 BEGIN
 	if exists(select *
 	from dbo.AmbulanceMap
-	where VIN = @VIN and StatusMap = '00')
+	where VIN = @VIN and (StatusMap = '00' OR StatusMap = '02' ))
 BEGIN
 		-- 1 -> Ambulance was already inserted but not assigned.
 		Set @HexCode = '01'
@@ -3351,43 +3351,39 @@ WHERE VIN = @VIN
 		RETURN 0
 	end
 END
+
 GO
-
-
 CREATE OR ALTER PROC usp_AmbulanceMap_Insert_Batch
-	@VIN INT,
-	@batchID BIGINT,
-	@HexCode NVARCHAR(2) OUTPUT
+@VIN INT,
+@batchID BIGINT,
+@HexCode NVARCHAR(2) OUTPUT
 AS
 BEGIN
-	if exists(select *
-	from dbo.AmbulanceMap
-	where  VIN = @VIN and StatusMap = '00')
+if exists(select * from dbo.AmbulanceMap where  VIN = @VIN and (StatusMap = '00' OR StatusMap = '02'))
 begin
-		UPDATE dbo.AmbulanceMap
+UPDATE dbo.AmbulanceMap
 SET BatchID = @batchID
-where VIN = @VIN and StatusMap = '00'
+where (VIN = @VIN and (StatusMap = '00' OR StatusMap = '02'))
 
-		INSERT INTO AmbulanceBatchesMap
-			(
-			AssociatedVIN,
-			BatchID
-			)
-		VALUES
-			(
-				@VIN,
-				@batchID
+INSERT INTO AmbulanceBatchesMap
+(
+    AssociatedVIN,
+    BatchID
+)
+VALUES (
+    @VIN,
+    @batchID
 )
 
 
-		-- '00' -> updated succesfully
-		SET @HexCode = '00'
-	end
+-- '00' -> updated succesfully
+SET @HexCode = '00'
+end
 else
 BEGIN
-		-- '01' -> Failure to add because a vehicle with these conditions doesn't exist
-		SET @HexCode = '01'
-	END
+-- '01' -> Failure to add because a vehicle with these conditions doesn't exist
+SET @HexCode = '01'
+END
 END
 GO
 
@@ -4512,24 +4508,23 @@ GO
 --EXEC usp_AmbulanceMap_Insert 1,50,49,1
 --EXEC usp_AmbulanceMap_Insert 2,52,51,2
 ----------------------------------------NEW SET OF STORED PROCEDURES--------------------------------------------------------------
+USE KAN_AMO
+GO
+
 CREATE OR ALTER TRIGGER onLogOut 
 ON Employee
 AFTER UPDATE
 AS
 BEGIN
 
-	IF((SELECT TOP 1 e.LogInStatus FROM Employee e WHERE (e.JobID = 3 OR e.JobID = 2) AND e.EmployeeStatus = '05') = '00') --User Has Logged Out
-	BEGIN
-	
 	UPDATE AmbulanceMap
 	SET StatusMap = '02'
-	WHERE (DriverID = (SELECT e.EID FROM Employee e
-	INNER JOIN AmbulanceMap am ON e.EID = am.DriverID
-	AND am.StatusMap <> 04))
-	OR (ParamedicID = (SELECT e.EID FROM Employee e
-	INNER JOIN AmbulanceMap am ON e.EID = am.ParamedicID
-	AND am.StatusMap <> 04))
-	END
+	FROM AmbulanceMap am
+	INNER JOIN Employee e ON am.ParamedicID = e.EID
+	INNER JOIN Employee e1 ON am.DriverID = e1.EID
+	WHERE ((e1.EmployeeStatus = '05' AND e1.LogInStatus = '00') OR (e.LogInStatus = '00' AND e.EmployeeStatus = '05')
+	AND am.StatusMap <> 04)
+
 END
 
 GO
@@ -4540,18 +4535,14 @@ AFTER UPDATE
 AS
 BEGIN
 
-	IF((SELECT TOP 1 e.LogInStatus FROM Employee e WHERE (e.JobID = 3 OR e.JobID = 2) AND e.EmployeeStatus = '05') = '01') --User Has Logged In
-	BEGIN
-	
 	UPDATE AmbulanceMap
 	SET StatusMap = '00'
-	WHERE (DriverID = (SELECT e.EID FROM Employee e
-	INNER JOIN AmbulanceMap am ON e.EID = am.DriverID
-	AND am.StatusMap <> 04))
-	OR (ParamedicID = (SELECT e.EID FROM Employee e
-	INNER JOIN AmbulanceMap am ON e.EID = am.ParamedicID
-	AND am.StatusMap <> 04))
-	END
+	FROM AmbulanceMap am
+	INNER JOIN Employee e ON am.ParamedicID = e.EID
+	INNER JOIN Employee e1 ON am.DriverID = e1.EID
+	WHERE ((e1.EmployeeStatus = '05' AND e1.LogInStatus = '01') OR (e.LogInStatus = '01' AND e.EmployeeStatus = '05')
+	AND am.StatusMap <> 04)
+
 END
 GO
 
@@ -4561,16 +4552,17 @@ AFTER INSERT
 AS
 BEGIN
 
-UPDATE AmbulanceMap
-SET StatusMap = '02'
-WHERE (DriverID = (SELECT e.EID FROM Employee e
-	INNER JOIN AmbulanceMap am ON e.EID = am.DriverID
-	AND am.StatusMap <> 04 AND e.LogInStatus <> '00'))
-	OR (ParamedicID = (SELECT e.EID FROM Employee e
-	INNER JOIN AmbulanceMap am ON e.EID = am.ParamedicID
-	AND am.StatusMap <> 04 AND e.LogInStatus <> '00'))
+	UPDATE AmbulanceMap
+	SET StatusMap = '02'
+	FROM AmbulanceMap am
+	INNER JOIN Employee e ON am.ParamedicID = e.EID
+	INNER JOIN Employee e1 ON am.DriverID = e1.EID
+	WHERE ((e1.EmployeeStatus = '05' AND e1.LogInStatus = '00') OR (e.LogInStatus = '00' AND e.EmployeeStatus = '05')
+	AND am.StatusMap <> 04)
+
 
 END
+GO
 ----------------------------------------NEW SET OF STORED PROCEDURES--------------------------------------------------------------
 
 ----------------------------------------NEW SET OF STORED PROCEDURES--------------------------------------------------------------
