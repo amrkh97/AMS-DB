@@ -15,13 +15,13 @@ CREATE OR ALTER PROC [dbo].[usp_AmbulanceMap_Insert]
 @HexCode NVARCHAR(2) OUTPUT
 AS
 BEGIN
-if exists(select * from dbo.AmbulanceMap where VIN = @VIN and StatusMap = '00')
+if exists(select * from dbo.AmbulanceMap where VIN = @VIN and (StatusMap = '00' OR StatusMap = '02'))
 BEGIN
 -- 1 -> Ambulance was already inserted but not assigned.
 Set @HexCode = '01'
 RETURN 1
 END
-ELSE if exists(select * from dbo.AmbulanceMap where VIN = @VIN and StatusMap ='01')
+ELSE if exists(select * from dbo.AmbulanceMap where VIN = @VIN and StatusMap ='02')
 begin
 -- 2 -> Ambulance is assigned and already in service.
 Set @HexCode = '02'
