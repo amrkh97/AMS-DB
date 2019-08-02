@@ -3314,7 +3314,7 @@ BEGIN
 	END
 ELSE if exists(select *
 	from dbo.AmbulanceMap
-	where VIN = @VIN and StatusMap ='02')
+	where VIN = @VIN and StatusMap ='01')
 begin
 		-- 2 -> Ambulance is assigned and already in service.
 		Set @HexCode = '02'
