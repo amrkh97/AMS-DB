@@ -354,10 +354,8 @@ CREATE TABLE AmbulanceVehicle
 	DriverPhoneNumber NVARCHAR(32),
 	VehicleStatus NVARCHAR(32) DEFAULT '00',
 	AmbulanceVehiclePicture NVARCHAR(500),
-	--VehicleLocation INT,
 
 	PRIMARY KEY (VIN),
-	--FOREIGN KEY (VehicleLocation) REFERENCES dbo.Locations(LocationID),
 	CONSTRAINT Negative_VIN CHECK (VIN > 0)
 );
 
@@ -923,8 +921,22 @@ CREATE TABLE EmployeeRegistration
 CREATE TABLE Parameters
 (
 	MedicineThreshold INT DEFAULT 0,
+	SearchRadiusInKM INT DEFAULT 1,
 	AlgoEncryption NVARCHAR(64)
 );
+
+
+CREATE TABLE Hospital
+(
+	HospitalID INT IDENTITY,
+	HospitalName NVARCHAR(256),
+	HospitalDescription Nvarchar(500),
+	Latitude NVARCHAR(32),
+	Longitude NVARCHAR(32)
+
+	PRIMARY KEY(HospitalID)
+);
+
 
 CREATE TABLE Equipment
 (
