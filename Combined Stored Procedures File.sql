@@ -3282,6 +3282,15 @@ BEGIN CATCH
 	END CATCH
 
 return -1
+
+GO
+CREATE OR ALTER PROC usp_Ambulance_AssignedNotInTrip
+AS
+BEGIN
+	SELECT * FROM AmbulanceVehicle av
+	INNER JOIN AmbulanceMap am ON av.VIN = am.VIN
+	WHERE am.StatusMap = '00' OR am.StatusMap = '02'
+END
 		
 ----------------------------------------NEW SET OF STORED PROCEDURES--------------------------------------------------------------
 GO
