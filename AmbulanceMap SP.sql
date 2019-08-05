@@ -155,17 +155,15 @@ BEGIN
 SET @HexCode = '01'
 END
 END
-GO
 
-USE KAN_AMO
 GO
-
 CREATE OR ALTER PROC usp_AmbulanceMap_Update
 @VIN INT,
 @ParamedicID INT,
 @DriverID INT,
 @YelloPadID INT,
-@HexCode NVARCHAR(2) OUTPUT
+@HexCode NVARCHAR(2) OUTPUT,
+@HexMsg NVARCHAR(64) OUTPUT
 AS
 BEGIN
 DECLARE @OldParamedic INT
@@ -176,6 +174,7 @@ DECLARE @CounterChecker INT
 if(@VIN is NULL)
 BEGIN
 set @HexCode = '02' --No VIN was sent.
+SET @HexMsg = 'No VIN was Sent'
 return 1
 END
 ELSE
@@ -184,7 +183,7 @@ BEGIN
 SET @CounterChecker = 0
 
 IF EXISTS(SELECT * FROM AmbulanceMap WHERE VIN=@VIN AND (StatusMap <> '04' OR StatusMap <> '01'))
-	
+BEGIN	
 	SELECT @OldDriver = am.DriverID, 
 		   @OldParamedic = am.ParamedicID,
 		   @OldYelloPad = am.YelloPadID,
@@ -216,6 +215,11 @@ IF EXISTS(SELECT * FROM AmbulanceMap WHERE VIN=@VIN AND (StatusMap <> '04' OR St
 	WHERE VIN = @VIN
 	AND (StatusMap <> '04' OR StatusMap <> '01')
 
+	
+	UPDATE Employee
+	SET EmployeeStatus = '05'
+	WHERE EID = @DriverID
+
 	UPDATE Employee
 	SET EmployeeStatus = '00'
 	WHERE EID = @OldDriver
@@ -234,6 +238,11 @@ IF EXISTS(SELECT * FROM AmbulanceMap WHERE VIN=@VIN AND (StatusMap <> '04' OR St
 	SET ParamedicID = @ParamedicID
 	WHERE VIN = @VIN
 	AND (StatusMap <> '04' OR StatusMap <> '01')
+
+	
+	UPDATE Employee
+	SET EmployeeStatus = '05'
+	WHERE EID = @ParamedicID
 
 	UPDATE Employee
 	SET EmployeeStatus = '00'
@@ -255,6 +264,10 @@ IF EXISTS(SELECT * FROM AmbulanceMap WHERE VIN=@VIN AND (StatusMap <> '04' OR St
 	AND (StatusMap <> '04' OR StatusMap <> '01')
 
 	UPDATE Yellopad
+	SET YelloPadStatus = '01'
+	WHERE YelloPadID = @YelloPadID
+
+	UPDATE Yellopad
 	SET YelloPadStatus = '00'
 	WHERE YelloPadID = @OldYelloPad
 	
@@ -269,12 +282,19 @@ IF EXISTS(SELECT * FROM AmbulanceMap WHERE VIN=@VIN AND (StatusMap <> '04' OR St
 	BEGIN
 	PRINT 'Counter Check true'
 	SET @HexCode = '00' --Updated Succesfully
+	SET @HexMsg = 'Updated Succesfully'
 	END
 	ELSE
 	BEGIN
 	PRINT 'Counter Check false'
 	SET @HexCode = '01' -- Failed To update
+	SET @HexMsg = 'Failed to update'
 	END
-
+END
+ELSE
+BEGIN
+SET @HexCode = '01'
+SET @HexMsg = 'Error! Please Use Setup Car Page.'
+END
 END
 END
