@@ -156,3 +156,125 @@ SET @HexCode = '01'
 END
 END
 GO
+
+USE KAN_AMO
+GO
+
+CREATE OR ALTER PROC usp_AmbulanceMap_Update
+@VIN INT,
+@ParamedicID INT,
+@DriverID INT,
+@YelloPadID INT,
+@HexCode NVARCHAR(2) OUTPUT
+AS
+BEGIN
+DECLARE @OldParamedic INT
+DECLARE @OldDriver INT
+DECLARE @OldYelloPad INT
+DECLARE @CurrentBatch BIGINT
+DECLARE @CounterChecker INT
+if(@VIN is NULL)
+BEGIN
+set @HexCode = '02' --No VIN was sent.
+return 1
+END
+ELSE
+BEGIN
+
+SET @CounterChecker = 0
+
+IF EXISTS(SELECT * FROM AmbulanceMap WHERE VIN=@VIN AND (StatusMap <> '04' OR StatusMap <> '01'))
+	
+	SELECT @OldDriver = am.DriverID, 
+		   @OldParamedic = am.ParamedicID,
+		   @OldYelloPad = am.YelloPadID,
+		   @CurrentBatch = am.BatchID
+	FROM AmbulanceMap am WHERE VIN=@VIN AND (StatusMap <> '04' OR StatusMap <> '01')
+
+	IF(@DriverID <> 0)
+	BEGIN
+	PRINT 'Driver ID Sent'
+	SET @CounterChecker = @CounterChecker + 1
+	END
+
+	IF(@ParamedicID <> 0)
+	BEGIN
+	PRINT 'Paramedic ID Sent'
+	SET @CounterChecker = @CounterChecker + 1
+	END
+	IF(@YelloPadID <> 0)
+	BEGIN
+	PRINT 'YelloPad ID Sent'
+	SET @CounterChecker = @CounterChecker + 1
+	END
+
+
+	IF(@DriverID <> 0)
+	BEGIN
+	UPDATE AmbulanceMap
+	SET DriverID = @DriverID
+	WHERE VIN = @VIN
+	AND (StatusMap <> '04' OR StatusMap <> '01')
+
+	UPDATE Employee
+	SET EmployeeStatus = '00'
+	WHERE EID = @OldDriver
+
+	IF EXISTS(SELECT * FROM AmbulanceMap am WHERE am.DriverID = @DriverID AND am.StatusMap <> '04')
+	BEGIN
+	PRINT 'Driver ID UpdatedSuccsfully'
+	SET @CounterChecker = @CounterChecker -1
+	END
+
+	END
+	
+	IF(@ParamedicID <> 0)
+	BEGIN
+	UPDATE AmbulanceMap
+	SET ParamedicID = @ParamedicID
+	WHERE VIN = @VIN
+	AND (StatusMap <> '04' OR StatusMap <> '01')
+
+	UPDATE Employee
+	SET EmployeeStatus = '00'
+	WHERE EID = @OldParamedic
+
+	IF EXISTS(SELECT * FROM AmbulanceMap am WHERE am.ParamedicID = @ParamedicID AND am.StatusMap <> '04')
+	BEGIN
+	PRINT 'Paramedic ID UpdatedSuccsfully'
+	SET @CounterChecker = @CounterChecker -1
+	END
+
+	END
+
+	IF(@YelloPadID <> 0)
+	BEGIN
+	UPDATE AmbulanceMap
+	SET YelloPadID = @YelloPadID
+	WHERE VIN = @VIN
+	AND (StatusMap <> '04' OR StatusMap <> '01')
+
+	UPDATE Yellopad
+	SET YelloPadStatus = '00'
+	WHERE YelloPadID = @OldYelloPad
+	
+	IF EXISTS(SELECT * FROM AmbulanceMap am WHERE am.YelloPadID = @YelloPadID AND am.StatusMap <> '04')
+	BEGIN
+	PRINT 'YelloPad ID UpdatedSuccsfully'
+	SET @CounterChecker = @CounterChecker -1
+	END
+	END
+
+	IF(@CounterChecker = 0)
+	BEGIN
+	PRINT 'Counter Check true'
+	SET @HexCode = '00' --Updated Succesfully
+	END
+	ELSE
+	BEGIN
+	PRINT 'Counter Check false'
+	SET @HexCode = '01' -- Failed To update
+	END
+
+END
+END
