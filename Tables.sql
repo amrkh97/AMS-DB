@@ -295,22 +295,42 @@ VALUES
 		'device 9' -- Yellopad device Number
 	),
 	(
+		N'1d17a1d4ea9b8e5b',
+		N'12',
+		'device 12'
+	),
+	(
+		N'180dc1d4ea9b8e5b',
+		N'13',
+		'device 13'
+	),
+	(
+		N'170da1d4ea9b8e5b',
+		N'14',
+		'device 14'
+	),
+	(
+		N'050da1d4ea9b8e5b',
+		N'15',
+		'device 15'
+	),
+	(
 		--For Test Purposes Only
 		N'Amr', -- YelloPadUniqueID - nvarchar(16)
-		N'12', -- YellopadNetworkcardNo - nvarchar(64)
+		N'16', -- YellopadNetworkcardNo - nvarchar(64)
 		'Amr' -- Yellopad device Number
 	
 	),
 	(
 		--For Test Purposes Only
 		N'Kanda', -- YelloPadUniqueID - nvarchar(16)
-		N'13', -- YellopadNetworkcardNo - nvarchar(64)
+		N'17', -- YellopadNetworkcardNo - nvarchar(64)
 		'Kanda' -- Yellopad device Number
 	),
 	(
 		--For Test Purposes Only
 		N'Salah', -- YelloPadUniqueID - nvarchar(16)
-		N'14', -- YellopadNetworkcardNo - nvarchar(64)
+		N'18', -- YellopadNetworkcardNo - nvarchar(64)
 		'Salah' -- Yellopad device Number
 	)
 
