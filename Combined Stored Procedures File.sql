@@ -824,8 +824,6 @@ END
 
 --(3) Get Report by ReportIssueTime --
 GO
-Use KAN_AMO
-GO
 
 CREATE OR ALTER proc usp_Reports_SelectByReportIssueTime
 	@ReportIssueTime DATETIME
@@ -3509,9 +3507,6 @@ BEGIN
 END
 GO
 
-
-USE KAN_AMO
-GO
 
 CREATE OR ALTER PROC usp_AmbulanceMap_Update
 @VIN INT,
