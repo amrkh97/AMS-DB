@@ -18,7 +18,7 @@ CREATE OR ALTER proc usp_YelloPads_selectActive
 AS
 select *
 from Yellopad
-where YelloPadStatus <> '02'
+where (YelloPadStatus <> '01' AND YelloPadStatus <> '02')
 
 GO
 CREATE OR ALTER proc usp_YelloPads_selectInActive
