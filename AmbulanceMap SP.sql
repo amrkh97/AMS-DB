@@ -157,6 +157,8 @@ END
 END
 GO
 
+USE KAN_AMO
+GO
 
 CREATE OR ALTER PROC usp_AmbulanceMap_Update
 @VIN INT,
@@ -191,15 +193,18 @@ IF EXISTS(SELECT * FROM AmbulanceMap WHERE VIN=@VIN AND (StatusMap <> '04' OR St
 
 	IF(@DriverID <> 0)
 	BEGIN
+	PRINT 'Driver ID Sent'
 	SET @CounterChecker = @CounterChecker + 1
 	END
 
 	IF(@ParamedicID <> 0)
 	BEGIN
+	PRINT 'Paramedic ID Sent'
 	SET @CounterChecker = @CounterChecker + 1
 	END
 	IF(@YelloPadID <> 0)
 	BEGIN
+	PRINT 'YelloPad ID Sent'
 	SET @CounterChecker = @CounterChecker + 1
 	END
 
@@ -217,6 +222,7 @@ IF EXISTS(SELECT * FROM AmbulanceMap WHERE VIN=@VIN AND (StatusMap <> '04' OR St
 
 	IF EXISTS(SELECT * FROM AmbulanceMap am WHERE am.DriverID = @DriverID AND am.StatusMap <> '04')
 	BEGIN
+	PRINT 'Driver ID UpdatedSuccsfully'
 	SET @CounterChecker = @CounterChecker -1
 	END
 
@@ -235,6 +241,7 @@ IF EXISTS(SELECT * FROM AmbulanceMap WHERE VIN=@VIN AND (StatusMap <> '04' OR St
 
 	IF EXISTS(SELECT * FROM AmbulanceMap am WHERE am.ParamedicID = @ParamedicID AND am.StatusMap <> '04')
 	BEGIN
+	PRINT 'Paramedic ID UpdatedSuccsfully'
 	SET @CounterChecker = @CounterChecker -1
 	END
 
@@ -253,16 +260,19 @@ IF EXISTS(SELECT * FROM AmbulanceMap WHERE VIN=@VIN AND (StatusMap <> '04' OR St
 	
 	IF EXISTS(SELECT * FROM AmbulanceMap am WHERE am.YelloPadID = @YelloPadID AND am.StatusMap <> '04')
 	BEGIN
+	PRINT 'YelloPad ID UpdatedSuccsfully'
 	SET @CounterChecker = @CounterChecker -1
 	END
 	END
 
 	IF(@CounterChecker = 0)
 	BEGIN
+	PRINT 'Counter Check true'
 	SET @HexCode = '00' --Updated Succesfully
 	END
 	ELSE
 	BEGIN
+	PRINT 'Counter Check false'
 	SET @HexCode = '01' -- Failed To update
 	END
 
