@@ -26,6 +26,22 @@ AS
 select *
 from Yellopad
 where YelloPadStatus = '02'
+
+GO
+CREATE OR ALTER proc usp_YelloPads_selectNotAssigned
+AS
+BEGIN
+    select * from Yellopad
+	where YelloPadStatus = '00'
+END
+
+GO
+CREATE OR ALTER proc usp_YelloPads_selectAssigned
+AS
+BEGIN
+    select * from Yellopad
+	where YelloPadStatus = '01'
+END
  ------------------------------------------
 -- (2) Search Unique ID --
 -----------------------------------------
@@ -4631,6 +4647,47 @@ BEGIN
 		INNER JOIN dbo.Jobs AS J ON J.JobID = Emp.JobID
 END
 GO
+
+
+CREATE OR ALTER PROC get_Employee_AssignedParamedics
+AS
+BEGIN
+
+SELECT EID,Fname,Lname,Email,ContactNumber,PAN,NationalID,EmployeeStatus,Photo,Age FROM dbo.Employee
+WHERE JobID = 2 AND EmployeeStatus = '05' 
+
+END
+GO
+
+CREATE OR ALTER PROC get_Employee_NotAssignedParamedics
+AS
+BEGIN
+
+SELECT EID,Fname,Lname,Email,ContactNumber,PAN,NationalID,EmployeeStatus,Photo,Age FROM dbo.Employee
+WHERE JobID = 2 AND (EmployeeStatus <> '05' OR EmployeeStatus <> '01') 
+
+END
+GO
+
+CREATE OR ALTER PROC get_Employee_AssignedDrivers
+AS
+BEGIN
+
+SELECT EID,Fname,Lname,Email,ContactNumber,PAN,NationalID,EmployeeStatus,Photo,Age FROM dbo.Employee
+WHERE JobID = 3 AND EmployeeStatus = '05' 
+
+END
+GO
+
+CREATE OR ALTER PROC get_Employee_NotAssignedDrivers
+AS
+BEGIN
+
+SELECT EID,Fname,Lname,Email,ContactNumber,PAN,NationalID,EmployeeStatus,Photo,Age FROM dbo.Employee
+WHERE JobID = 3 AND (EmployeeStatus <> '05' OR EmployeeStatus <> '01') 
+ 
+END
+
 ----------------------------------------NEW SET OF STORED PROCEDURES--------------------------------------------------------------
 --EXEC usp_AmbulanceMap_Insert 1,50,49,1
 --EXEC usp_AmbulanceMap_Insert 2,52,51,2

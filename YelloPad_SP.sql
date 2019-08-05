@@ -19,6 +19,22 @@ CREATE OR ALTER proc usp_YelloPads_selectInActive
 AS
     select * from Yellopad
 	where YelloPadStatus = '02'
+
+GO
+CREATE OR ALTER proc usp_YelloPads_selectNotAssigned
+AS
+BEGIN
+    select * from Yellopad
+	where YelloPadStatus = '00'
+END
+
+GO
+CREATE OR ALTER proc usp_YelloPads_selectAssigned
+AS
+BEGIN
+    select * from Yellopad
+	where YelloPadStatus = '01'
+END
  ------------------------------------------
 -- (2) Search Unique ID --
 -----------------------------------------
