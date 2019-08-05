@@ -155,6 +155,7 @@ BEGIN
 SET @HexCode = '01'
 END
 END
+
 GO
 CREATE OR ALTER PROC usp_AmbulanceMap_Update
 @VIN INT,
@@ -214,6 +215,11 @@ BEGIN
 	WHERE VIN = @VIN
 	AND (StatusMap <> '04' OR StatusMap <> '01')
 
+	
+	UPDATE Employee
+	SET EmployeeStatus = '05'
+	WHERE EID = @DriverID
+
 	UPDATE Employee
 	SET EmployeeStatus = '00'
 	WHERE EID = @OldDriver
@@ -233,6 +239,11 @@ BEGIN
 	WHERE VIN = @VIN
 	AND (StatusMap <> '04' OR StatusMap <> '01')
 
+	
+	UPDATE Employee
+	SET EmployeeStatus = '05'
+	WHERE EID = @ParamedicID
+
 	UPDATE Employee
 	SET EmployeeStatus = '00'
 	WHERE EID = @OldParamedic
@@ -251,6 +262,10 @@ BEGIN
 	SET YelloPadID = @YelloPadID
 	WHERE VIN = @VIN
 	AND (StatusMap <> '04' OR StatusMap <> '01')
+
+	UPDATE Yellopad
+	SET YelloPadStatus = '01'
+	WHERE YelloPadID = @YelloPadID
 
 	UPDATE Yellopad
 	SET YelloPadStatus = '00'
