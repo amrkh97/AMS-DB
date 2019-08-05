@@ -4694,7 +4694,11 @@ BEGIN
 END
 GO
 ----------------------------------------NEW SET OF STORED PROCEDURES--------------------------------------------------------------
-
+CREATE OR ALTER PROC usp_Hospital_getAll
+AS
+BEGIN
+SELECT * FROM Hospital
+END
 ----------------------------------------NEW SET OF STORED PROCEDURES--------------------------------------------------------------
 
 ----------------------------------------NEW SET OF STORED PROCEDURES--------------------------------------------------------------

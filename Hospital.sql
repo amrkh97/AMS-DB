@@ -1,0 +1,8 @@
+USE KAN_AMO
+GO
+
+CREATE OR ALTER PROC usp_Hospital_getAll
+AS
+BEGIN
+SELECT * FROM Hospital
+END

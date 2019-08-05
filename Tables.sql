@@ -932,8 +932,17 @@ CREATE TABLE Hospital
 	HospitalName NVARCHAR(256),
 	HospitalDescription Nvarchar(500),
 	Latitude NVARCHAR(32),
-	Longitude NVARCHAR(32)
-
+	Longitude NVARCHAR(32),
+	HospitalStatus NVARCHAR(2),
+	TotalBeds INT,
+	TotalAvailableBeds INT,
+	TotalICUBeds INT,
+	TotalAvailableICUBeds INT,
+	TotalRegularBeds INT,
+	TotalAvailableRegularBeds INT,
+	TotalBabyBeds INT,
+	TotalAvailableBabyBeds INT
+	
 	PRIMARY KEY(HospitalID)
 );
 
