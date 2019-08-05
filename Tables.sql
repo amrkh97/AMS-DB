@@ -295,22 +295,37 @@ VALUES
 		'device 9' -- Yellopad device Number
 	),
 	(
+		N'1d17a1d4ea9b8e5b',
+		N'12',
+		'device 12'
+	),
+	(
+		N'180dc1d4ea9b8e5b',
+		N'13',
+		'device 13'
+	),
+	(
+		N'170da1d4ea9b8e5b',
+		N'14',
+		'device 14'
+	),
+	(
 		--For Test Purposes Only
 		N'Amr', -- YelloPadUniqueID - nvarchar(16)
-		N'12', -- YellopadNetworkcardNo - nvarchar(64)
+		N'15', -- YellopadNetworkcardNo - nvarchar(64)
 		'Amr' -- Yellopad device Number
 	
 	),
 	(
 		--For Test Purposes Only
 		N'Kanda', -- YelloPadUniqueID - nvarchar(16)
-		N'13', -- YellopadNetworkcardNo - nvarchar(64)
+		N'16', -- YellopadNetworkcardNo - nvarchar(64)
 		'Kanda' -- Yellopad device Number
 	),
 	(
 		--For Test Purposes Only
 		N'Salah', -- YelloPadUniqueID - nvarchar(16)
-		N'14', -- YellopadNetworkcardNo - nvarchar(64)
+		N'17', -- YellopadNetworkcardNo - nvarchar(64)
 		'Salah' -- Yellopad device Number
 	)
 
@@ -334,10 +349,8 @@ CREATE TABLE AmbulanceVehicle
 	DriverPhoneNumber NVARCHAR(32),
 	VehicleStatus NVARCHAR(32) DEFAULT '00',
 	AmbulanceVehiclePicture NVARCHAR(500),
-	--VehicleLocation INT,
 
 	PRIMARY KEY (VIN),
-	--FOREIGN KEY (VehicleLocation) REFERENCES dbo.Locations(LocationID),
 	CONSTRAINT Negative_VIN CHECK (VIN > 0)
 );
 
@@ -903,8 +916,22 @@ CREATE TABLE EmployeeRegistration
 CREATE TABLE Parameters
 (
 	MedicineThreshold INT DEFAULT 0,
+	SearchRadiusInKM INT DEFAULT 1,
 	AlgoEncryption NVARCHAR(64)
 );
+
+
+CREATE TABLE Hospital
+(
+	HospitalID INT IDENTITY,
+	HospitalName NVARCHAR(256),
+	HospitalDescription Nvarchar(500),
+	Latitude NVARCHAR(32),
+	Longitude NVARCHAR(32)
+
+	PRIMARY KEY(HospitalID)
+);
+
 
 CREATE TABLE Equipment
 (
