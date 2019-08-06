@@ -239,6 +239,8 @@ CREATE TABLE Yellopad
 	YelloPadMaintenanceNote NVARCHAR(128),
 	YelloPadStatus NVARCHAR(32) NOT NULL DEFAULT '00',
 	YelloPadPicture NVARCHAR(500),
+	YelloPadLatitude NVARCHAR(32),
+	YelloPadLongitude NVARCHAR(32)
 
 	PRIMARY KEY (YelloPadID),
 );

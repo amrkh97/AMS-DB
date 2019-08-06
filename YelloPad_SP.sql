@@ -77,3 +77,80 @@ as
 	END
 	ELSE
 		RETURN -1
+
+
+GO
+CREATE OR ALTER PROC usp_YelloPads_Insert
+@YelloPadUniqueID NVARCHAR(16),
+@YellopadNetworkcardNo NVARCHAR(64),
+@YelloPadMaintenanceNote NVARCHAR(128),
+@HexCode NVARCHAR(2) OUTPUT,
+@HexMsg NVARCHAR(64) OUTPUT
+AS
+BEGIN
+
+IF EXISTS(SELECT * FROM YElloPad WHERE YelloPadUniqueID = @YelloPadUniqueID)
+BEGIN
+SET @HexCode = '01'
+SET @HexMsg = 'YelloPad Already Exists'
+END
+ELSE
+BEGIN
+
+INSERT INTO YelloPad
+	(
+		YelloPadUniqueID,
+		YellopadNetworkcardNo,
+		YelloPadMaintenanceNote
+	)
+VALUES
+	( 	@YelloPadUniqueID, -- YelloPadUniqueID - nvarchar(16)
+		@YellopadNetworkcardNo, -- YellopadNetworkcardNo - nvarchar(64)
+		@YelloPadMaintenanceNote -- Yellopad device Number 
+	)
+
+IF EXISTS(SELECT * FROM YElloPad WHERE YelloPadUniqueID = @YelloPadUniqueID)
+BEGIN
+SET @HexCode = '00'
+SET @HexMsg = 'YelloPad Added Successfully'
+END
+ELSE
+BEGIN
+SET @HexCode = '02'
+SET @HexMsg = 'YelloPad Failed To Insert, Please Try Again.'
+END
+END
+END
+
+GO
+
+CREATE OR ALTER PROC usp_YelloPads_UpdateLocation
+@YelloPadUniqueID NVARCHAR(16),
+@YelloPadLatitude NVARCHAR(16),
+@YelloPadLongitude NVARCHAR(16),
+@HexCode NVARCHAR(2) OUTPUT,
+@HexMsg NVARCHAR(64) OUTPUT
+AS
+BEGIN
+
+IF EXISTS(SELECT * FROM YelloPad WHERE YelloPadUniqueID = @YelloPadUniqueID)
+BEGIN
+
+UPDATE YelloPad
+SET YelloPadLatitude = @YelloPadLatitude
+WHERE YelloPadUniqueID = @YelloPadUniqueID
+
+UPDATE YelloPad
+SET YelloPadLongitude = @YelloPadLongitude
+WHERE YelloPadUniqueID = @YelloPadUniqueID
+
+SET @HexCode = '00'
+SET @HexMsg = 'YelloPad Updated Successfully'
+
+END
+ELSE
+BEGIN
+SET @HexCode = '01'
+SET @HexMsg = 'YelloPad Does not Exist'
+END
+END

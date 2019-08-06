@@ -3007,7 +3007,7 @@ AS
 BEGIN
 SELECT @UniqueID = YelloPadUniqueID FROM dbo.Yellopad
 INNER JOIN dbo.AmbulanceMap ON AmbulanceMap.YelloPadID = Yellopad.YelloPadID
-WHERE dbo.AmbulanceMap.VIN = @VIN AND (dbo.AmbulanceMap.StatusMap = '00' AND dbo.AmbulanceMap.StatusMap = '02')
+WHERE dbo.AmbulanceMap.VIN = @VIN AND dbo.AmbulanceMap.StatusMap <> '04'
 END
 ----------------------------------------NEW SET OF STORED PROCEDURES--------------------------------------------------------------
 GO
@@ -3627,7 +3627,7 @@ BEGIN
 	SET @CounterChecker = @CounterChecker -1
 	
 	INSERT INTO AmbulanceVehicleHistory
-	(VIN,ParamedicID,DriverID,YelloPad)
+	(VIN,ParamedicID,DriverID,YelloPadID)
 	VALUES
 	(@VIN,@ParamedicID,@OldDriver,@OldYelloPad)
 	
@@ -4814,6 +4814,239 @@ WHERE am.StatusMap = '00'
 
 END
 GO
+----------------------------------------NEW SET OF STORED PROCEDURES--------------------------------------------------------------
+
+CREATE OR ALTER PROC usp_Equipment_Add
+@EquipmentName NVARCHAR(200),
+@EquipmentDescription NVARCHAR(MAX),
+@HexCode NVARCHAR(2) OUTPUT,
+@HexMsg NVARCHAR(64) OUTPUT
+AS
+BEGIN
+
+IF EXISTS (SELECT * FROM Equipment WHERE EquipmentName = @EquipmentName)
+BEGIN
+SET @HexCode = '01'
+SET @HexMsg = 'Equipment Already Exists.'
+END
+ELSE
+BEGIN
+
+INSERT INTO Equipment
+(EquipmentName, EquipmentDescription)
+VALUES
+(@EquipmentName, @EquipmentDescription)
+
+
+IF NOT EXISTS(SELECT * FROM Equipment WHERE EquipmentName = @EquipmentName)
+BEGIN
+
+SET @HexCode = '02'
+SET @HexMsg = 'Equipment Addition failed please try again.'
+
+END
+ELSE
+BEGIN
+
+
+SET @HexCode = '00'
+SET @HexMsg = 'Equipment Added Succesfully.'
+
+END
+
+END
+END
+
+GO
+CREATE OR ALTER PROC usp_Equipment_getAll
+AS
+BEGIN
+SELECT * FROM Equipment
+END
+
+
+GO
+CREATE OR ALTER PROC usp_Equipment_getByName
+@EquipmentName NVARCHAR(200)
+AS
+BEGIN
+SELECT * FROM Equipment WHERE EquipmentName = @EquipmentName
+END
+
+GO
+CREATE OR ALTER PROC usp_Equipment_AssignToAmbulance
+@VIN INT,
+@EquipmentName NVARCHAR(200),
+@HexCode NVARCHAR(2) OUTPUT,
+@HexMsg NVARCHAR(64) OUTPUT
+AS
+BEGIN
+
+IF NOT EXISTS(SELECT * FROM AmbulanceVehicle WHERE VIN = @VIN)
+BEGIN
+SET @HexCode = '01'
+SET @HexMsg = 'No Ambulance Vehicle with given VIN'
+RETURN 1
+END
+
+
+IF NOT EXISTS(SELECT * FROM Equipment WHERE EquipmentName = @EquipmentName )
+BEGIN
+SET @HexCode = '02'
+SET @HexMsg = 'No Equipment with given name'
+RETURN 1
+END
+
+INSERT INTO EquipmentOnCar
+(
+    VIN,
+    EquipmentName
+)
+VALUES
+(
+    @VIN,
+    @EquipmentName
+)
+SET @HexCode = '00'
+SET @HexMsg = 'Assigned to vehicle successfully'
+END
+
+GO
+
+CREATE OR ALTER PROC usp_Equipment_OnAmbulance
+@VIN INT
+AS
+BEGIN
+
+SELECT Equipment.* FROM EquipmentOnCar
+Inner Join Equipment
+ON EquipmentOnCar.EquipmentName = Equipment.EquipmentName
+WHERE EquipmentOnCar.VIN = @VIN
+
+END
+
+GO
+CREATE OR ALTER PROC usp_Equipment_DeleteOnAmbulance
+@VIN INT,
+@EquipmentName NVARCHAR(200),
+@HexCode NVARCHAR(2) OUTPUT,
+@HexMsg NVARCHAR(64) OUTPUT
+AS
+BEGIN
+
+
+IF NOT EXISTS(SELECT * FROM AmbulanceVehicle WHERE VIN = @VIN)
+BEGIN
+SET @HexCode = '01'
+SET @HexMsg = 'No Ambulance Vehicle with given VIN'
+RETURN 1
+END
+
+
+IF NOT EXISTS(SELECT * FROM Equipment WHERE EquipmentName = @EquipmentName )
+BEGIN
+SET @HexCode = '02'
+SET @HexMsg = 'No Equipment with given name'
+RETURN 1
+END
+
+IF NOT EXISTS(SELECT * FROM EquipmentOnCar WHERE EquipmentName = @EquipmentName )
+BEGIN
+SET @HexCode = '02'
+SET @HexMsg = 'No Equipment with given name assigned on Ambulance'
+RETURN 1
+END
+
+DELETE EquipmentOnCar
+WHERE VIN = @VIN AND EquipmentName = @EquipmentName
+
+SET @HexCode = '00'
+SET @HexMsg = 'Deleted Succesfully'
+
+END
+----------------------------------------NEW SET OF STORED PROCEDURES--------------------------------------------------------------
+
+GO
+CREATE OR ALTER PROC usp_YelloPads_Insert
+@YelloPadUniqueID NVARCHAR(16),
+@YellopadNetworkcardNo NVARCHAR(64),
+@YelloPadMaintenanceNote NVARCHAR(128),
+@HexCode NVARCHAR(2) OUTPUT,
+@HexMsg NVARCHAR(64) OUTPUT
+AS
+BEGIN
+
+IF EXISTS(SELECT * FROM YelloPad WHERE YelloPadUniqueID = @YelloPadUniqueID)
+BEGIN
+SET @HexCode = '01'
+SET @HexMsg = 'YelloPad Already Exists'
+END
+ELSE
+BEGIN
+
+INSERT INTO YelloPad
+	(
+		YelloPadUniqueID,
+		YellopadNetworkcardNo,
+		YelloPadMaintenanceNote
+	)
+VALUES
+	( 	@YelloPadUniqueID, -- YelloPadUniqueID - nvarchar(16)
+		@YellopadNetworkcardNo, -- YellopadNetworkcardNo - nvarchar(64)
+		@YelloPadMaintenanceNote -- Yellopad device Number 
+	)
+
+IF EXISTS(SELECT * FROM YelloPad WHERE YelloPadUniqueID = @YelloPadUniqueID)
+BEGIN
+SET @HexCode = '00'
+SET @HexMsg = 'YelloPad Added Successfully'
+END
+ELSE
+BEGIN
+SET @HexCode = '02'
+SET @HexMsg = 'YelloPad Failed To Insert, Please Try Again.'
+END
+END
+END
+
+GO
+
+CREATE OR ALTER PROC usp_YelloPads_UpdateLocation
+@YelloPadUniqueID NVARCHAR(16),
+@YelloPadLatitude NVARCHAR(16),
+@YelloPadLongitude NVARCHAR(16),
+@HexCode NVARCHAR(2) OUTPUT,
+@HexMsg NVARCHAR(64) OUTPUT
+AS
+BEGIN
+
+IF EXISTS(SELECT * FROM YelloPad WHERE YelloPadUniqueID = @YelloPadUniqueID)
+BEGIN
+
+UPDATE YelloPad
+SET YelloPadLatitude = @YelloPadLatitude
+WHERE YelloPadUniqueID = @YelloPadUniqueID
+
+UPDATE YelloPad
+SET YelloPadLongitude = @YelloPadLongitude
+WHERE YelloPadUniqueID = @YelloPadUniqueID
+
+SET @HexCode = '00'
+SET @HexMsg = 'YelloPad Updated Successfully'
+
+END
+ELSE
+BEGIN
+SET @HexCode = '01'
+SET @HexMsg = 'YelloPad Does not Exist'
+END
+END
+----------------------------------------NEW SET OF STORED PROCEDURES--------------------------------------------------------------
+
+----------------------------------------NEW SET OF STORED PROCEDURES--------------------------------------------------------------
+
+----------------------------------------NEW SET OF STORED PROCEDURES--------------------------------------------------------------
+
 ----------------------------------------NEW SET OF STORED PROCEDURES--------------------------------------------------------------
 
 ----------------------------------------NEW SET OF STORED PROCEDURES--------------------------------------------------------------
