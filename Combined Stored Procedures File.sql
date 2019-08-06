@@ -4890,7 +4890,7 @@ RETURN 1
 END
 
 
-IF NOT EXISTS(SELECT * FROM Equipment WHERE EquipmentName LIKE '%'+ @EquipmentName + '%')
+IF NOT EXISTS(SELECT * FROM Equipment WHERE EquipmentName = @EquipmentName )
 BEGIN
 SET @HexCode = '02'
 SET @HexMsg = 'No Equipment with given name'
@@ -4943,14 +4943,14 @@ RETURN 1
 END
 
 
-IF NOT EXISTS(SELECT * FROM Equipment WHERE EquipmentName LIKE '%'+ @EquipmentName + '%')
+IF NOT EXISTS(SELECT * FROM Equipment WHERE EquipmentName = @EquipmentName )
 BEGIN
 SET @HexCode = '02'
 SET @HexMsg = 'No Equipment with given name'
 RETURN 1
 END
 
-IF NOT EXISTS(SELECT * FROM EquipmentOnCar WHERE EquipmentName LIKE '%'+ @EquipmentName + '%')
+IF NOT EXISTS(SELECT * FROM EquipmentOnCar WHERE EquipmentName = @EquipmentName )
 BEGIN
 SET @HexCode = '02'
 SET @HexMsg = 'No Equipment with given name assigned on Ambulance'
@@ -4958,7 +4958,7 @@ RETURN 1
 END
 
 DELETE EquipmentOnCar
-WHERE VIN = @VIN AND EquipmentName LIKE '%' + @EquipmentName + '%'
+WHERE VIN = @VIN AND EquipmentName = @EquipmentName
 
 SET @HexCode = '00'
 SET @HexMsg = 'Deleted Succesfully'
