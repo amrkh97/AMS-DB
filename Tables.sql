@@ -1025,6 +1025,22 @@ CREATE TABLE EquipmentOnCar
 	FOREIGN KEY (VIN) REFERENCES AmbulanceVehicle(VIN),
 	FOREIGN KEY (EquipmentName) REFERENCES Equipment(EquipmentName)
 );
+
+CREATE TABLE AmbulanceVehicleHistory
+(
+	EntryID INT IDENTITY,
+	VIN INT,
+	ParamedicID INT,
+	DriverID INT,
+	YelloPadID INT
+
+	PRIMARY KEY(EntryID),
+	FOREIGN KEY(VIN) REFERENCES AmbulanceVehicle(VIN),
+	FOREIGN KEY(ParamedicID) REFERENCES Employee(EID),
+	FOREIGN KEY(DriverID) REFERENCES Employee(EID),
+	FOREIGN KEY(YelloPadID) REFERENCES Yellopad(YelloPadID)
+
+);
 ------------------------------------------------------------------------
 -- Creating Indecies --
 -- (1) Medicine BarCode Unique Index -- 
