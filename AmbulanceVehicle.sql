@@ -294,4 +294,16 @@ BEGIN
 	INNER JOIN AmbulanceMap am ON av.VIN = am.VIN
 	WHERE am.StatusMap = '00' OR am.StatusMap = '02'
 END
+
+GO
+CREATE OR ALTER PROC usp_AmbulanceVehicle_getAssignedCarsLoggedIn
+AS
+BEGIN
+
+SELECT DISTINCT av.* FROM AmbulanceVehicle av
+INNER JOIN AmbulanceMap am ON av.VIN = am.VIN
+WHERE am.StatusMap = '00'
+
+END
+GO
 		

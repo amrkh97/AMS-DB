@@ -102,5 +102,5 @@ AS
 BEGIN
 SELECT @UniqueID = YelloPadUniqueID FROM dbo.Yellopad
 INNER JOIN dbo.AmbulanceMap ON AmbulanceMap.YelloPadID = Yellopad.YelloPadID
-WHERE dbo.AmbulanceMap.VIN = @VIN AND dbo.AmbulanceMap.StatusMap = '00'
+WHERE dbo.AmbulanceMap.VIN = @VIN AND (dbo.AmbulanceMap.StatusMap = '00' AND dbo.AmbulanceMap.StatusMap = '02')
 END

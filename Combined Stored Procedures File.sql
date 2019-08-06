@@ -2999,15 +2999,15 @@ END
 
 GO
 
+
 CREATE OR ALTER PROC usp_IncidentResponse_GetYelloPad
-	@VIN INTEGER,
-	@UniqueID NVARCHAR(64) OUTPUT
+@VIN INTEGER,
+@UniqueID NVARCHAR(64) OUTPUT
 AS
 BEGIN
-	SELECT @UniqueID = YelloPadUniqueID
-	FROM dbo.Yellopad
-		INNER JOIN dbo.AmbulanceMap ON AmbulanceMap.YelloPadID = Yellopad.YelloPadID
-	WHERE dbo.AmbulanceMap.VIN = @VIN AND dbo.AmbulanceMap.StatusMap = '01'
+SELECT @UniqueID = YelloPadUniqueID FROM dbo.Yellopad
+INNER JOIN dbo.AmbulanceMap ON AmbulanceMap.YelloPadID = Yellopad.YelloPadID
+WHERE dbo.AmbulanceMap.VIN = @VIN AND (dbo.AmbulanceMap.StatusMap = '00' AND dbo.AmbulanceMap.StatusMap = '02')
 END
 ----------------------------------------NEW SET OF STORED PROCEDURES--------------------------------------------------------------
 GO
@@ -4688,7 +4688,7 @@ AS
 BEGIN
 
 SELECT EID,Fname,Lname,Email,ContactNumber,PAN,NationalID,EmployeeStatus,Photo,Age FROM dbo.Employee
-WHERE JobID = 2 AND (EmployeeStatus <> '05' OR EmployeeStatus <> '01') 
+WHERE JobID = 2 AND (EmployeeStatus <> '05' AND EmployeeStatus <> '01') 
 
 END
 GO
@@ -4708,7 +4708,7 @@ AS
 BEGIN
 
 SELECT EID,Fname,Lname,Email,ContactNumber,PAN,NationalID,EmployeeStatus,Photo,Age FROM dbo.Employee
-WHERE JobID = 3 AND (EmployeeStatus <> '05' OR EmployeeStatus <> '01') 
+WHERE JobID = 3 AND (EmployeeStatus <> '05' AND EmployeeStatus <> '01') 
  
 END
 
@@ -4775,6 +4775,28 @@ AS
 BEGIN
 SELECT * FROM Hospital
 END
+
+GO
+
+Create OR Alter PROC usp_Hospital_getByName
+@HospitalName Nvarchar(256)
+AS
+BEGIN
+SELECT * FROM Hospital
+WHERE HospitalName LIKE '%' + @HospitalName + '%'
+END
+GO
+
+CREATE OR ALTER PROC usp_AmbulanceVehicle_getAssignedCarsLoggedIn
+AS
+BEGIN
+
+SELECT DISTINCT av.* FROM AmbulanceVehicle av
+INNER JOIN AmbulanceMap am ON av.VIN = am.VIN
+WHERE am.StatusMap = '00'
+
+END
+GO
 ----------------------------------------NEW SET OF STORED PROCEDURES--------------------------------------------------------------
 
 ----------------------------------------NEW SET OF STORED PROCEDURES--------------------------------------------------------------
