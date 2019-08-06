@@ -4775,6 +4775,17 @@ AS
 BEGIN
 SELECT * FROM Hospital
 END
+
+GO
+
+Create OR Alter PROC usp_Hospital_getByName
+@HospitalName Nvarchar(256)
+AS
+BEGIN
+SELECT * FROM Hospital
+WHERE HospitalName LIKE '%' + @HospitalName + '%'
+END
+GO
 ----------------------------------------NEW SET OF STORED PROCEDURES--------------------------------------------------------------
 
 ----------------------------------------NEW SET OF STORED PROCEDURES--------------------------------------------------------------
