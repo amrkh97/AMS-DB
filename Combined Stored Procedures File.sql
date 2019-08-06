@@ -4688,7 +4688,7 @@ AS
 BEGIN
 
 SELECT EID,Fname,Lname,Email,ContactNumber,PAN,NationalID,EmployeeStatus,Photo,Age FROM dbo.Employee
-WHERE JobID = 2 AND (EmployeeStatus <> '05' OR EmployeeStatus <> '01') 
+WHERE JobID = 2 AND (EmployeeStatus <> '05' AND EmployeeStatus <> '01') 
 
 END
 GO
@@ -4708,7 +4708,7 @@ AS
 BEGIN
 
 SELECT EID,Fname,Lname,Email,ContactNumber,PAN,NationalID,EmployeeStatus,Photo,Age FROM dbo.Employee
-WHERE JobID = 3 AND (EmployeeStatus <> '05' OR EmployeeStatus <> '01') 
+WHERE JobID = 3 AND (EmployeeStatus <> '05' AND EmployeeStatus <> '01') 
  
 END
 
