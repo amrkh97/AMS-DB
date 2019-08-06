@@ -3523,7 +3523,6 @@ BEGIN
 END
 GO
 
-
 GO
 CREATE OR ALTER PROC usp_AmbulanceMap_Update
 @VIN INT,
@@ -3596,6 +3595,12 @@ BEGIN
 	BEGIN
 	PRINT 'Driver ID UpdatedSuccsfully'
 	SET @CounterChecker = @CounterChecker -1
+
+	INSERT INTO AmbulanceVehicleHistory
+	(VIN,ParamedicID,DriverID,YelloPadID)
+	VALUES
+	(@VIN,@OldParamedic,@DriverID,@OldYelloPad)
+	
 	END
 
 	END
@@ -3620,6 +3625,12 @@ BEGIN
 	BEGIN
 	PRINT 'Paramedic ID UpdatedSuccsfully'
 	SET @CounterChecker = @CounterChecker -1
+	
+	INSERT INTO AmbulanceVehicleHistory
+	(VIN,ParamedicID,DriverID,YelloPad)
+	VALUES
+	(@VIN,@ParamedicID,@OldDriver,@OldYelloPad)
+	
 	END
 
 	END
@@ -3643,6 +3654,12 @@ BEGIN
 	BEGIN
 	PRINT 'YelloPad ID UpdatedSuccsfully'
 	SET @CounterChecker = @CounterChecker -1
+	
+	INSERT INTO AmbulanceVehicleHistory
+	(VIN,ParamedicID,DriverID,YelloPadID)
+	VALUES
+	(@VIN,@OldParamedic,@OldDriver,@YelloPadID)
+	
 	END
 	END
 
