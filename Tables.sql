@@ -933,8 +933,8 @@ CREATE TABLE Hospital
 	HospitalDescription Nvarchar(500),
 	Latitude NVARCHAR(32),
 	Longitude NVARCHAR(32),
-	HospitalStatus NVARCHAR(2),
-	TotalBeds INT,
+	HospitalStatus NVARCHAR(2) DEFAULT '00',
+	TotalBeds INT ,
 	TotalAvailableBeds INT,
 	TotalICUBeds INT,
 	TotalAvailableICUBeds INT,
@@ -945,6 +945,49 @@ CREATE TABLE Hospital
 	
 	PRIMARY KEY(HospitalID)
 );
+
+INSERT INTO Hospital
+(HospitalName,
+ HospitalDescription,
+ Latitude,
+ Longitude,
+ TotalBeds,
+ TotalAvailableBeds,
+ TotalICUBeds,
+ TotalAvailableICUBeds,
+ TotalRegularBeds,
+ TotalAvailableRegularBeds,
+ TotalBabyBeds,
+ TotalAvailableBabyBeds)
+ VALUES
+ (
+ N'Al Salam International',
+ N'International Hospital in Maadi',
+ N'29.9823175',
+ N'31.2306764',
+ 100,
+ 90,
+ 10,
+ 5,
+ 40,
+ 10,
+ 20,
+ 10
+ ),
+ (
+ N'Military Hospital',
+ N'Military Hospital in Maadi',
+ N'29.962458',
+ N'31.2481057',
+ 100,
+ 90,
+ 10,
+ 5,
+ 40,
+ 10,
+ 20,
+ 10
+ )
 
 
 CREATE TABLE Equipment
