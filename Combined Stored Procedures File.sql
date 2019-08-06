@@ -4866,14 +4866,6 @@ END
 
 
 GO
-CREATE OR ALTER PROC usp_Equipment_getAll
-AS
-BEGIN
-SELECT * FROM Equipment
-END
-
-
-GO
 CREATE OR ALTER PROC usp_Equipment_getByName
 @EquipmentName NVARCHAR(200)
 AS
@@ -4984,7 +4976,7 @@ CREATE OR ALTER PROC usp_YelloPads_Insert
 AS
 BEGIN
 
-IF EXISTS(SELECT * FROM YElloPad WHERE YelloPadUniqueID = @YelloPadUniqueID)
+IF EXISTS(SELECT * FROM YelloPad WHERE YelloPadUniqueID = @YelloPadUniqueID)
 BEGIN
 SET @HexCode = '01'
 SET @HexMsg = 'YelloPad Already Exists'
@@ -5004,7 +4996,7 @@ VALUES
 		@YelloPadMaintenanceNote -- Yellopad device Number 
 	)
 
-IF EXISTS(SELECT * FROM YElloPad WHERE YelloPadUniqueID = @YelloPadUniqueID)
+IF EXISTS(SELECT * FROM YelloPad WHERE YelloPadUniqueID = @YelloPadUniqueID)
 BEGIN
 SET @HexCode = '00'
 SET @HexMsg = 'YelloPad Added Successfully'
