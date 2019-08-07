@@ -2874,10 +2874,10 @@ CREATE OR ALTER PROC usp_Batch_getAllAssigned
 AS
 BEGIN
 
-SELECT am.VIN,b.BatchID FROM Batch b
-LEFT JOIN AmbulanceMap am
-ON b.BatchID = am.BatchID
-WHERE am.VIN IS NOT NULL
+SELECT abm.AssociatedVIN, b.BatchID FROM Batch b
+INNER JOIN AmbulanceBatchesMap abm
+ON b.BatchID = abm.BatchID
+WHERE abm.AssociatedVIN IS NOT NULL
 
 END
 
@@ -2887,10 +2887,10 @@ CREATE OR ALTER PROC usp_Batch_getAllUnAssigned
 AS
 BEGIN
 
-SELECT am.VIN, b.BatchID FROM Batch b
-LEFT JOIN AmbulanceMap am
-ON b.BatchID = am.BatchID
-WHERE am.BatchID IS NULL
+SELECT abm.AssociatedVIN, b.BatchID FROM Batch b
+FULL OUTER JOIN AmbulanceBatchesMap abm
+ON b.BatchID = abm.BatchID
+WHERE abm.AssociatedVIN IS NULL
 
 END
 ----------------------------------------NEW SET OF STORED PROCEDURES--------------------------------------------------------------
@@ -4894,6 +4894,15 @@ IF NOT EXISTS(SELECT * FROM Equipment WHERE EquipmentName = @EquipmentName )
 BEGIN
 SET @HexCode = '02'
 SET @HexMsg = 'No Equipment with given name'
+RETURN 1
+END
+
+IF EXISTS(SELECT Equipment.* FROM Equipment INNER JOIN EquipmentOnCar
+ON EquipmentOnCar.EquipmentName = Equipment.EquipmentName
+WHERE Equipment.EquipmentName LIKE '%'+ @EquipmentName + '%')
+BEGIN
+SET @HexCode = '03'
+SET @HexMsg = 'Equipment Already On Car'
 RETURN 1
 END
 
