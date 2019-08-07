@@ -4897,6 +4897,15 @@ SET @HexMsg = 'No Equipment with given name'
 RETURN 1
 END
 
+IF EXISTS(SELECT Equipment.* FROM Equipment INNER JOIN EquipmentOnCar
+ON EquipmentOnCar.EquipmentName = Equipment.EquipmentName
+WHERE Equipment.EquipmentName LIKE '%'+ @EquipmentName + '%')
+BEGIN
+SET @HexCode = '03'
+SET @HexMsg = 'Equipment Already On Car'
+RETURN 1
+END
+
 INSERT INTO EquipmentOnCar
 (
     VIN,
