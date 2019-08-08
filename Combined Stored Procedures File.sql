@@ -4112,14 +4112,12 @@ BEGIN
 	SET @PatientID = (SELECT TOP 1
 		dbo.Patient.PatientID
 	FROM dbo.Patient
-	WHERE PatientNationalID = @PatientNationalID) --TODO: Ask Gohary.
+	WHERE Age = @Age AND Gender = @Gender AND PatientFName = @PatientFName
+		AND PatientLName = @PatientLName AND Phone = @Phone AND PatientNationalID = @PatientNationalID)
 	IF (@PatientID IS NOT NULL)
 	BEGIN
 		SET @responseCode = 'EF'
 		SET @responseMessage = 'Patient Already Exist'
-		PRINT @PatientID
-		PRINT @responseCode
-		PRINT @responseMessage
 		RETURN 1
 	END 
 	ELSE
@@ -4137,11 +4135,11 @@ BEGIN
 		BEGIN
 			SET @responseCode = '00'
 			SET @responseMessage = 'Succesfully Added New Patient'
-			PRINT @PatientID
 			RETURN 0
 		END 
 		ELSE 
 		BEGIN
+			SET @PatientID = 1
 			SET @responseCode = 'FF'
 			SET @responseMessage = 'Failed To Add Patient'
 			PRINT @PatientID
@@ -4149,6 +4147,7 @@ BEGIN
 		END
 	END
 END
+
 
 GO
 CREATE OR ALTER PROC usp_Update_Patient
