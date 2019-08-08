@@ -182,13 +182,13 @@ BEGIN
 
 SET @CounterChecker = 0
 
-IF EXISTS(SELECT * FROM AmbulanceMap WHERE VIN=@VIN AND (StatusMap <> '04' OR StatusMap <> '01'))
+IF EXISTS(SELECT * FROM AmbulanceMap WHERE VIN=@VIN AND (StatusMap <> '04' AND StatusMap <> '01'))
 BEGIN	
 	SELECT @OldDriver = am.DriverID, 
 		   @OldParamedic = am.ParamedicID,
 		   @OldYelloPad = am.YelloPadID,
 		   @CurrentBatch = am.BatchID
-	FROM AmbulanceMap am WHERE VIN=@VIN AND (StatusMap <> '04' OR StatusMap <> '01')
+	FROM AmbulanceMap am WHERE VIN=@VIN AND (StatusMap <> '04' AND StatusMap <> '01')
 
 	IF(@DriverID <> 0)
 	BEGIN
@@ -213,7 +213,7 @@ BEGIN
 	UPDATE AmbulanceMap
 	SET DriverID = @DriverID
 	WHERE VIN = @VIN
-	AND (StatusMap <> '04' OR StatusMap <> '01')
+	AND (StatusMap <> '04' AND StatusMap <> '01')
 
 	
 	UPDATE Employee
@@ -243,7 +243,7 @@ BEGIN
 	UPDATE AmbulanceMap
 	SET ParamedicID = @ParamedicID
 	WHERE VIN = @VIN
-	AND (StatusMap <> '04' OR StatusMap <> '01')
+	AND (StatusMap <> '04' AND StatusMap <> '01')
 
 	
 	UPDATE Employee
@@ -273,7 +273,7 @@ BEGIN
 	UPDATE AmbulanceMap
 	SET YelloPadID = @YelloPadID
 	WHERE VIN = @VIN
-	AND (StatusMap <> '04' OR StatusMap <> '01')
+	AND (StatusMap <> '04' AND StatusMap <> '01')
 
 	UPDATE Yellopad
 	SET YelloPadStatus = '01'
