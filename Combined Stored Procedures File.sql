@@ -3611,7 +3611,7 @@ BEGIN
 	SET @CounterChecker = @CounterChecker -1
 	
 	INSERT INTO AmbulanceVehicleHistory
-	(VIN,ParamedicID,DriverID,YelloPad)
+	(VIN,ParamedicID,DriverID,YelloPadID)
 	VALUES
 	(@VIN,@ParamedicID,@OldDriver,@OldYelloPad)
 	
@@ -3667,6 +3667,127 @@ SET @HexMsg = 'Error! Please Use Setup Car Page.'
 END
 END
 END
+GO
+
+GO
+CREATE OR ALTER PROC usp_AmbulanceMap_Exchange
+@VIN INT,
+@ParamedicID INT,
+@DriverID INT,
+@YelloPadID INT,
+@HexCode NVARCHAR(2) OUTPUT,
+@HexMsg NVARCHAR(64) OUTPUT
+AS
+BEGIN --0
+DECLARE @OldVIN INT
+DECLARE @OldParamedic INT
+DECLARE @OldDriver INT
+DECLARE @OldYelloPad INT
+DECLARE @CurrentBatch BIGINT
+DECLARE @CounterChecker INT
+if(@VIN is NULL)
+BEGIN --1
+	SET @HexCode = '02' --No VIN was sent.
+	SET @HexMsg = 'No VIN was Sent'
+	RETURN 1
+END --1
+	ELSE
+BEGIN --2
+
+SET @CounterChecker = 0
+
+IF NOT EXISTS(SELECT * FROM AmbulanceMap
+	INNER JOIN Employee e ON AmbulanceMap.DriverID = e.EID
+	INNER JOIN Employee e1 ON AmbulanceMap.ParamedicID = e1.EID
+	WHERE (ParamedicID = @ParamedicID OR DriverID = @DriverID)
+	AND e.LogInStatus = '00' AND e1.LogInStatus = '00' 
+	AND (AmbulanceMap.StatusMap <> '04' AND AmbulanceMap.StatusMap <> '01'))
+BEGIN --3
+	SET @HexCode = '01'
+	SET @HexMsg = 'Can''t Perform exchange! Please make sure that Drivers and Paramedics are logged out'
+	RETURN 1
+END --3
+	ELSE
+BEGIN --4 --Exchange Logic here.
+-------------------------------------------------------------
+
+	
+	IF(@DriverID <> 0)
+	BEGIN
+	PRINT 'Driver ID Sent'
+	SET @CounterChecker = @CounterChecker + 1
+	
+	SET @OldVIN = (SELECT VIN FROM AmbulanceMap
+	WHERE DriverID= @DriverID AND (StatusMap <> '04' AND StatusMap <> '01'))
+
+	SELECT @OldParamedic = am.ParamedicID,
+		   @OldDriver = am.DriverID,
+		   @OldYelloPad = am.YelloPadID FROM AmbulanceMap am WHERE am.VIN = @VIN
+
+	UPDATE AmbulanceMap
+	SET DriverID = @DriverID
+	WHERE VIN = @VIN AND (StatusMap <> '04' AND StatusMap <> '01')
+
+	UPDATE AmbulanceMap
+	SET DriverID = @OldDriver
+	WHERE VIN = @OldVIN AND (StatusMap <> '04' AND StatusMap <> '01')
+
+	END
+
+	IF(@ParamedicID <> 0)
+	BEGIN
+	PRINT 'Paramedic ID Sent'
+	SET @CounterChecker = @CounterChecker + 1
+
+	SET @OldVIN = (SELECT VIN FROM AmbulanceMap
+	WHERE ParamedicID= @ParamedicID AND (StatusMap <> '04' AND StatusMap <> '01'))
+
+	SELECT @OldParamedic = am.ParamedicID,
+		   @OldDriver = am.DriverID,
+		   @OldYelloPad = am.YelloPadID FROM AmbulanceMap am WHERE am.VIN = @VIN
+
+	UPDATE AmbulanceMap
+	SET ParamedicID = @ParamedicID
+	WHERE VIN = @VIN AND (StatusMap <> '04' AND StatusMap <> '01')
+
+	UPDATE AmbulanceMap
+	SET ParamedicID = @OldParamedic
+	WHERE VIN = @OldVIN AND (StatusMap <> '04' AND StatusMap <> '01')
+
+	END
+
+	IF(@YelloPadID <> 0)
+	BEGIN
+	PRINT 'YelloPad ID Sent'
+	SET @CounterChecker = @CounterChecker + 1
+
+	SET @OldVIN = (SELECT VIN FROM AmbulanceMap
+	WHERE YelloPadID= @YelloPadID AND (StatusMap <> '04' AND StatusMap <> '01'))
+
+	SELECT @OldParamedic = am.ParamedicID,
+		   @OldDriver = am.DriverID,
+		   @OldYelloPad = am.YelloPadID FROM AmbulanceMap am WHERE am.VIN = @VIN
+
+	UPDATE AmbulanceMap
+	SET YelloPadID = @YelloPadID
+	WHERE VIN = @VIN AND (StatusMap <> '04' AND StatusMap <> '01')
+
+	UPDATE AmbulanceMap
+	SET YelloPadID = @OldYelloPad
+	WHERE VIN = @OldVIN AND (StatusMap <> '04' AND StatusMap <> '01')
+
+	END
+
+	SET @HexCode = '00'
+	SET @HexMsg = 'Exchange Successfull'
+	RETURN 0
+
+-------------------------------------------------------------
+END --4
+
+
+END --2
+END --0
 ----------------------------------------NEW SET OF STORED PROCEDURES--------------------------------------------------------------
 -- Medicine Stored Procedures --
 -- (1) Get All Medicines --
