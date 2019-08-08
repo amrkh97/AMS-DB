@@ -4104,7 +4104,7 @@ CREATE OR ALTER PROC  usp_add_New_Patient
 	@PatientNationalID NVARCHAR(14) = '-1',
 	@PatientEntryDate BIGINT,
 
-	@PatientID INT = -1 OUTPUT,
+	@PatientID INT = 1 OUTPUT,
 	@responseCode NVARCHAR(2)='FF' OUTPUT,
 	@responseMessage NVARCHAR(128)='' OUTPUT
 AS
@@ -4139,10 +4139,8 @@ BEGIN
 		END 
 		ELSE 
 		BEGIN
-			SET @PatientID = 1
 			SET @responseCode = 'FF'
 			SET @responseMessage = 'Failed To Add Patient'
-			PRINT @PatientID
 			RETURN -1
 		END
 	END
