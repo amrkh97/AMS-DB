@@ -2658,62 +2658,57 @@ END
 GO
 
 CREATE OR ALTER PROC usp_BatchMedicine_Insert
-	@BatchID BIGINT,
-	@MedicineBarcode NVARCHAR(64),
-	@MedicineQuantity INTEGER,
-	@HexCode NVARCHAR(2) OUTPUT
+@BatchID BIGINT,
+@MedicineBarcode NVARCHAR(64),
+@MedicineQuantity INTEGER,
+@HexCode NVARCHAR(2) OUTPUT
 AS
 BEGIN
 
-	DECLARE @QuantityDifference INT
-	set @QuantityDifference = (select CountInStock
-	from Medicine
-	where BarCode = @MedicineBarcode) - @MedicineQuantity
+DECLARE @QuantityDifference INT
+set @QuantityDifference = (select CountInStock from Medicine where BarCode = @MedicineBarcode) - @MedicineQuantity
 
-	if(@QuantityDifference >= 0)
+if(@QuantityDifference >= 0)
 begin
 
-		if not exists(select *
-		from dbo.Batch
-		where dbo.Batch.BatchID=@BatchID)
+if not exists(select * from dbo.Batch  where dbo.Batch.BatchID=@BatchID)
 begin
-			insert into dbo.Batch
-				(BatchID)
-			VALUES(@BatchID)
-		end
+insert into dbo.Batch(BatchID)
+VALUES(@BatchID)
+end
 
-		INSERT INTO dbo.BatchMedicine
-			(
-			BatchID,
-			MedicineBCode,
-			Quantity
-			)
-		VALUES
-			( @BatchID ,
-				@MedicineBarcode,
-				@MedicineQuantity
+INSERT INTO dbo.BatchMedicine
+(
+    BatchID,
+    MedicineBCode,
+    Quantity
+)
+VALUES
+(   @BatchID ,
+    @MedicineBarcode,
+    @MedicineQuantity
 )
 
-		UPDATE dbo.Medicine
+UPDATE dbo.Medicine
 SET CountInStock = @QuantityDifference WHERE BarCode = @MedicineBarcode;
-		-- '00' -> Addition Successful    
-		SET @HexCode = '00'
-	END
+-- '00' -> Addition Successful    
+SET @HexCode = '00'
+END
 ELSE
 BEGIN
-		-- '01' -> Addition Failed
-		SET @HexCode = '01'
-	END
+-- '01' -> Addition Failed
+SET @HexCode = '01'
+END
 END
 go
 
 
 CREATE OR ALTER PROC usp_Batch_MedicineUsed
-	@batchID BIGINT,
-	@sequenceNumber INTEGER,
-	@barCode NVARCHAR(64),
-	@usedAmt INTEGER,
-	@HexCode NVARCHAR(2) OUTPUT
+@batchID BIGINT,
+@sequenceNumber INTEGER,
+@barCode NVARCHAR(64),
+@usedAmt INTEGER,
+@HexCode NVARCHAR(2) OUTPUT
 AS
 BEGIN
 	DECLARE @QuantityDifference INT
@@ -2754,24 +2749,10 @@ END
 GO
 
 CREATE OR ALTER PROC usp_AmbulanceMap_getAllBatches
-	@VIN INTEGER
+@VIN INTEGER
 AS
 BEGIN
-	SELECT BatchID
-	FROM dbo.AmbulanceBatchesMap
-	WHERE AssociatedVIN = @VIN
-END
-GO
-
-CREATE OR ALTER PROC usp_Batch_getMedicines
-	@BatchID BIGINT
-AS
-BEGIN
-	select BarCode, MedicineName, Price, dbo.BatchMedicine.Quantity, Implications, MedicineUsage, SideEffects, ActiveComponent, MedicineStatus
-	from dbo.Medicine
-		inner join dbo.BatchMedicine
-		ON BatchMedicine.MedicineBCode = Medicine.BarCode
-	WHERE dbo.BatchMedicine.BatchID = @BatchID
+SELECT BatchID FROM dbo.AmbulanceBatchesMap WHERE AssociatedVIN = @VIN
 END
 GO
 
@@ -2786,12 +2767,7 @@ BEGIN
   DECLARE @QuantityDifference INT
   DECLARE @QuantityFinal INT
   DECLARE @CountInStock INT
-  SET @CountInStock = (SELECT
-    CountInStock
-  FROM Medicine
-  WHERE BarCode = @MedicineBarcode)
-  SET @QuantityDifference = @CountInStock
-  - @MedicineQuantity
+
 
 	IF NOT EXISTS(SELECT * FROM BatchMedicine bm WHERE bm.MedicineBCode = @MedicineBarcode)
 		BEGIN
@@ -2799,6 +2775,18 @@ BEGIN
 		PRINT @HexCode
 		RETURN
 	END
+
+	SET @OldQuantity = (
+	SELECT bm.Quantity FROM BatchMedicine bm
+	WHERE bm.BatchID = @BatchID AND bm.MedicineBCode = @MedicineBarcode
+	)
+
+ 	 SET @CountInStock = (SELECT
+    CountInStock
+  	FROM Medicine
+  	WHERE BarCode = @MedicineBarcode)
+  	SET @QuantityDifference = @CountInStock
+  	- @MedicineQuantity + @OldQuantity
 
   IF (@QuantityDifference >= 0)
   BEGIN
@@ -2812,11 +2800,6 @@ BEGIN
     SET @HexCode = '01'
 	RETURN 1
     END
-
-	SET @OldQuantity = (
-	SELECT bm.Quantity FROM BatchMedicine bm
-	WHERE bm.BatchID = @BatchID AND bm.MedicineBCode = @MedicineBarcode
-	)
 
 	UPDATE BatchMedicine
 	SET Quantity = @MedicineQuantity
@@ -2840,6 +2823,7 @@ BEGIN
 END
 GO
 
+
 CREATE OR ALTER PROC usp_Batch_getAllByMedName
 @MedName NVARCHAR(100)
 AS
@@ -2857,7 +2841,6 @@ AND M.MedicineName LIKE '%' + @MedName + '%'
 
 END
 GO
-
 CREATE OR ALTER PROC usp_Batch_getAllBatches
 AS
 BEGIN
@@ -2893,6 +2876,7 @@ ON b.BatchID = abm.BatchID
 WHERE abm.AssociatedVIN IS NULL
 
 END
+
 ----------------------------------------NEW SET OF STORED PROCEDURES--------------------------------------------------------------
 
 --TODO: Add the PatientID select query to set values.
@@ -4106,21 +4090,21 @@ END
 
 GO
 CREATE OR ALTER PROC  usp_add_New_Patient
-	@PatientFName VARCHAR(32) = 'john',
-	@PatientLName VARCHAR(32) = 'doe',
-	@Gender NVARCHAR(1) = 'M',
+	@PatientFName VARCHAR(32) = 'John',
+	@PatientLName VARCHAR(32) = 'Doe',
+	@Gender NVARCHAR(1) = 'U',
 	@Age NVARCHAR(32) = '0',
 	@Phone NVARCHAR(24) = '0',
 	@LastBenifitedTime DATETIME = '2019-07-22 12:35:54.170',
 	@FirstBenifitedTime DATETIME = '2019-07-22 12:35:54.170',
-	@NextOfKenName NVARCHAR(32) = 'john',
+	@NextOfKenName NVARCHAR(32) = 'John Doe',
 	@NextOfKenPhone NVARCHAR(24) = '0',
-	@NextOfKenAddress NVARCHAR(256) = '0',
+	@NextOfKenAddress NVARCHAR(256) = 'Not Known',
 	@PatientStatus NVARCHAR(32) = '00',
 	@PatientNationalID NVARCHAR(14) = '-1',
-	@PatientEntryDate BIGINT = 1,
+	@PatientEntryDate BIGINT,
 
-	@PatientID INT = -1 OUTPUT,
+	@PatientID INT = 1 OUTPUT,
 	@responseCode NVARCHAR(2)='FF' OUTPUT,
 	@responseMessage NVARCHAR(128)='' OUTPUT
 AS
@@ -4134,9 +4118,6 @@ BEGIN
 	BEGIN
 		SET @responseCode = 'EF'
 		SET @responseMessage = 'Patient Already Exist'
-		PRINT @PatientID
-		PRINT @responseCode
-		PRINT @responseMessage
 		RETURN 1
 	END 
 	ELSE
@@ -4144,7 +4125,7 @@ BEGIN
 		INSERT INTO Patient
 			( PatientFName, PatientLName, Gender, Age, Phone, LastBenifitedTime, FirstBenifitedTime, NextOfKenName, NextOfKenPhone, NextOfKenAddress, PatientStatus, PatientNationalID, CreationTime)
 		VALUES
-			(ISNULL(@PatientFName,'john'), ISNULL(@PatientLName,'Doe'), ISNULL(@Gender,'M'), ISNULL(@Age,'0'), ISNULL(@Phone,'0'), ISNULL(@LastBenifitedTime,GETDATE()), ISNULL(@FirstBenifitedTime,GETDATE()), ISNULL(@NextOfKenName,'John Doe'), ISNULL(@NextOfKenPhone,'0'), ISNULL(@NextOfKenAddress,'NULL'), ISNULL( @PatientStatus,'00'), ISNULL(@PatientNationalID,'-1'), @PatientEntryDate)
+			(ISNULL(@PatientFName,'John'), ISNULL(@PatientLName,'Doe'), ISNULL(@Gender,'U'), ISNULL(@Age,'0'), ISNULL(@Phone,'0'), ISNULL(@LastBenifitedTime,GETDATE()), ISNULL(@FirstBenifitedTime,GETDATE()), ISNULL(@NextOfKenName,'John Doe'), ISNULL(@NextOfKenPhone,'0'), ISNULL(@NextOfKenAddress,'Not Known'), ISNULL( @PatientStatus,'00'), ISNULL(@PatientNationalID,'-1'), @PatientEntryDate)
 		SET @PatientID = (
 			SELECT PatientID
 		FROM dbo.Patient
@@ -4154,18 +4135,17 @@ BEGIN
 		BEGIN
 			SET @responseCode = '00'
 			SET @responseMessage = 'Succesfully Added New Patient'
-			PRINT @PatientID
 			RETURN 0
 		END 
 		ELSE 
 		BEGIN
 			SET @responseCode = 'FF'
 			SET @responseMessage = 'Failed To Add Patient'
-			PRINT @PatientID
 			RETURN -1
 		END
 	END
 END
+
 
 GO
 CREATE OR ALTER PROC usp_Update_Patient
