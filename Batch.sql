@@ -112,12 +112,6 @@ BEGIN
   DECLARE @QuantityDifference INT
   DECLARE @QuantityFinal INT
   DECLARE @CountInStock INT
-  SET @CountInStock = (SELECT
-    CountInStock
-  FROM Medicine
-  WHERE BarCode = @MedicineBarcode)
-  SET @QuantityDifference = @CountInStock
-  - @MedicineQuantity
 
 
 	IF NOT EXISTS(SELECT * FROM BatchMedicine bm WHERE bm.MedicineBCode = @MedicineBarcode)
@@ -127,6 +121,17 @@ BEGIN
 		RETURN
 	END
 
+	SET @OldQuantity = (
+	SELECT bm.Quantity FROM BatchMedicine bm
+	WHERE bm.BatchID = @BatchID AND bm.MedicineBCode = @MedicineBarcode
+	)
+
+ 	 SET @CountInStock = (SELECT
+    CountInStock
+  	FROM Medicine
+  	WHERE BarCode = @MedicineBarcode)
+  	SET @QuantityDifference = @CountInStock
+  	- @MedicineQuantity + @OldQuantity
 
   IF (@QuantityDifference >= 0)
   BEGIN
@@ -140,11 +145,6 @@ BEGIN
     SET @HexCode = '01'
 	RETURN 1
     END
-
-	SET @OldQuantity = (
-	SELECT bm.Quantity FROM BatchMedicine bm
-	WHERE bm.BatchID = @BatchID AND bm.MedicineBCode = @MedicineBarcode
-	)
 
 	UPDATE BatchMedicine
 	SET Quantity = @MedicineQuantity

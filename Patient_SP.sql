@@ -81,27 +81,30 @@ END
 
 GO 
 CREATE OR ALTER PROC  usp_add_New_Patient
-	@PatientFName VARCHAR(32) = 'john',
-	@PatientLName VARCHAR(32) = 'doe',
-	@Gender NVARCHAR(1) = 'M',
+	@PatientFName VARCHAR(32) = 'John',
+	@PatientLName VARCHAR(32) = 'Doe',
+	@Gender NVARCHAR(1) = 'U',
 	@Age NVARCHAR(32) = '0',
 	@Phone NVARCHAR(24) = '0',
 	@LastBenifitedTime DATETIME = '2019-07-22 12:35:54.170',
 	@FirstBenifitedTime DATETIME = '2019-07-22 12:35:54.170',
-	@NextOfKenName NVARCHAR(32) = 'john',
+	@NextOfKenName NVARCHAR(32) = 'John Doe',
 	@NextOfKenPhone NVARCHAR(24) = '0',
-	@NextOfKenAddress NVARCHAR(256) = '0',
+	@NextOfKenAddress NVARCHAR(256) = 'Not Known',
 	@PatientStatus NVARCHAR(32) = '00',
 	@PatientNationalID NVARCHAR(14) = '-1',
-	@PatientEntryDate BIGINT = 1,
+	@PatientEntryDate BIGINT,
 
 	@PatientID INT = -1 OUTPUT,
 	@responseCode NVARCHAR(2)='FF' OUTPUT,
 	@responseMessage NVARCHAR(128)='' OUTPUT
 AS
 BEGIN
-	SET @PatientID = (SELECT TOP 1 dbo.Patient.PatientID FROM dbo.Patient WHERE Age = @Age AND Gender = @Gender AND PatientFName = @PatientFName
-	AND PatientLName = @PatientLName AND Phone = @Phone AND PatientNationalID = @PatientNationalID AND CreationTime = @PatientEntryDate)
+	SET @PatientID = (SELECT TOP 1
+		dbo.Patient.PatientID
+	FROM dbo.Patient
+	WHERE Age = @Age AND Gender = @Gender AND PatientFName = @PatientFName
+		AND PatientLName = @PatientLName AND Phone = @Phone AND PatientNationalID = @PatientNationalID)
 	IF (@PatientID IS NOT NULL)
 	BEGIN
 		SET @responseCode = 'EF'
@@ -113,12 +116,14 @@ BEGIN
 	END 
 	ELSE
 	BEGIN
-		INSERT INTO Patient ( PatientFName, PatientLName, Gender, Age, Phone, LastBenifitedTime, FirstBenifitedTime, NextOfKenName, NextOfKenPhone, NextOfKenAddress, PatientStatus, PatientNationalID, CreationTime)
-		VALUES (@PatientFName,@PatientLName,ISNULL(@Gender,'M'),ISNULL(@Age,'0'),ISNULL(@Phone,'0'),ISNULL(@LastBenifitedTime,GETDATE()),ISNULL(@FirstBenifitedTime,GETDATE()),ISNULL(@NextOfKenName,'John Doe'),ISNULL(@NextOfKenPhone,'0'),ISNULL(@NextOfKenAddress,'NULL'),@PatientStatus,ISNULL(@PatientNationalID,'-1'), @PatientEntryDate)
+		INSERT INTO Patient
+			( PatientFName, PatientLName, Gender, Age, Phone, LastBenifitedTime, FirstBenifitedTime, NextOfKenName, NextOfKenPhone, NextOfKenAddress, PatientStatus, PatientNationalID, CreationTime)
+		VALUES
+			(ISNULL(@PatientFName,'John'), ISNULL(@PatientLName,'Doe'), ISNULL(@Gender,'U'), ISNULL(@Age,'0'), ISNULL(@Phone,'0'), ISNULL(@LastBenifitedTime,GETDATE()), ISNULL(@FirstBenifitedTime,GETDATE()), ISNULL(@NextOfKenName,'John Doe'), ISNULL(@NextOfKenPhone,'0'), ISNULL(@NextOfKenAddress,'Not Known'), ISNULL( @PatientStatus,'00'), ISNULL(@PatientNationalID,'-1'), @PatientEntryDate)
 		SET @PatientID = (
-			SELECT PatientID 
-			FROM dbo.Patient 
-			WHERE CreationTime = @PatientEntryDate
+			SELECT PatientID
+		FROM dbo.Patient
+		WHERE CreationTime = @PatientEntryDate
 		)
 		IF (@PatientID IS NOT NULL)
 		BEGIN
@@ -136,6 +141,7 @@ BEGIN
 		END
 	END
 END
+
 GO
 Create OR ALTER   PROC usp_Update_Patient
     @PatientID INT,
