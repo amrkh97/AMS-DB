@@ -177,6 +177,19 @@ DECLARE @VIN INTEGER
 			SET @RespStatus = (SELECT RespStatus
 			FROM Responses
 			WHERE SequenceNumber=@SequenceNumber)
+
+			INSERT INTO ResponseUpdateLog
+			(
+				RespSQN,
+				RespStatusMap
+			)
+			VALUES
+			(
+				@SequenceNumber,
+				@ResponseStatus
+			)
+
+
 			IF ( @ResponseStatus = '0E')
 			BEGIN
 			SET @VIN = (
