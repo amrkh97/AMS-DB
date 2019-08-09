@@ -2759,6 +2759,18 @@ SELECT BatchID FROM dbo.AmbulanceBatchesMap WHERE AssociatedVIN = @VIN
 END
 GO
 
+CREATE OR ALTER PROC usp_Batch_getMedicines
+	@BatchID BIGINT
+AS
+BEGIN
+	select BarCode, MedicineName, Price, dbo.BatchMedicine.Quantity, Implications, MedicineUsage, SideEffects, ActiveComponent, MedicineStatus
+	from dbo.Medicine
+		inner join dbo.BatchMedicine
+		ON BatchMedicine.MedicineBCode = Medicine.BarCode
+	WHERE dbo.BatchMedicine.BatchID = @BatchID
+END
+GO
+
 CREATE OR ALTER PROC usp_BatchMedicine_Update
 @BatchID bigint,
 @MedicineBarcode nvarchar(64),
