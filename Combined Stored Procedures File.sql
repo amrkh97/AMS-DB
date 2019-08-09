@@ -1799,7 +1799,7 @@ AS
 BEGIN
 	if not exists(Select *
 	from IncidentCallers
-	where CallerMobile = @MobileNumber)
+	where CallerMobile = @MobileNumber AND IncidentSQN = @ISQN)
 BEGIN
 		INSERT INTO  IncidentCallers
 			(

@@ -107,7 +107,9 @@ CREATE OR ALTER PROC usp_Incident_InsertCallData
 @HexCode NVARCHAR(2) OUTPUT
 AS
 BEGIN
-if not exists(Select * from IncidentCallers where CallerMobile = @MobileNumber)
+if not exists(Select * from IncidentCallers
+ where CallerMobile = @MobileNumber
+ AND IncidentSQN = @ISQN)
 BEGIN
 INSERT INTO  IncidentCallers(
 	IncidentSQN ,
