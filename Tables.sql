@@ -867,6 +867,7 @@ CREATE TABLE IncidentCallers
 	CallerLName NVARCHAR(64),
 	CallerMobile NVARCHAR(11),
 	CallTime DATETIME DEFAULT (GETDATE()),
+	RelationToPatient NVARCHAR(32),
 	PRIMARY KEY(IncidentSQN),
 	FOREIGN KEY(IncidentSQN) REFERENCES dbo.Incident(IncidentSequenceNumber)
 );
