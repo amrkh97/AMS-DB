@@ -1794,6 +1794,7 @@ CREATE OR ALTER PROC usp_Incident_InsertCallData
 	@FName NVARCHAR(64),
 	@LName NVARCHAR(64),
 	@MobileNumber NVARCHAR(64),
+	@RelationToPatient NVARCHAR(32),
 	@HexCode NVARCHAR(2) OUTPUT
 AS
 BEGIN
@@ -1806,15 +1807,17 @@ BEGIN
 			IncidentSQN ,
 			CallerFName ,
 			CallerLName ,
-			CallerMobile
+			CallerMobile,
+			RelationToPatient
 			)
 		VALUES
 			(
 				@ISQN,
-				ISNULL(@FName,''),
-				ISNULL(@LName,''),
-				@MobileNumber	
-)
+				ISNULL(@FName,'John'),
+				ISNULL(@LName,'Doe'),
+				@MobileNumber,
+				ISNULL(@RelationToPatient,'UnKnown')	
+			)
 		SET @HexCode = '00'
 	END
 ELSE
