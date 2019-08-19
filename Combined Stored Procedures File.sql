@@ -252,6 +252,18 @@ BEGIN
 		SET VehicleStatus = '06'
 		WHERE VIN = @AssociatedVehicleVIN
 
+
+			INSERT INTO ResponseUpdateLog
+			(
+				RespSQN,
+				RespStatusMap
+			)
+			VALUES
+			(
+				@ResponseID,
+				@ResponseStatus
+			)
+
 		RETURN 1
 	END
 END
