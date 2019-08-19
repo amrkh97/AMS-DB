@@ -850,14 +850,14 @@ CREATE TABLE Feedback
 	PRIMARY KEY (FeedbackID)
 );
 
---CREATE TABLE ResponseUpdateLog
---(
---	RespSQN INT NOT NULL,
---	RespStatusMap NVARCHAR(64),
---	RespStatusTime DATETIME DEFAULT (GETDATE())
+CREATE TABLE ResponseUpdateLog
+(
+	RespSQN INT NOT NULL,
+	RespStatusMap NVARCHAR(64),
+	RespStatusTime DATETIME DEFAULT (GETDATE())
 
---	FOREIGN KEY (RespSQN) REFERENCES dbo.Responses(PrimaryResponseSQN)
---);
+	FOREIGN KEY (RespSQN) REFERENCES dbo.Responses(SequenceNumber)
+);
 
 
 CREATE TABLE IncidentCallers

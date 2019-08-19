@@ -329,6 +329,18 @@ BEGIN
 			SET @RespStatus = (SELECT RespStatus
 			FROM Responses
 			WHERE SequenceNumber=@SequenceNumber)
+
+			INSERT INTO ResponseUpdateLog
+			(
+				RespSQN,
+				RespStatusMap
+			)
+			VALUES
+			(
+				@SequenceNumber,
+				@ResponseStatus
+			)
+
 			IF ( @ResponseStatus = '0E')
 			BEGIN
 				SET @VIN = (
@@ -358,6 +370,17 @@ BEGIN
 			RETURN -1
 		END
 	END
+END
+GO
+
+CREATE OR ALTER PROC usp_Response_TripHistory
+@ResponseID INT
+AS
+BEGIN
+
+SELECT * FROM ResponseUpdateLog
+WHERE RespSQN = @ResponseID
+
 END
 ----------------------------------------NEW SET OF STORED PROCEDURES--------------------------------------------------------------
 
