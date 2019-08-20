@@ -111,12 +111,24 @@ BEGIN
 		SELECT @return_Hex_value = '00'
 		
 		UPDATE dbo.AmbulanceMap
-		SET StatusMap = '01' --Ambulance Is Busy Ans Assigned
+		SET StatusMap = '01' --Ambulance Is Busy And Assigned
 		WHERE VIN = @AssociatedVehicleVIN AND StatusMap = '00'
 
 		UPDATE dbo.AmbulanceVehicle
 		SET VehicleStatus = '06'
 		WHERE VIN = @AssociatedVehicleVIN
+
+
+			INSERT INTO ResponseUpdateLog
+			(
+				RespSQN,
+				RespStatusMap
+			)
+			VALUES
+			(
+				@@ResponseID,
+				@ResponseStatus
+			)
 
 		RETURN 1
 	END
@@ -177,6 +189,19 @@ DECLARE @VIN INTEGER
 			SET @RespStatus = (SELECT RespStatus
 			FROM Responses
 			WHERE SequenceNumber=@SequenceNumber)
+
+			INSERT INTO ResponseUpdateLog
+			(
+				RespSQN,
+				RespStatusMap
+			)
+			VALUES
+			(
+				@SequenceNumber,
+				@ResponseStatus
+			)
+
+
 			IF ( @ResponseStatus = '0E')
 			BEGIN
 			SET @VIN = (
@@ -241,7 +266,15 @@ ON PatientLoc.LocationID = Responses.PickLocationID
 
 
 END
-
+GO
 --1	هبوط	1	Urgent	00	1	1	Ahmed	Al-Gohary	NULL	2	Amr	Khaled	NULL	3D0979	BENZ	Cairo
 
+CREATE OR ALTER PROC usp_Response_TripHistory
+@ResponseID INT
+AS
+BEGIN
 
+SELECT * FROM ResponseUpdateLog
+WHERE RespSQN = @ResponseID
+
+END
