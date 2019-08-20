@@ -5201,14 +5201,15 @@ SET @HexCode = '01'
 SET @HexMsg = 'YelloPad Does not Exist'
 END
 END
+GO
 ----------------------------------------NEW SET OF STORED PROCEDURES--------------------------------------------------------------
 
 CREATE OR ALTER PROC YelloPad_Check_Database
 @YelloPadUniqueID NVARCHAR(16),
-@DataBaseStatus NVARCHAR(2) OUTPUT
+@HexCode NVARCHAR(2) OUTPUT
 AS
 BEGIN
-SET @DataBaseStatus = (
+SET @HexCode = (
 SELECT DatabaseStatus 
 FROM YelloPad 
 WHERE YelloPadUniqueID = @YelloPadUniqueID
