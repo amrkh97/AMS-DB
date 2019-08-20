@@ -240,9 +240,9 @@ CREATE TABLE Yellopad
 	YelloPadStatus NVARCHAR(32) NOT NULL DEFAULT '00',
 	YelloPadPicture NVARCHAR(500),
 	YelloPadLatitude NVARCHAR(32),
-	YelloPadLongitude NVARCHAR(32)
-
-	PRIMARY KEY (YelloPadID),
+	YelloPadLongitude NVARCHAR(32),
+	DatabaseStatus NVARCHAR(2) DEFAULT '00',
+	PRIMARY KEY (YelloPadID)
 );
 
 INSERT INTO dbo.Yellopad

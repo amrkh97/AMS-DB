@@ -260,7 +260,7 @@ BEGIN
 			)
 			VALUES
 			(
-				@@ResponseID,
+				@ResponseID,
 				@ResponseStatus
 			)
 
@@ -5050,7 +5050,7 @@ END
 
 IF EXISTS(SELECT Equipment.* FROM Equipment INNER JOIN EquipmentOnCar
 ON EquipmentOnCar.EquipmentName = Equipment.EquipmentName
-WHERE Equipment.EquipmentName LIKE '%'+ @EquipmentName + '%')
+WHERE Equipment.EquipmentName = @EquipmentName AND EquipmentOnCar.VIN = @VIN )
 BEGIN
 SET @HexCode = '03'
 SET @HexMsg = 'Equipment Already On Car'
@@ -5201,8 +5201,46 @@ SET @HexCode = '01'
 SET @HexMsg = 'YelloPad Does not Exist'
 END
 END
+GO
 ----------------------------------------NEW SET OF STORED PROCEDURES--------------------------------------------------------------
 
+CREATE OR ALTER PROC YelloPad_Check_Database
+@YelloPadUniqueID NVARCHAR(16),
+@HexCode NVARCHAR(2) OUTPUT
+AS
+BEGIN
+SET @HexCode = (
+SELECT DatabaseStatus 
+FROM YelloPad 
+WHERE YelloPadUniqueID = @YelloPadUniqueID
+)
+END
+GO
+
+CREATE OR ALTER PROC YelloPad_Set_DataBase
+@YelloPadUniqueID NVARCHAR(16),
+@HexCode NVARCHAR(2) OUTPUT,
+@HexMsg NVARCHAR(100) OUTPUT
+AS
+BEGIN
+
+UPDATE YelloPad
+SET DatabaseStatus = '01'
+WHERE YelloPadUniqueID = @YelloPadUniqueID
+
+IF EXISTS(SELECT * FROM YelloPad WHERE DatabaseStatus = '01'
+AND YelloPadUniqueID = @YelloPadUniqueID)
+BEGIN
+SET @HexCode = '00'
+SET @HexMsg = 'Success' 
+END
+ELSE
+BEGIN
+SET @HexCode = '00'
+SET @HexMsg = 'Success'
+END
+END
+GO
 ----------------------------------------NEW SET OF STORED PROCEDURES--------------------------------------------------------------
 
 ----------------------------------------NEW SET OF STORED PROCEDURES--------------------------------------------------------------

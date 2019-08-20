@@ -154,3 +154,42 @@ SET @HexCode = '01'
 SET @HexMsg = 'YelloPad Does not Exist'
 END
 END
+GO
+
+CREATE OR ALTER PROC YelloPad_Check_Database
+@YelloPadUniqueID NVARCHAR(16),
+@HexCode NVARCHAR(2) OUTPUT
+AS
+BEGIN
+SET @HexCode = (
+SELECT DatabaseStatus 
+FROM YelloPad 
+WHERE YelloPadUniqueID = @YelloPadUniqueID
+)
+END
+GO
+
+CREATE OR ALTER PROC YelloPad_Set_DataBase
+@YelloPadUniqueID NVARCHAR(16),
+@HexCode NVARCHAR(2) OUTPUT,
+@HexMsg NVARCHAR(100) OUTPUT
+AS
+BEGIN
+
+UPDATE YelloPad
+SET DatabaseStatus = '01'
+WHERE YelloPadUniqueID = @YelloPadUniqueID
+
+IF EXISTS(SELECT * FROM YelloPad WHERE DatabaseStatus = '01'
+AND YelloPadUniqueID = @YelloPadUniqueID)
+BEGIN
+SET @HexCode = '00'
+SET @HexMsg = 'Success' 
+END
+ELSE
+BEGIN
+SET @HexCode = '00'
+SET @HexMsg = 'Success'
+END
+END
+GO
