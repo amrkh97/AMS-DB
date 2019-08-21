@@ -432,8 +432,6 @@ BEGIN
 						BEGIN
 						-- Not logged in, so login successful, send his type to backend and jobID
 						-- And set status to 1
-						SET @responseMessage='User logged in successfully'
-						SELECT @return_Hex_value = '00'
 						SET @jobID = (SELECT JobID
 						FROM Employee
 						WHERE EID = @userID)
@@ -444,6 +442,49 @@ BEGIN
 						SET @userPhoto = (SELECT Photo
 						FROM Employee
 						WHERE EID = @userID)
+
+						if (@jobID = 2) --Paramedic
+						BEGIN
+						IF EXISTS( SELECT * FROM AmbulanceMap
+						INNER JOIN Employee
+						ON AmbulanceMap.ParamedicID = Employee.EID
+						WHERE AmbulanceMap.StatusMap <> '04'
+						AND AmbulanceMap.ParamedicID = @userID
+						)
+						BEGIN
+						SET @responseMessage='User logged in successfully'
+						SELECT @return_Hex_value = '00'
+						END
+						ELSE
+						BEGIN
+
+						SELECT @return_Hex_value = 'AA'
+						SET @responseMessage='User is not assigned to any vehicle'
+						RETURN -1
+						END
+						END
+
+						if (@jobID = 3) --Driver
+						BEGIN
+						IF EXISTS( SELECT * FROM AmbulanceMap
+						INNER JOIN Employee
+						ON AmbulanceMap.DriverID = Employee.EID
+						WHERE AmbulanceMap.StatusMap <> '04'
+						AND AmbulanceMap.DriverID = @userID
+						)
+						BEGIN
+						SET @responseMessage='User logged in successfully'
+						SELECT @return_Hex_value = '00'
+						END
+						ELSE
+						BEGIN
+
+						SELECT @return_Hex_value = 'AA'
+						SET @responseMessage='User is not assigned to any vehicle'
+						RETURN -1
+						END
+						END
+
 						UPDATE Employee SET LogInStatus = '01' WHERE EID = @userID
 						SET @inStamp = GETDATE()
 						UPDATE Employee SET LogInTStamp = @inStamp WHERE EID = @userID
@@ -457,6 +498,8 @@ BEGIN
 								@inStamp
 							)
 
+						SET @responseMessage='User logged in successfully'
+						SELECT @return_Hex_value = '00'
 						RETURN 0
 					END
 					IF(@status = '01')
