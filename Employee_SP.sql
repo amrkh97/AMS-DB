@@ -1,31 +1,33 @@
 GO
 
 CREATE OR ALTER PROC get_Employee_getAll
-@SuperSSN INT,
-@jobID INT
+	@SuperSSN INT,
+	@jobID INT
 AS
 BEGIN
 
-IF(@jobID = -1)
+	IF(@jobID = -1)
 BEGIN
-SELECT Emp.EID,Emp.Fname,Emp.Lname,Emp.Email,Emp.ContactNumber,
-	   Emp.PAN,Emp.NationalID,Emp.EmployeeStatus,Emp.Photo,Emp.Age,
-	   Emp.Gender,Emp.City,Emp.JobID,J.Title FROM dbo.Employee AS Emp
-INNER JOIN dbo.Jobs AS J ON J.JobID = Emp.JobID
-WHERE Emp.SuperSSN = @SuperSSN
-END
+		SELECT Emp.EID, Emp.Fname, Emp.Lname, Emp.Email, Emp.ContactNumber,
+			Emp.PAN, Emp.NationalID, Emp.EmployeeStatus, Emp.Photo, Emp.Age,
+			Emp.Gender, Emp.City, Emp.JobID, J.Title, Emp.LogInStatus
+		FROM dbo.Employee AS Emp
+			INNER JOIN dbo.Jobs AS J ON J.JobID = Emp.JobID
+		WHERE Emp.SuperSSN = @SuperSSN
+	END
 ELSE
 BEGIN
 
-SELECT Emp.EID,Emp.Fname,Emp.Lname,Emp.Email,Emp.ContactNumber,
-	   Emp.PAN,Emp.NationalID,Emp.EmployeeStatus,Emp.Photo,Emp.Age,
-	   Emp.Gender,Emp.City,Emp.JobID,J.Title FROM dbo.Employee AS Emp
-INNER JOIN dbo.Jobs AS J ON J.JobID = Emp.JobID
-WHERE Emp.JobID = @jobID AND Emp.SuperSSN = @SuperSSN
+		SELECT Emp.EID, Emp.Fname, Emp.Lname, Emp.Email, Emp.ContactNumber,
+			Emp.PAN, Emp.NationalID, Emp.EmployeeStatus, Emp.Photo, Emp.Age,
+			Emp.Gender, Emp.City, Emp.JobID, J.Title, Emp.LogInStatus
+		FROM dbo.Employee AS Emp
+			INNER JOIN dbo.Jobs AS J ON J.JobID = Emp.JobID
+		WHERE Emp.JobID = @jobID AND Emp.SuperSSN = @SuperSSN
+	END
 END
-END
-
 GO
+
 CREATE OR ALTER PROC get_Employee_AllParamedics
 @SuperSSN INT
 AS

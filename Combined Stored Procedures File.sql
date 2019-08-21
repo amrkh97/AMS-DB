@@ -4609,7 +4609,7 @@ BEGIN
 BEGIN
 		SELECT Emp.EID, Emp.Fname, Emp.Lname, Emp.Email, Emp.ContactNumber,
 			Emp.PAN, Emp.NationalID, Emp.EmployeeStatus, Emp.Photo, Emp.Age,
-			Emp.Gender, Emp.City, Emp.JobID, J.Title
+			Emp.Gender, Emp.City, Emp.JobID, J.Title, Emp.LogInStatus
 		FROM dbo.Employee AS Emp
 			INNER JOIN dbo.Jobs AS J ON J.JobID = Emp.JobID
 		WHERE Emp.SuperSSN = @SuperSSN
@@ -4619,7 +4619,7 @@ BEGIN
 
 		SELECT Emp.EID, Emp.Fname, Emp.Lname, Emp.Email, Emp.ContactNumber,
 			Emp.PAN, Emp.NationalID, Emp.EmployeeStatus, Emp.Photo, Emp.Age,
-			Emp.Gender, Emp.City, Emp.JobID, J.Title
+			Emp.Gender, Emp.City, Emp.JobID, J.Title, Emp.LogInStatus
 		FROM dbo.Employee AS Emp
 			INNER JOIN dbo.Jobs AS J ON J.JobID = Emp.JobID
 		WHERE Emp.JobID = @jobID AND Emp.SuperSSN = @SuperSSN
