@@ -277,6 +277,7 @@ BEGIN
 SELECT * FROM ResponseUpdateLog
 WHERE RespSQN = @ResponseID
 
+END
 GO
 
 --WIP
