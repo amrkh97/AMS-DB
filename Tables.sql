@@ -1044,6 +1044,17 @@ CREATE TABLE AmbulanceVehicleHistory
 	FOREIGN KEY(YelloPadID) REFERENCES Yellopad(YelloPadID)
 
 );
+
+--TODO: After Implementing the token Add Extra Data.
+CREATE TABLE ActivityLog
+(
+	ID INT IDENTITY,
+	IPAddress NVARCHAR(50),
+	RequestPath NVARCHAR(200),
+	CreationTime DATETIME DEFAULT (GETDATE())
+
+	PRIMARY KEY(ID)
+);
 ------------------------------------------------------------------------
 -- Creating Indecies --
 -- (1) Medicine BarCode Unique Index -- 
