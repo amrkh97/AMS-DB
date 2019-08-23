@@ -1049,8 +1049,8 @@ CREATE TABLE AmbulanceVehicleHistory
 CREATE TABLE ActivityLog
 (
 	ID INT IDENTITY,
-	IPAddress NVARCHAR(50),
-	RequestPath NVARCHAR(200),
+	IPAddress NVARCHAR(200),
+	RequestPath NVARCHAR(500),
 	CreationTime DATETIME DEFAULT (GETDATE())
 
 	PRIMARY KEY(ID)
