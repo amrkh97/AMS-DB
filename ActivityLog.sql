@@ -2,7 +2,7 @@ USE KAN_AMO
 GO
 
 CREATE OR ALTER PROC Insert_Into_Log
-@IPAddress NVARCHAR(200),
+@IPAddress NVARCHAR(50),
 @RequestPath NVARCHAR(500)
 AS
 BEGIN
