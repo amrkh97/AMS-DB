@@ -170,7 +170,18 @@ CREATE OR ALTER PROC usp_ResponseStatus_UpdateByID
 AS
 BEGIN
 DECLARE @VIN INTEGER
+
+
+
 	IF(@ResponseStatus IS NULL OR @ResponseStatus = '')
+	BEGIN
+		SET @responseMessage = 'MISSING RESPONSE STATUS VALUE TO UPDATED'
+		SELECT @return_Hex_value = 'EE'
+		RETURN -1
+	END
+
+	IF NOT EXISTS(SELECT * FROM AcceptedResponseStatus
+	WHERE StatusCode=@ResponseStatus)
 	BEGIN
 		SET @responseMessage = 'MISSING RESPONSE STATUS VALUE TO UPDATED'
 		SELECT @return_Hex_value = 'EE'

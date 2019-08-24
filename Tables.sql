@@ -1055,6 +1055,34 @@ CREATE TABLE ActivityLog
 
 	PRIMARY KEY(ID)
 );
+
+CREATE TABLE AcceptedResponseStatus
+(
+	ID INT IDENTITY,
+	StatusCode NVARCHAR(64),
+
+	PRIMARY KEY(ID)
+);
+
+INSERT INTO AcceptedResponseStatus
+(
+	StatusCode
+)
+VALUES
+('01'),
+('02'),
+('03'),
+('04'),
+('05'),
+('06'),
+('07'),
+('08'),
+('09'),
+('0A'),
+('0B'),
+('0C'),
+('0D'),
+('0E')
 ------------------------------------------------------------------------
 -- Creating Indecies --
 -- (1) Medicine BarCode Unique Index -- 
