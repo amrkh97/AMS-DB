@@ -653,8 +653,24 @@ VALUES
 	--72
 	('salah_d@test.com','12345678',null,null,71,3,'Ahmed','Salah'),
 	--73
-	('salah_p@test.com','12345678',null,null,71,2,'Ahmed','Salah')
+	('salah_p@test.com','12345678',null,null,71,2,'Ahmed','Salah'),
 	--74
+	('sherif_m@test.com', '12345678', null, null, 1, 1, 'Sherif', 'abdallah'),
+	--75
+	('sherif_o@test.com', '12345678', null, null, 75, 4, 'Sherif', 'Hassan'),
+	--76
+	('sherif_d1@test.com', '12345678', null, null, 75, 3, 'Sherif', 'Mostafa'),
+	--77
+	('sherif_p1@test.com', '12345678', null, null, 75, 2, 'Sherif', 'Ahmed'),
+	--78
+	('sherif_d2@test.com', '12345678', null, null, 75, 3, 'Sherif', 'Zaky'),
+	--79
+	('sherif_p2@test.com', '12345678', null, null, 75, 2, 'Sherif', 'Hussien'),
+	--80
+	('sherif_d3@test.com', '12345678', null, null, 75, 3, 'Sherif', 'Hasabelnaby'),
+	--81
+	('sherif_p3@test.com', '12345678', null, null, 75, 2, 'Sherif', 'Amr')
+	--82
 
 CREATE TABLE Incident
 (
