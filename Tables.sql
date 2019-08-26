@@ -633,11 +633,11 @@ VALUES
 	--62
 	('amr_m@test.com','12345678',null,null,1,1,'Amr','Khaled'),
 	--63
-	('amr_o@test.com','12345678',null,null,63,4,'Amr','Khaled'),
+	('amr_o@test.com','12345678',null,null,63,4,'Ahmed','Khaled'),
 	--64
-	('amr_d@test.com','12345678',null,null,63,3,'Amr','Khaled'),
+	('amr_d@test.com','12345678',null,null,63,3,'Ashraf','Khaled'),
 	--65
-	('amr_p@test.com','12345678',null,null,63,2,'Amr','Khaled'),
+	('amr_p@test.com','12345678',null,null,63,2,'Omar','Khaled'),
 	--66
 	('kanda_m@test.com','12345678',null,null,1,1,'Mustafa','Kanda'),
 	--67
