@@ -1059,7 +1059,8 @@ CREATE TABLE ActivityLog
 CREATE TABLE AcceptedResponseStatus
 (
 	ID INT IDENTITY,
-	StatusCode NVARCHAR(64),
+	StatusCode NVARCHAR(2),
+	StatusMsg NVARCHAR(100),
 
 	PRIMARY KEY(ID)
 );
