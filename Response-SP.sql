@@ -235,10 +235,19 @@ END
 GO
 
 CREATE OR ALTER PROC usp_Response_TableData
-
+@NumberOfDays INT = 1
 AS
 BEGIN
+DECLARE @dateDiff INT
+SET @dateDiff = 1 --Default Value
 
+IF(@NumberOfDays IS NOT NULL)
+BEGIN
+SET @dateDiff = @NumberOfDays
+END
+
+DECLARE @currentTime DATETIME
+SET @currentTime = GETDATE()
 SELECT
 dbo.Responses.IncidentSQN, dbo.IncidentTypes.TypeName, dbo.Responses.SequenceNumber,
 dbo.Priorities.PriorityName,dbo.Responses.RespStatus,
@@ -263,7 +272,11 @@ INNER JOIN dbo.Priorities
 ON Priorities.PrioritYID = Incident.IncidentPriority
 INNER JOIN dbo.Locations AS PatientLoc
 ON PatientLoc.LocationID = Responses.PickLocationID
-
+WHERE ((Responses.RespStatus <> '0E') 
+OR
+(
+(Responses.RespStatus = '0E') AND (@dateDiff >= DATEDIFF(DAY,Responses.CreationTime,@currentTime)))
+)
 
 END
 GO
@@ -277,6 +290,7 @@ BEGIN
 SELECT * FROM ResponseUpdateLog
 WHERE RespSQN = @ResponseID
 
+END
 GO
 
 --WIP
