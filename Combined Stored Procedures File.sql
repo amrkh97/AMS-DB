@@ -95,49 +95,50 @@ END
 
 ----------------------------------------NEW SET OF STORED PROCEDURES--------------------------------------------------------------
 GO
-
 CREATE OR ALTER PROC usp_Response_TableData
-	@NumberOfDays INT = 1
+@NumberOfDays INT = 1
 AS
 BEGIN
-	DECLARE @dateDiff INT
-	SET @dateDiff = 1
-	--Default Value
+DECLARE @dateDiff INT
+SET @dateDiff = 1 --Default Value
 
-	IF(@NumberOfDays IS NOT NULL)
+IF(@NumberOfDays IS NOT NULL)
 BEGIN
-		SET @dateDiff = @NumberOfDays
-	END
+SET @dateDiff = @NumberOfDays
+END
 
-	DECLARE @currentTime DATETIME
-	SET @currentTime = GETDATE()
-	SELECT
-		dbo.Responses.IncidentSQN, dbo.IncidentTypes.TypeName, dbo.Responses.SequenceNumber,
-		dbo.Priorities.PriorityName, dbo.Responses.RespStatus,
-		dbo.AmbulanceMap.VIN, dbo.AmbulanceMap.ParamedicID, ParamedicTable.Fname, ParamedicTable.Lname, ParamedicTable.ContactNumber,
-		dbo.AmbulanceMap.DriverID, DriverTable.Fname, DriverTable.Lname, DriverTable.ContactNumber,
-		dbo.AmbulanceVehicle.LicencePlate, dbo.AmbulanceVehicle.Model,
-		PatientLoc.FreeFormatAddress
-	FROM dbo.AmbulanceMap
-		INNER JOIN dbo.AmbulanceVehicle
-		ON AmbulanceVehicle.VIN = AmbulanceMap.VIN
-		INNER JOIN dbo.Employee AS ParamedicTable
-		ON ParamedicTable.EID = AmbulanceMap.ParamedicID
-		INNER JOIN dbo.Employee AS DriverTable
-		ON DriverTable.EID = AmbulanceMap.DriverID
-		INNER JOIN dbo.Responses
-		ON Responses.AssociatedVehicleVIN = AmbulanceVehicle.VIN
-		INNER JOIN dbo.Incident
-		ON Incident.IncidentSequenceNumber = Responses.IncidentSQN
-		INNER JOIN dbo.IncidentTypes
-		ON IncidentTypes.IncidentTypeID = Incident.IncidentType
-		INNER JOIN dbo.Priorities
-		ON Priorities.PrioritYID = Incident.IncidentPriority
-		INNER JOIN dbo.Locations AS PatientLoc
-		ON PatientLoc.LocationID = Responses.PickLocationID
-	WHERE ((Responses.RespStatus <> '0E')
-		OR
-		(
+DECLARE @currentTime DATETIME
+SET @currentTime = GETDATE()
+SELECT
+dbo.Responses.IncidentSQN, dbo.IncidentTypes.TypeName, dbo.Responses.SequenceNumber,
+dbo.Priorities.PriorityName,dbo.Responses.RespStatus,
+dbo.AmbulanceMap.VIN,dbo.AmbulanceMap.ParamedicID,ParamedicTable.Fname,ParamedicTable.Lname,ParamedicTable.ContactNumber,
+dbo.AmbulanceMap.DriverID,DriverTable.Fname,DriverTable.Lname,DriverTable.ContactNumber,
+dbo.AmbulanceVehicle.LicencePlate,dbo.AmbulanceVehicle.Model,
+PatientLoc.FreeFormatAddress, PatientLoc.Latitude, PatientLoc.Longitude,
+DropLoc.FreeFormatAddress, DropLoc.Latitude, DropLoc.Longitude
+FROM dbo.AmbulanceMap
+INNER JOIN dbo.AmbulanceVehicle 
+ON AmbulanceVehicle.VIN = AmbulanceMap.VIN
+INNER JOIN dbo.Employee AS ParamedicTable
+ON ParamedicTable.EID = AmbulanceMap.ParamedicID
+INNER JOIN dbo.Employee AS DriverTable
+ON DriverTable.EID = AmbulanceMap.DriverID
+INNER JOIN dbo.Responses
+ON Responses.AssociatedVehicleVIN = AmbulanceVehicle.VIN
+INNER JOIN dbo.Incident
+ON Incident.IncidentSequenceNumber = Responses.IncidentSQN
+INNER JOIN dbo.IncidentTypes
+ON IncidentTypes.IncidentTypeID = Incident.IncidentType
+INNER JOIN dbo.Priorities
+ON Priorities.PrioritYID = Incident.IncidentPriority
+INNER JOIN dbo.Locations AS PatientLoc
+ON PatientLoc.LocationID = Responses.PickLocationID
+INNER JOIN dbo.Locations AS DropLoc
+ON DropLoc.LocationID = Responses.DropLocationID
+WHERE ((Responses.RespStatus <> '0E') 
+OR
+(
 (Responses.RespStatus = '0E') AND (@dateDiff >= DATEDIFF(DAY,Responses.CreationTime,@currentTime)))
 )
 
