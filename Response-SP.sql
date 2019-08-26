@@ -285,7 +285,7 @@ ON Priorities.PrioritYID = Incident.IncidentPriority
 INNER JOIN dbo.Locations AS PatientLoc
 ON PatientLoc.LocationID = Responses.PickLocationID
 INNER JOIN dbo.Locations AS DropLoc
-ON PatientLoc.LocationID = Responses.DropLocationID
+ON DropLoc.LocationID = Responses.DropLocationID
 WHERE ((Responses.RespStatus <> '0E') 
 OR
 (
