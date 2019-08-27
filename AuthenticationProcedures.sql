@@ -25,11 +25,11 @@ BEGIN
 			BEGIN TRY
 
 			IF EXISTS (SELECT *
-			FROM EmployeeRegistration
+			FROM Employee
 			WHERE (Email=@EmailOrPAN OR PAN = @EmailOrPAN OR NationalID=@EmailOrPAN))
 				BEGIN
 					SET @userID = (SELECT EID
-					FROM EmployeeRegistration
+					FROM Employee
 					WHERE (Email=@EmailOrPAN OR PAN = @EmailOrPAN OR NationalID=@EmailOrPAN) AND (HashPassword=@HashPassword))
 
 					SET @status = (SELECT LogInStatus
@@ -180,11 +180,11 @@ BEGIN
 			BEGIN TRY
 
 			IF EXISTS (SELECT *
-			FROM EmployeeRegistration
+			FROM Employee
 			WHERE (Email=@EmailOrPAN OR PAN = @EmailOrPAN OR NationalID=@EmailOrPAN))
 				BEGIN
 					SET @jobIDCheck = (SELECT JobID
-					FROM EmployeeRegistration
+					FROM Employee
 					WHERE (Email=@EmailOrPAN OR PAN = @EmailOrPAN OR NationalID=@EmailOrPAN) AND (HashPassword=@HashPassword))
 					
 					IF(@jobIDCheck = 2 OR @jobIDCheck = 3)
@@ -196,7 +196,7 @@ BEGIN
 					END
 					
 					SET @userID = (SELECT EID
-					FROM EmployeeRegistration
+					FROM Employee
 					WHERE (Email=@EmailOrPAN OR PAN = @EmailOrPAN OR NationalID=@EmailOrPAN) AND (HashPassword=@HashPassword))
 
 					SET @status = (SELECT LogInStatus
@@ -337,7 +337,7 @@ GO
 CREATE OR ALTER PROC usp_Employee_Login_Android
 	@EmailOrPAN NVARCHAR(128),
 	@HashPassword NVARCHAR(128),
-
+	@YelloPadUniqueID NVARCHAR(16),
 	@return_Hex_value NVARCHAR(2)='FF' OUTPUT,
 	@responseMessage NVARCHAR(128)='' OUTPUT,
 
@@ -360,11 +360,11 @@ BEGIN
 			BEGIN TRY
 
 			IF EXISTS (SELECT *
-			FROM EmployeeRegistration
+			FROM Employee
 			WHERE (Email=@EmailOrPAN OR PAN = @EmailOrPAN OR NationalID=@EmailOrPAN))
 				BEGIN
 					SET @jobIDCheck = (SELECT JobID
-					FROM EmployeeRegistration
+					FROM Employee
 					WHERE (Email=@EmailOrPAN OR PAN = @EmailOrPAN OR NationalID=@EmailOrPAN) AND (HashPassword=@HashPassword))
 					
 					IF(@jobIDCheck = 0 OR @jobIDCheck = 1 OR @jobIDCheck = 4)
@@ -376,7 +376,7 @@ BEGIN
 					END
 					
 					SET @userID = (SELECT EID
-					FROM EmployeeRegistration
+					FROM Employee
 					WHERE (Email=@EmailOrPAN OR PAN = @EmailOrPAN OR NationalID=@EmailOrPAN) AND (HashPassword=@HashPassword))
 
 					SET @status = (SELECT LogInStatus
@@ -445,42 +445,36 @@ BEGIN
 
 						if (@jobID = 2) --Paramedic
 						BEGIN
-						IF EXISTS( SELECT * FROM AmbulanceMap
+						IF NOT EXISTS( SELECT * FROM AmbulanceMap
 						INNER JOIN Employee
 						ON AmbulanceMap.ParamedicID = Employee.EID
+						INNER JOIN Yellopad
+						ON Yellopad.YelloPadID = AmbulanceMap.YelloPadID
 						WHERE AmbulanceMap.StatusMap <> '04'
 						AND AmbulanceMap.ParamedicID = @userID
+						AND YelloPad.YelloPadUniqueID = @YelloPadUniqueID
 						)
 						BEGIN
-						SET @responseMessage='User logged in successfully'
-						SELECT @return_Hex_value = '00'
-						END
-						ELSE
-						BEGIN
-
 						SELECT @return_Hex_value = 'AA'
-						SET @responseMessage='User is not assigned to any vehicle'
+						SET @responseMessage='User is not assigned to this vehicle'
 						RETURN -1
 						END
 						END
 
 						if (@jobID = 3) --Driver
 						BEGIN
-						IF EXISTS( SELECT * FROM AmbulanceMap
+						IF NOT EXISTS( SELECT * FROM AmbulanceMap
 						INNER JOIN Employee
 						ON AmbulanceMap.DriverID = Employee.EID
+						INNER JOIN Yellopad
+						ON Yellopad.YelloPadID = AmbulanceMap.YelloPadID
 						WHERE AmbulanceMap.StatusMap <> '04'
 						AND AmbulanceMap.DriverID = @userID
+						AND YelloPad.YelloPadUniqueID = @YelloPadUniqueID
 						)
 						BEGIN
-						SET @responseMessage='User logged in successfully'
-						SELECT @return_Hex_value = '00'
-						END
-						ELSE
-						BEGIN
-
 						SELECT @return_Hex_value = 'AA'
-						SET @responseMessage='User is not assigned to any vehicle'
+						SET @responseMessage='User is not assigned to this vehicle'
 						RETURN -1
 						END
 						END

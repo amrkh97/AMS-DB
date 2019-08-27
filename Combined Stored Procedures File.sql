@@ -2031,27 +2031,27 @@ BEGIN
 			BEGIN TRY
 
 			IF EXISTS (SELECT *
-			FROM EmployeeRegistration
+			FROM Employee
 			WHERE (Email=@EmailOrPAN OR PAN = @EmailOrPAN OR NationalID=@EmailOrPAN))
 				BEGIN
-				SET @userID = (SELECT EID
-				FROM EmployeeRegistration
-				WHERE (Email=@EmailOrPAN OR PAN = @EmailOrPAN OR NationalID=@EmailOrPAN) AND (HashPassword=@HashPassword))
+					SET @userID = (SELECT EID
+					FROM Employee
+					WHERE (Email=@EmailOrPAN OR PAN = @EmailOrPAN OR NationalID=@EmailOrPAN) AND (HashPassword=@HashPassword))
 
-				SET @status = (SELECT LogInStatus
-				FROM Employee
-				WHERE EID=@userID)
+					SET @status = (SELECT LogInStatus
+					FROM Employee
+					WHERE EID=@userID)
 
-				IF(@status = '02')
+					IF(@status = '02')
 						BEGIN
-					-- Not verrified
-					SET @responseMessage='This user is not verified'
-					SELECT @return_Hex_value = '04'
-					RETURN 4
+						-- Not verrified
+						SET @responseMessage='This user is not verified'
+						SELECT @return_Hex_value = '04'
+						RETURN 4
+					END
 				END
-			END
 				
-				IF EXISTS (SELECT *
+			IF EXISTS (SELECT *
 			FROM Employee
 			WHERE (Email=@EmailOrPAN OR PAN = @EmailOrPAN OR NationalID=@EmailOrPAN))
 				BEGIN
@@ -2186,48 +2186,48 @@ BEGIN
 			BEGIN TRY
 
 			IF EXISTS (SELECT *
-			FROM EmployeeRegistration
+			FROM Employee
 			WHERE (Email=@EmailOrPAN OR PAN = @EmailOrPAN OR NationalID=@EmailOrPAN))
 				BEGIN
-				SET @jobIDCheck = (SELECT JobID
-				FROM EmployeeRegistration
-				WHERE (Email=@EmailOrPAN OR PAN = @EmailOrPAN OR NationalID=@EmailOrPAN) AND (HashPassword=@HashPassword))
-
-				IF(@jobIDCheck = 2 OR @jobIDCheck = 3)
+					SET @jobIDCheck = (SELECT JobID
+					FROM Employee
+					WHERE (Email=@EmailOrPAN OR PAN = @EmailOrPAN OR NationalID=@EmailOrPAN) AND (HashPassword=@HashPassword))
+					
+					IF(@jobIDCheck = 2 OR @jobIDCheck = 3)
 					BEGIN
-					-- Not Allowed (Paramedic or Driver)
-					SET @responseMessage='This user is not allowed to login'
-					SELECT @return_Hex_value = '01'
-					RETURN 1
-				END
+						-- Not Allowed (Paramedic or Driver)
+						SET @responseMessage='This user is not allowed to login'
+						SELECT @return_Hex_value = '01'
+						RETURN 1
+					END
+					
+					SET @userID = (SELECT EID
+					FROM Employee
+					WHERE (Email=@EmailOrPAN OR PAN = @EmailOrPAN OR NationalID=@EmailOrPAN) AND (HashPassword=@HashPassword))
 
-				SET @userID = (SELECT EID
-				FROM EmployeeRegistration
-				WHERE (Email=@EmailOrPAN OR PAN = @EmailOrPAN OR NationalID=@EmailOrPAN) AND (HashPassword=@HashPassword))
+					SET @status = (SELECT LogInStatus
+					FROM Employee
+					WHERE EID=@userID)
 
-				SET @status = (SELECT LogInStatus
-				FROM Employee
-				WHERE EID=@userID)
-
-				IF(@status = '02')
+					IF(@status = '02')
 					BEGIN
-					-- Not verrified
-					SET @responseMessage='This user is not verified'
-					SELECT @return_Hex_value = '04'
-					RETURN 4
+						-- Not verrified
+						SET @responseMessage='This user is not verified'
+						SELECT @return_Hex_value = '04'
+						RETURN 4
+					END
 				END
-			END
 				
 			IF EXISTS (SELECT *
 			FROM Employee
 			WHERE (Email=@EmailOrPAN OR PAN = @EmailOrPAN OR NationalID=@EmailOrPAN))
 				BEGIN
 				-- Found the user using email or PAN or National ID
-
+				
 				SET @jobIDCheck = (SELECT JobID
 				FROM Employee
 				WHERE (Email=@EmailOrPAN OR PAN = @EmailOrPAN OR NationalID=@EmailOrPAN) AND (HashPassword=@HashPassword))
-
+					
 				IF(@jobIDCheck = 2 OR @jobIDCheck = 3)
 				BEGIN
 					-- Not Allowed (Paramedic or Driver)
@@ -2235,7 +2235,7 @@ BEGIN
 					SELECT @return_Hex_value = '01'
 					RETURN 1
 				END
-
+				
 				SET @userID = (SELECT EID
 				FROM Employee
 				WHERE (Email=@EmailOrPAN OR PAN = @EmailOrPAN OR NationalID=@EmailOrPAN) AND (HashPassword=@HashPassword))
@@ -2343,7 +2343,7 @@ GO
 CREATE OR ALTER PROC usp_Employee_Login_Android
 	@EmailOrPAN NVARCHAR(128),
 	@HashPassword NVARCHAR(128),
-
+	@YelloPadUniqueID NVARCHAR(16),
 	@return_Hex_value NVARCHAR(2)='FF' OUTPUT,
 	@responseMessage NVARCHAR(128)='' OUTPUT,
 
@@ -2366,48 +2366,48 @@ BEGIN
 			BEGIN TRY
 
 			IF EXISTS (SELECT *
-			FROM EmployeeRegistration
+			FROM Employee
 			WHERE (Email=@EmailOrPAN OR PAN = @EmailOrPAN OR NationalID=@EmailOrPAN))
 				BEGIN
-				SET @jobIDCheck = (SELECT JobID
-				FROM EmployeeRegistration
-				WHERE (Email=@EmailOrPAN OR PAN = @EmailOrPAN OR NationalID=@EmailOrPAN) AND (HashPassword=@HashPassword))
-
-				IF(@jobIDCheck = 0 OR @jobIDCheck = 1 OR @jobIDCheck = 4)
+					SET @jobIDCheck = (SELECT JobID
+					FROM Employee
+					WHERE (Email=@EmailOrPAN OR PAN = @EmailOrPAN OR NationalID=@EmailOrPAN) AND (HashPassword=@HashPassword))
+					
+					IF(@jobIDCheck = 0 OR @jobIDCheck = 1 OR @jobIDCheck = 4)
 					BEGIN
-					-- Not Allowed (Admin or Manager or Operator)
-					SET @responseMessage='This user is not allowed to login'
-					SELECT @return_Hex_value = '01'
-					RETURN 1
-				END
+						-- Not Allowed (Admin or Manager or Operator)
+						SET @responseMessage='This user is not allowed to login'
+						SELECT @return_Hex_value = '01'
+						RETURN 1
+					END
+					
+					SET @userID = (SELECT EID
+					FROM Employee
+					WHERE (Email=@EmailOrPAN OR PAN = @EmailOrPAN OR NationalID=@EmailOrPAN) AND (HashPassword=@HashPassword))
 
-				SET @userID = (SELECT EID
-				FROM EmployeeRegistration
-				WHERE (Email=@EmailOrPAN OR PAN = @EmailOrPAN OR NationalID=@EmailOrPAN) AND (HashPassword=@HashPassword))
+					SET @status = (SELECT LogInStatus
+					FROM Employee
+					WHERE EID=@userID)
 
-				SET @status = (SELECT LogInStatus
-				FROM Employee
-				WHERE EID=@userID)
-
-				IF(@status = '02')
+					IF(@status = '02')
 					BEGIN
-					-- Not verrified
-					SET @responseMessage='This user is not verified'
-					SELECT @return_Hex_value = '04'
-					RETURN 4
+						-- Not verrified
+						SET @responseMessage='This user is not verified'
+						SELECT @return_Hex_value = '04'
+						RETURN 4
+					END
 				END
-			END
 				
 			IF EXISTS (SELECT *
 			FROM Employee
 			WHERE (Email=@EmailOrPAN OR PAN = @EmailOrPAN OR NationalID=@EmailOrPAN))
 				BEGIN
 				-- Found the user using email or PAN or National ID
-
+				
 				SET @jobIDCheck = (SELECT JobID
 				FROM Employee
 				WHERE (Email=@EmailOrPAN OR PAN = @EmailOrPAN OR NationalID=@EmailOrPAN) AND (HashPassword=@HashPassword))
-
+					
 				IF(@jobIDCheck = 0 OR @jobIDCheck = 1 OR @jobIDCheck = 4)
 				BEGIN
 					-- Not Allowed (Admin or Manager or Operator)
@@ -2415,7 +2415,7 @@ BEGIN
 					SELECT @return_Hex_value = '01'
 					RETURN 1
 				END
-
+				
 				SET @userID = (SELECT EID
 				FROM Employee
 				WHERE (Email=@EmailOrPAN OR PAN = @EmailOrPAN OR NationalID=@EmailOrPAN) AND (HashPassword=@HashPassword))
@@ -2438,8 +2438,6 @@ BEGIN
 						BEGIN
 						-- Not logged in, so login successful, send his type to backend and jobID
 						-- And set status to 1
-						SET @responseMessage='User logged in successfully'
-						SELECT @return_Hex_value = '00'
 						SET @jobID = (SELECT JobID
 						FROM Employee
 						WHERE EID = @userID)
@@ -2450,6 +2448,43 @@ BEGIN
 						SET @userPhoto = (SELECT Photo
 						FROM Employee
 						WHERE EID = @userID)
+
+						if (@jobID = 2) --Paramedic
+						BEGIN
+						IF NOT EXISTS( SELECT * FROM AmbulanceMap
+						INNER JOIN Employee
+						ON AmbulanceMap.ParamedicID = Employee.EID
+						INNER JOIN Yellopad
+						ON Yellopad.YelloPadID = AmbulanceMap.YelloPadID
+						WHERE AmbulanceMap.StatusMap <> '04'
+						AND AmbulanceMap.ParamedicID = @userID
+						AND YelloPad.YelloPadUniqueID = @YelloPadUniqueID
+						)
+						BEGIN
+						SELECT @return_Hex_value = 'AA'
+						SET @responseMessage='User is not assigned to this vehicle'
+						RETURN -1
+						END
+						END
+
+						if (@jobID = 3) --Driver
+						BEGIN
+						IF NOT EXISTS( SELECT * FROM AmbulanceMap
+						INNER JOIN Employee
+						ON AmbulanceMap.DriverID = Employee.EID
+						INNER JOIN Yellopad
+						ON Yellopad.YelloPadID = AmbulanceMap.YelloPadID
+						WHERE AmbulanceMap.StatusMap <> '04'
+						AND AmbulanceMap.DriverID = @userID
+						AND YelloPad.YelloPadUniqueID = @YelloPadUniqueID
+						)
+						BEGIN
+						SELECT @return_Hex_value = 'AA'
+						SET @responseMessage='User is not assigned to this vehicle'
+						RETURN -1
+						END
+						END
+
 						UPDATE Employee SET LogInStatus = '01' WHERE EID = @userID
 						SET @inStamp = GETDATE()
 						UPDATE Employee SET LogInTStamp = @inStamp WHERE EID = @userID
@@ -2463,6 +2498,8 @@ BEGIN
 								@inStamp
 							)
 
+						SET @responseMessage='User logged in successfully'
+						SELECT @return_Hex_value = '00'
 						RETURN 0
 					END
 					IF(@status = '01')
@@ -2517,7 +2554,6 @@ BEGIN
 		RETURN -1
 	END
 END
-
 
 -- Logout --
 GO
@@ -2620,6 +2656,7 @@ CREATE OR ALTER PROC usp_Employee_Signup
 	@contactNumber NVARCHAR(64),
 	@country NVARCHAR(32),
 	@city NVARCHAR(32),
+	-- TODO: Review --
 	@state NVARCHAR(32),
 	@street NVARCHAR(64),
 	@postalCode VARCHAR(20),
