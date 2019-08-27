@@ -31,7 +31,8 @@ GO
 CREATE OR ALTER proc usp_YelloPads_selectNotAssigned
 AS
 BEGIN
-    select * from Yellopad
+	select *
+	from Yellopad
 	where YelloPadStatus = '00'
 END
 
@@ -39,7 +40,8 @@ GO
 CREATE OR ALTER proc usp_YelloPads_selectAssigned
 AS
 BEGIN
-    select * from Yellopad
+	select *
+	from Yellopad
 	where YelloPadStatus = '01'
 END
  ------------------------------------------
@@ -93,41 +95,56 @@ END
 
 ----------------------------------------NEW SET OF STORED PROCEDURES--------------------------------------------------------------
 GO
-
 CREATE OR ALTER PROC usp_Response_TableData
-
+@NumberOfDays INT = 1
 AS
 BEGIN
+DECLARE @dateDiff INT
+SET @dateDiff = 1 --Default Value
 
-	SELECT
-		dbo.Responses.IncidentSQN, dbo.IncidentTypes.TypeName, dbo.Responses.SequenceNumber,
-		dbo.Priorities.PriorityName, dbo.Responses.RespStatus,
-		dbo.AmbulanceMap.VIN, dbo.AmbulanceMap.ParamedicID, ParamedicTable.Fname, ParamedicTable.Lname, ParamedicTable.ContactNumber,
-		dbo.AmbulanceMap.DriverID, DriverTable.Fname, DriverTable.Lname, DriverTable.ContactNumber,
-		dbo.AmbulanceVehicle.LicencePlate, dbo.AmbulanceVehicle.Model,
-		PatientLoc.FreeFormatAddress
-	FROM dbo.AmbulanceMap
-		INNER JOIN dbo.AmbulanceVehicle
-		ON AmbulanceVehicle.VIN = AmbulanceMap.VIN
-		INNER JOIN dbo.Employee AS ParamedicTable
-		ON ParamedicTable.EID = AmbulanceMap.ParamedicID
-		INNER JOIN dbo.Employee AS DriverTable
-		ON DriverTable.EID = AmbulanceMap.DriverID
-		INNER JOIN dbo.Responses
-		ON Responses.AssociatedVehicleVIN = AmbulanceVehicle.VIN
-		INNER JOIN dbo.Incident
-		ON Incident.IncidentSequenceNumber = Responses.IncidentSQN
-		INNER JOIN dbo.IncidentTypes
-		ON IncidentTypes.IncidentTypeID = Incident.IncidentType
-		INNER JOIN dbo.Priorities
-		ON Priorities.PrioritYID = Incident.IncidentPriority
-		INNER JOIN dbo.Locations AS PatientLoc
-		ON PatientLoc.LocationID = Responses.PickLocationID
-
-
+IF(@NumberOfDays IS NOT NULL)
+BEGIN
+SET @dateDiff = @NumberOfDays
 END
 
+DECLARE @currentTime DATETIME
+SET @currentTime = GETDATE()
+SELECT
+dbo.Responses.IncidentSQN, dbo.IncidentTypes.TypeName, dbo.Responses.SequenceNumber,
+dbo.Priorities.PriorityName,dbo.Responses.RespStatus,
+dbo.AmbulanceMap.VIN,dbo.AmbulanceMap.ParamedicID,ParamedicTable.Fname,ParamedicTable.Lname,ParamedicTable.ContactNumber,
+dbo.AmbulanceMap.DriverID,DriverTable.Fname,DriverTable.Lname,DriverTable.ContactNumber,
+dbo.AmbulanceVehicle.LicencePlate,dbo.AmbulanceVehicle.Model,
+PatientLoc.FreeFormatAddress, PatientLoc.Latitude, PatientLoc.Longitude,
+DropLoc.FreeFormatAddress, DropLoc.Latitude, DropLoc.Longitude
+FROM dbo.AmbulanceMap
+INNER JOIN dbo.AmbulanceVehicle 
+ON AmbulanceVehicle.VIN = AmbulanceMap.VIN
+INNER JOIN dbo.Employee AS ParamedicTable
+ON ParamedicTable.EID = AmbulanceMap.ParamedicID
+INNER JOIN dbo.Employee AS DriverTable
+ON DriverTable.EID = AmbulanceMap.DriverID
+INNER JOIN dbo.Responses
+ON Responses.AssociatedVehicleVIN = AmbulanceVehicle.VIN
+INNER JOIN dbo.Incident
+ON Incident.IncidentSequenceNumber = Responses.IncidentSQN
+INNER JOIN dbo.IncidentTypes
+ON IncidentTypes.IncidentTypeID = Incident.IncidentType
+INNER JOIN dbo.Priorities
+ON Priorities.PrioritYID = Incident.IncidentPriority
+INNER JOIN dbo.Locations AS PatientLoc
+ON PatientLoc.LocationID = Responses.PickLocationID
+INNER JOIN dbo.Locations AS DropLoc
+ON DropLoc.LocationID = Responses.DropLocationID
+WHERE ((Responses.RespStatus <> '0E') 
+OR
+(
+(Responses.RespStatus = '0E') AND (@dateDiff >= DATEDIFF(DAY,Responses.CreationTime,@currentTime)))
+)
+
+END
 GO
+
 CREATE OR ALTER PROC usp_Response_Insert
 	@AssociatedVehicleVIN INT,
 	--1
@@ -253,12 +270,12 @@ BEGIN
 		WHERE VIN = @AssociatedVehicleVIN
 
 
-			INSERT INTO ResponseUpdateLog
+		INSERT INTO ResponseUpdateLog
 			(
-				RespSQN,
-				RespStatusMap
+			RespSQN,
+			RespStatusMap
 			)
-			VALUES
+		VALUES
 			(
 				@ResponseID,
 				@ResponseStatus
@@ -316,6 +333,14 @@ BEGIN
 		SELECT @return_Hex_value = 'EE'
 		RETURN -1
 	END
+
+	IF NOT EXISTS(SELECT * FROM AcceptedResponseStatus
+	WHERE StatusCode=@ResponseStatus)
+	BEGIN
+		SET @responseMessage = 'MISSING RESPONSE STATUS VALUE TO UPDATED'
+		SELECT @return_Hex_value = 'EE'
+		RETURN -1
+	END
 	ELSE
 	BEGIN
 		IF EXISTS (SELECT TOP 1
@@ -331,14 +356,14 @@ BEGIN
 			WHERE SequenceNumber=@SequenceNumber)
 
 			INSERT INTO ResponseUpdateLog
-			(
+				(
 				RespSQN,
 				RespStatusMap
-			)
+				)
 			VALUES
-			(
-				@SequenceNumber,
-				@ResponseStatus
+				(
+					@SequenceNumber,
+					@ResponseStatus
 			)
 
 			IF ( @ResponseStatus = '0E')
@@ -374,12 +399,13 @@ END
 GO
 
 CREATE OR ALTER PROC usp_Response_TripHistory
-@ResponseID INT
+	@ResponseID INT
 AS
 BEGIN
 
-SELECT * FROM ResponseUpdateLog
-WHERE RespSQN = @ResponseID
+	SELECT *
+	FROM ResponseUpdateLog
+	WHERE RespSQN = @ResponseID
 
 END
 ----------------------------------------NEW SET OF STORED PROCEDURES--------------------------------------------------------------
@@ -2163,45 +2189,45 @@ BEGIN
 			FROM EmployeeRegistration
 			WHERE (Email=@EmailOrPAN OR PAN = @EmailOrPAN OR NationalID=@EmailOrPAN))
 				BEGIN
-					SET @jobIDCheck = (SELECT JobID
-					FROM EmployeeRegistration
-					WHERE (Email=@EmailOrPAN OR PAN = @EmailOrPAN OR NationalID=@EmailOrPAN) AND (HashPassword=@HashPassword))
-					
-					IF(@jobIDCheck = 2 OR @jobIDCheck = 3)
-					BEGIN
-						-- Not Allowed (Paramedic or Driver)
-						SET @responseMessage='This user is not allowed to login'
-						SELECT @return_Hex_value = '01'
-						RETURN 1
-					END
-					
-					SET @userID = (SELECT EID
-					FROM EmployeeRegistration
-					WHERE (Email=@EmailOrPAN OR PAN = @EmailOrPAN OR NationalID=@EmailOrPAN) AND (HashPassword=@HashPassword))
+				SET @jobIDCheck = (SELECT JobID
+				FROM EmployeeRegistration
+				WHERE (Email=@EmailOrPAN OR PAN = @EmailOrPAN OR NationalID=@EmailOrPAN) AND (HashPassword=@HashPassword))
 
-					SET @status = (SELECT LogInStatus
-					FROM Employee
-					WHERE EID=@userID)
-
-					IF(@status = '02')
+				IF(@jobIDCheck = 2 OR @jobIDCheck = 3)
 					BEGIN
-						-- Not verrified
-						SET @responseMessage='This user is not verified'
-						SELECT @return_Hex_value = '04'
-						RETURN 4
-					END
+					-- Not Allowed (Paramedic or Driver)
+					SET @responseMessage='This user is not allowed to login'
+					SELECT @return_Hex_value = '01'
+					RETURN 1
 				END
+
+				SET @userID = (SELECT EID
+				FROM EmployeeRegistration
+				WHERE (Email=@EmailOrPAN OR PAN = @EmailOrPAN OR NationalID=@EmailOrPAN) AND (HashPassword=@HashPassword))
+
+				SET @status = (SELECT LogInStatus
+				FROM Employee
+				WHERE EID=@userID)
+
+				IF(@status = '02')
+					BEGIN
+					-- Not verrified
+					SET @responseMessage='This user is not verified'
+					SELECT @return_Hex_value = '04'
+					RETURN 4
+				END
+			END
 				
 			IF EXISTS (SELECT *
 			FROM Employee
 			WHERE (Email=@EmailOrPAN OR PAN = @EmailOrPAN OR NationalID=@EmailOrPAN))
 				BEGIN
 				-- Found the user using email or PAN or National ID
-				
+
 				SET @jobIDCheck = (SELECT JobID
 				FROM Employee
 				WHERE (Email=@EmailOrPAN OR PAN = @EmailOrPAN OR NationalID=@EmailOrPAN) AND (HashPassword=@HashPassword))
-					
+
 				IF(@jobIDCheck = 2 OR @jobIDCheck = 3)
 				BEGIN
 					-- Not Allowed (Paramedic or Driver)
@@ -2209,7 +2235,7 @@ BEGIN
 					SELECT @return_Hex_value = '01'
 					RETURN 1
 				END
-				
+
 				SET @userID = (SELECT EID
 				FROM Employee
 				WHERE (Email=@EmailOrPAN OR PAN = @EmailOrPAN OR NationalID=@EmailOrPAN) AND (HashPassword=@HashPassword))
@@ -2343,45 +2369,45 @@ BEGIN
 			FROM EmployeeRegistration
 			WHERE (Email=@EmailOrPAN OR PAN = @EmailOrPAN OR NationalID=@EmailOrPAN))
 				BEGIN
-					SET @jobIDCheck = (SELECT JobID
-					FROM EmployeeRegistration
-					WHERE (Email=@EmailOrPAN OR PAN = @EmailOrPAN OR NationalID=@EmailOrPAN) AND (HashPassword=@HashPassword))
-					
-					IF(@jobIDCheck = 0 OR @jobIDCheck = 1 OR @jobIDCheck = 4)
-					BEGIN
-						-- Not Allowed (Admin or Manager or Operator)
-						SET @responseMessage='This user is not allowed to login'
-						SELECT @return_Hex_value = '01'
-						RETURN 1
-					END
-					
-					SET @userID = (SELECT EID
-					FROM EmployeeRegistration
-					WHERE (Email=@EmailOrPAN OR PAN = @EmailOrPAN OR NationalID=@EmailOrPAN) AND (HashPassword=@HashPassword))
+				SET @jobIDCheck = (SELECT JobID
+				FROM EmployeeRegistration
+				WHERE (Email=@EmailOrPAN OR PAN = @EmailOrPAN OR NationalID=@EmailOrPAN) AND (HashPassword=@HashPassword))
 
-					SET @status = (SELECT LogInStatus
-					FROM Employee
-					WHERE EID=@userID)
-
-					IF(@status = '02')
+				IF(@jobIDCheck = 0 OR @jobIDCheck = 1 OR @jobIDCheck = 4)
 					BEGIN
-						-- Not verrified
-						SET @responseMessage='This user is not verified'
-						SELECT @return_Hex_value = '04'
-						RETURN 4
-					END
+					-- Not Allowed (Admin or Manager or Operator)
+					SET @responseMessage='This user is not allowed to login'
+					SELECT @return_Hex_value = '01'
+					RETURN 1
 				END
+
+				SET @userID = (SELECT EID
+				FROM EmployeeRegistration
+				WHERE (Email=@EmailOrPAN OR PAN = @EmailOrPAN OR NationalID=@EmailOrPAN) AND (HashPassword=@HashPassword))
+
+				SET @status = (SELECT LogInStatus
+				FROM Employee
+				WHERE EID=@userID)
+
+				IF(@status = '02')
+					BEGIN
+					-- Not verrified
+					SET @responseMessage='This user is not verified'
+					SELECT @return_Hex_value = '04'
+					RETURN 4
+				END
+			END
 				
 			IF EXISTS (SELECT *
 			FROM Employee
 			WHERE (Email=@EmailOrPAN OR PAN = @EmailOrPAN OR NationalID=@EmailOrPAN))
 				BEGIN
 				-- Found the user using email or PAN or National ID
-				
+
 				SET @jobIDCheck = (SELECT JobID
 				FROM Employee
 				WHERE (Email=@EmailOrPAN OR PAN = @EmailOrPAN OR NationalID=@EmailOrPAN) AND (HashPassword=@HashPassword))
-					
+
 				IF(@jobIDCheck = 0 OR @jobIDCheck = 1 OR @jobIDCheck = 4)
 				BEGIN
 					-- Not Allowed (Admin or Manager or Operator)
@@ -2389,7 +2415,7 @@ BEGIN
 					SELECT @return_Hex_value = '01'
 					RETURN 1
 				END
-				
+
 				SET @userID = (SELECT EID
 				FROM Employee
 				WHERE (Email=@EmailOrPAN OR PAN = @EmailOrPAN OR NationalID=@EmailOrPAN) AND (HashPassword=@HashPassword))
@@ -2696,57 +2722,62 @@ END
 GO
 
 CREATE OR ALTER PROC usp_BatchMedicine_Insert
-@BatchID BIGINT,
-@MedicineBarcode NVARCHAR(64),
-@MedicineQuantity INTEGER,
-@HexCode NVARCHAR(2) OUTPUT
+	@BatchID BIGINT,
+	@MedicineBarcode NVARCHAR(64),
+	@MedicineQuantity INTEGER,
+	@HexCode NVARCHAR(2) OUTPUT
 AS
 BEGIN
 
-DECLARE @QuantityDifference INT
-set @QuantityDifference = (select CountInStock from Medicine where BarCode = @MedicineBarcode) - @MedicineQuantity
+	DECLARE @QuantityDifference INT
+	set @QuantityDifference = (select CountInStock
+	from Medicine
+	where BarCode = @MedicineBarcode) - @MedicineQuantity
 
-if(@QuantityDifference >= 0)
+	if(@QuantityDifference >= 0)
 begin
 
-if not exists(select * from dbo.Batch  where dbo.Batch.BatchID=@BatchID)
+		if not exists(select *
+		from dbo.Batch
+		where dbo.Batch.BatchID=@BatchID)
 begin
-insert into dbo.Batch(BatchID)
-VALUES(@BatchID)
-end
+			insert into dbo.Batch
+				(BatchID)
+			VALUES(@BatchID)
+		end
 
-INSERT INTO dbo.BatchMedicine
-(
-    BatchID,
-    MedicineBCode,
-    Quantity
-)
-VALUES
-(   @BatchID ,
-    @MedicineBarcode,
-    @MedicineQuantity
+		INSERT INTO dbo.BatchMedicine
+			(
+			BatchID,
+			MedicineBCode,
+			Quantity
+			)
+		VALUES
+			( @BatchID ,
+				@MedicineBarcode,
+				@MedicineQuantity
 )
 
-UPDATE dbo.Medicine
+		UPDATE dbo.Medicine
 SET CountInStock = @QuantityDifference WHERE BarCode = @MedicineBarcode;
--- '00' -> Addition Successful    
-SET @HexCode = '00'
-END
+		-- '00' -> Addition Successful    
+		SET @HexCode = '00'
+	END
 ELSE
 BEGIN
--- '01' -> Addition Failed
-SET @HexCode = '01'
-END
+		-- '01' -> Addition Failed
+		SET @HexCode = '01'
+	END
 END
 go
 
 
 CREATE OR ALTER PROC usp_Batch_MedicineUsed
-@batchID BIGINT,
-@sequenceNumber INTEGER,
-@barCode NVARCHAR(64),
-@usedAmt INTEGER,
-@HexCode NVARCHAR(2) OUTPUT
+	@batchID BIGINT,
+	@sequenceNumber INTEGER,
+	@barCode NVARCHAR(64),
+	@usedAmt INTEGER,
+	@HexCode NVARCHAR(2) OUTPUT
 AS
 BEGIN
 	DECLARE @QuantityDifference INT
@@ -2787,10 +2818,12 @@ END
 GO
 
 CREATE OR ALTER PROC usp_AmbulanceMap_getAllBatches
-@VIN INTEGER
+	@VIN INTEGER
 AS
 BEGIN
-SELECT BatchID FROM dbo.AmbulanceBatchesMap WHERE AssociatedVIN = @VIN
+	SELECT BatchID
+	FROM dbo.AmbulanceBatchesMap
+	WHERE AssociatedVIN = @VIN
 END
 GO
 
@@ -2807,19 +2840,21 @@ END
 GO
 
 CREATE OR ALTER PROC usp_BatchMedicine_Update
-@BatchID bigint,
-@MedicineBarcode nvarchar(64),
-@MedicineQuantity integer,
-@HexCode nvarchar(2) OUTPUT
+	@BatchID bigint,
+	@MedicineBarcode nvarchar(64),
+	@MedicineQuantity integer,
+	@HexCode nvarchar(2) OUTPUT
 AS
 BEGIN
-  DECLARE @OldQuantity INT
-  DECLARE @QuantityDifference INT
-  DECLARE @QuantityFinal INT
-  DECLARE @CountInStock INT
+	DECLARE @OldQuantity INT
+	DECLARE @QuantityDifference INT
+	DECLARE @QuantityFinal INT
+	DECLARE @CountInStock INT
 
 
-	IF NOT EXISTS(SELECT * FROM BatchMedicine bm WHERE bm.MedicineBCode = @MedicineBarcode)
+	IF NOT EXISTS(SELECT *
+	FROM BatchMedicine bm
+	WHERE bm.MedicineBCode = @MedicineBarcode)
 		BEGIN
 		EXEC usp_BatchMedicine_Insert @BatchID ,@MedicineBarcode, @MedicineQuantity, @HexCode OUTPUT
 		PRINT @HexCode
@@ -2827,67 +2862,69 @@ BEGIN
 	END
 
 	SET @OldQuantity = (
-	SELECT bm.Quantity FROM BatchMedicine bm
+	SELECT bm.Quantity
+	FROM BatchMedicine bm
 	WHERE bm.BatchID = @BatchID AND bm.MedicineBCode = @MedicineBarcode
 	)
 
- 	 SET @CountInStock = (SELECT
-    CountInStock
-  	FROM Medicine
-  	WHERE BarCode = @MedicineBarcode)
-  	SET @QuantityDifference = @CountInStock
+	SET @CountInStock = (SELECT
+		CountInStock
+	FROM Medicine
+	WHERE BarCode = @MedicineBarcode)
+	SET @QuantityDifference = @CountInStock
   	- @MedicineQuantity + @OldQuantity
 
-  IF (@QuantityDifference >= 0)
+	IF (@QuantityDifference >= 0)
   BEGIN
 
-    IF NOT EXISTS (SELECT
-        *
-      FROM dbo.Batch
-      WHERE dbo.Batch.BatchID = @BatchID)
+		IF NOT EXISTS (SELECT
+			*
+		FROM dbo.Batch
+		WHERE dbo.Batch.BatchID = @BatchID)
     BEGIN
-      -- '01' -> Update Failed
-    SET @HexCode = '01'
-	RETURN 1
-    END
+			-- '01' -> Update Failed
+			SET @HexCode = '01'
+			RETURN 1
+		END
 
-	UPDATE BatchMedicine
+		UPDATE BatchMedicine
 	SET Quantity = @MedicineQuantity
 	WHERE BatchID = @BatchID AND MedicineBCode = @MedicineBarcode
-	
-	SET @QuantityFinal = @CountInStock + @OldQuantity - @MedicineQuantity 
 
-    UPDATE dbo.Medicine
+		SET @QuantityFinal = @CountInStock + @OldQuantity - @MedicineQuantity
+
+		UPDATE dbo.Medicine
     SET CountInStock = @QuantityFinal
     WHERE BarCode = @MedicineBarcode;
-    -- '00' -> Update Successful    
-    SET @HexCode = '00'
-	RETURN 0
-  END
+		-- '00' -> Update Successful    
+		SET @HexCode = '00'
+		RETURN 0
+	END
   ELSE
   BEGIN
-    -- '01' -> Update Failed
-    SET @HexCode = '01'
-	RETURN 1
-  END
+		-- '01' -> Update Failed
+		SET @HexCode = '01'
+		RETURN 1
+	END
 END
 GO
 
 
 CREATE OR ALTER PROC usp_Batch_getAllByMedName
-@MedName NVARCHAR(100)
+	@MedName NVARCHAR(100)
 AS
 BEGIN
 
-SELECT DISTINCT b.BatchID FROM Batch b
-LEFT JOIN AmbulanceMap am
-ON b.BatchID = am.BatchID
-INNER JOIN BatchMedicine bm
-ON b.BatchID = bm.BatchID
-INNER JOIN Medicine M
-ON bm.MedicineBCode = M.BarCode
-WHERE am.BatchID IS NULL
-AND M.MedicineName LIKE '%' + @MedName + '%'
+	SELECT DISTINCT b.BatchID
+	FROM Batch b
+		LEFT JOIN AmbulanceMap am
+		ON b.BatchID = am.BatchID
+		INNER JOIN BatchMedicine bm
+		ON b.BatchID = bm.BatchID
+		INNER JOIN Medicine M
+		ON bm.MedicineBCode = M.BarCode
+	WHERE am.BatchID IS NULL
+		AND M.MedicineName LIKE '%' + @MedName + '%'
 
 END
 GO
@@ -2895,9 +2932,10 @@ CREATE OR ALTER PROC usp_Batch_getAllBatches
 AS
 BEGIN
 
-SELECT am.VIN,b.BatchID FROM Batch b
-LEFT JOIN AmbulanceMap am
-ON b.BatchID = am.BatchID
+	SELECT am.VIN, b.BatchID
+	FROM Batch b
+		LEFT JOIN AmbulanceMap am
+		ON b.BatchID = am.BatchID
 
 END
 
@@ -2907,10 +2945,11 @@ CREATE OR ALTER PROC usp_Batch_getAllAssigned
 AS
 BEGIN
 
-SELECT abm.AssociatedVIN, b.BatchID FROM Batch b
-INNER JOIN AmbulanceBatchesMap abm
-ON b.BatchID = abm.BatchID
-WHERE abm.AssociatedVIN IS NOT NULL
+	SELECT abm.AssociatedVIN, b.BatchID
+	FROM Batch b
+		INNER JOIN AmbulanceBatchesMap abm
+		ON b.BatchID = abm.BatchID
+	WHERE abm.AssociatedVIN IS NOT NULL
 
 END
 
@@ -2920,10 +2959,11 @@ CREATE OR ALTER PROC usp_Batch_getAllUnAssigned
 AS
 BEGIN
 
-SELECT abm.AssociatedVIN, b.BatchID FROM Batch b
-FULL OUTER JOIN AmbulanceBatchesMap abm
-ON b.BatchID = abm.BatchID
-WHERE abm.AssociatedVIN IS NULL
+	SELECT abm.AssociatedVIN, b.BatchID
+	FROM Batch b
+		FULL OUTER JOIN AmbulanceBatchesMap abm
+		ON b.BatchID = abm.BatchID
+	WHERE abm.AssociatedVIN IS NULL
 
 END
 
@@ -3035,13 +3075,14 @@ GO
 
 
 CREATE OR ALTER PROC usp_IncidentResponse_GetYelloPad
-@VIN INTEGER,
-@UniqueID NVARCHAR(64) OUTPUT
+	@VIN INTEGER,
+	@UniqueID NVARCHAR(64) OUTPUT
 AS
 BEGIN
-SELECT @UniqueID = YelloPadUniqueID FROM dbo.Yellopad
-INNER JOIN dbo.AmbulanceMap ON AmbulanceMap.YelloPadID = Yellopad.YelloPadID
-WHERE dbo.AmbulanceMap.VIN = @VIN AND dbo.AmbulanceMap.StatusMap <> '04'
+	SELECT @UniqueID = YelloPadUniqueID
+	FROM dbo.Yellopad
+		INNER JOIN dbo.AmbulanceMap ON AmbulanceMap.YelloPadID = Yellopad.YelloPadID
+	WHERE dbo.AmbulanceMap.VIN = @VIN AND dbo.AmbulanceMap.StatusMap <> '04'
 END
 ----------------------------------------NEW SET OF STORED PROCEDURES--------------------------------------------------------------
 GO
@@ -3335,8 +3376,9 @@ GO
 CREATE OR ALTER PROC usp_Ambulance_AssignedNotInTrip
 AS
 BEGIN
-	SELECT * FROM AmbulanceVehicle av
-	INNER JOIN AmbulanceMap am ON av.VIN = am.VIN
+	SELECT *
+	FROM AmbulanceVehicle av
+		INNER JOIN AmbulanceMap am ON av.VIN = am.VIN
 	WHERE am.StatusMap = '00' OR am.StatusMap = '02'
 END
 		
@@ -3361,6 +3403,23 @@ CREATE OR ALTER PROC usp_AmbulanceMap_Insert
 	@HexCode NVARCHAR(2) OUTPUT
 AS
 BEGIN
+
+	IF EXISTS(SELECT *
+	FROM Employee
+	WHERE EmployeeStatus <> '00' AND (EID = @ParamedicID OR EID = @DriverID) )
+	BEGIN
+		-- 3 -> Driver Or Paramedic Not available or already assigned.
+		Set @HexCode = '03'
+		return 3
+	END
+
+	IF EXISTS(SELECT * FROM YelloPad WHERE YelloPadID = @YelloPadID AND YelloPadStatus <> '00')
+	BEGIN
+		-- 4 -> YelloPad Not Available Or Already Assigned.
+		Set @HexCode = '04'
+		return 4
+	END
+
 	if exists(select *
 	from dbo.AmbulanceMap
 	where VIN = @VIN and (StatusMap = '00' OR StatusMap = '02' ))
@@ -3411,36 +3470,39 @@ END
 
 GO
 CREATE OR ALTER PROC usp_AmbulanceMap_Insert_Batch
-@VIN INT,
-@batchID BIGINT,
-@HexCode NVARCHAR(2) OUTPUT
+	@VIN INT,
+	@batchID BIGINT,
+	@HexCode NVARCHAR(2) OUTPUT
 AS
 BEGIN
-if exists(select * from dbo.AmbulanceMap where  VIN = @VIN and (StatusMap = '00' OR StatusMap = '02'))
+	if exists(select *
+	from dbo.AmbulanceMap
+	where  VIN = @VIN and (StatusMap = '00' OR StatusMap = '02'))
 begin
-UPDATE dbo.AmbulanceMap
+		UPDATE dbo.AmbulanceMap
 SET BatchID = @batchID
 where (VIN = @VIN and (StatusMap = '00' OR StatusMap = '02'))
 
-INSERT INTO AmbulanceBatchesMap
-(
-    AssociatedVIN,
-    BatchID
-)
-VALUES (
-    @VIN,
-    @batchID
+		INSERT INTO AmbulanceBatchesMap
+			(
+			AssociatedVIN,
+			BatchID
+			)
+		VALUES
+			(
+				@VIN,
+				@batchID
 )
 
 
--- '00' -> updated succesfully
-SET @HexCode = '00'
-end
+		-- '00' -> updated succesfully
+		SET @HexCode = '00'
+	end
 else
 BEGIN
--- '01' -> Failure to add because a vehicle with these conditions doesn't exist
-SET @HexCode = '01'
-END
+		-- '01' -> Failure to add because a vehicle with these conditions doesn't exist
+		SET @HexCode = '01'
+	END
 END
 GO
 
@@ -3559,284 +3621,314 @@ GO
 
 GO
 CREATE OR ALTER PROC usp_AmbulanceMap_Update
-@VIN INT,
-@ParamedicID INT,
-@DriverID INT,
-@YelloPadID INT,
-@HexCode NVARCHAR(2) OUTPUT,
-@HexMsg NVARCHAR(64) OUTPUT
+	@VIN INT,
+	@ParamedicID INT,
+	@DriverID INT,
+	@YelloPadID INT,
+	@HexCode NVARCHAR(2) OUTPUT,
+	@HexMsg NVARCHAR(64) OUTPUT
 AS
 BEGIN
-DECLARE @OldParamedic INT
-DECLARE @OldDriver INT
-DECLARE @OldYelloPad INT
-DECLARE @CurrentBatch BIGINT
-DECLARE @CounterChecker INT
-if(@VIN is NULL)
+	DECLARE @OldParamedic INT
+	DECLARE @OldDriver INT
+	DECLARE @OldYelloPad INT
+	DECLARE @CurrentBatch BIGINT
+	DECLARE @CounterChecker INT
+	if(@VIN is NULL)
 BEGIN
-set @HexCode = '02' --No VIN was sent.
-SET @HexMsg = 'No VIN was Sent'
-return 1
-END
+		set @HexCode = '02'
+		--No VIN was sent.
+		SET @HexMsg = 'No VIN was Sent'
+		return 1
+	END
 ELSE
 BEGIN
 
-SET @CounterChecker = 0
+		SET @CounterChecker = 0
 
-IF EXISTS(SELECT * FROM AmbulanceMap WHERE VIN=@VIN AND (StatusMap <> '04' AND StatusMap <> '01'))
-BEGIN	
-	SELECT @OldDriver = am.DriverID, 
-		   @OldParamedic = am.ParamedicID,
-		   @OldYelloPad = am.YelloPadID,
-		   @CurrentBatch = am.BatchID
-	FROM AmbulanceMap am WHERE VIN=@VIN AND (StatusMap <> '04' AND StatusMap <> '01')
+		IF EXISTS(SELECT *
+		FROM AmbulanceMap
+		WHERE VIN=@VIN AND (StatusMap <> '04' AND StatusMap <> '01'))
+BEGIN
+			SELECT @OldDriver = am.DriverID,
+				@OldParamedic = am.ParamedicID,
+				@OldYelloPad = am.YelloPadID,
+				@CurrentBatch = am.BatchID
+			FROM AmbulanceMap am
+			WHERE VIN=@VIN AND (StatusMap <> '04' AND StatusMap <> '01')
 
-	IF(@DriverID <> 0)
+			IF(@DriverID <> 0)
 	BEGIN
-	PRINT 'Driver ID Sent'
-	SET @CounterChecker = @CounterChecker + 1
-	END
+				PRINT 'Driver ID Sent'
+				SET @CounterChecker = @CounterChecker + 1
+			END
 
-	IF(@ParamedicID <> 0)
+			IF(@ParamedicID <> 0)
 	BEGIN
-	PRINT 'Paramedic ID Sent'
-	SET @CounterChecker = @CounterChecker + 1
-	END
-	IF(@YelloPadID <> 0)
+				PRINT 'Paramedic ID Sent'
+				SET @CounterChecker = @CounterChecker + 1
+			END
+			IF(@YelloPadID <> 0)
 	BEGIN
-	PRINT 'YelloPad ID Sent'
-	SET @CounterChecker = @CounterChecker + 1
-	END
+				PRINT 'YelloPad ID Sent'
+				SET @CounterChecker = @CounterChecker + 1
+			END
 
 
-	IF(@DriverID <> 0)
+			IF(@DriverID <> 0)
 	BEGIN
-	UPDATE AmbulanceMap
+				UPDATE AmbulanceMap
 	SET DriverID = @DriverID
 	WHERE VIN = @VIN
-	AND (StatusMap <> '04' AND StatusMap <> '01')
+					AND (StatusMap <> '04' AND StatusMap <> '01')
 
-	
-	UPDATE Employee
+
+				UPDATE Employee
 	SET EmployeeStatus = '05'
 	WHERE EID = @DriverID
 
-	UPDATE Employee
+				UPDATE Employee
 	SET EmployeeStatus = '00'
 	WHERE EID = @OldDriver
 
-	IF EXISTS(SELECT * FROM AmbulanceMap am WHERE am.DriverID = @DriverID AND am.StatusMap <> '04')
+				IF EXISTS(SELECT *
+				FROM AmbulanceMap am
+				WHERE am.DriverID = @DriverID AND am.StatusMap <> '04')
 	BEGIN
-	PRINT 'Driver ID UpdatedSuccsfully'
-	SET @CounterChecker = @CounterChecker -1
+					PRINT 'Driver ID UpdatedSuccsfully'
+					SET @CounterChecker = @CounterChecker -1
 
-	INSERT INTO AmbulanceVehicleHistory
-	(VIN,ParamedicID,DriverID,YelloPadID)
-	VALUES
-	(@VIN,@OldParamedic,@DriverID,@OldYelloPad)
-	
-	END
+					INSERT INTO AmbulanceVehicleHistory
+						(VIN,ParamedicID,DriverID,YelloPadID)
+					VALUES
+						(@VIN, @OldParamedic, @DriverID, @OldYelloPad)
 
-	END
-	
-	IF(@ParamedicID <> 0)
+				END
+
+			END
+
+			IF(@ParamedicID <> 0)
 	BEGIN
-	UPDATE AmbulanceMap
+				UPDATE AmbulanceMap
 	SET ParamedicID = @ParamedicID
 	WHERE VIN = @VIN
-	AND (StatusMap <> '04' AND StatusMap <> '01')
+					AND (StatusMap <> '04' AND StatusMap <> '01')
 
-	
-	UPDATE Employee
+
+				UPDATE Employee
 	SET EmployeeStatus = '05'
 	WHERE EID = @ParamedicID
 
-	UPDATE Employee
+				UPDATE Employee
 	SET EmployeeStatus = '00'
 	WHERE EID = @OldParamedic
 
-	IF EXISTS(SELECT * FROM AmbulanceMap am WHERE am.ParamedicID = @ParamedicID AND am.StatusMap <> '04')
+				IF EXISTS(SELECT *
+				FROM AmbulanceMap am
+				WHERE am.ParamedicID = @ParamedicID AND am.StatusMap <> '04')
 	BEGIN
-	PRINT 'Paramedic ID UpdatedSuccsfully'
-	SET @CounterChecker = @CounterChecker -1
-	
-	INSERT INTO AmbulanceVehicleHistory
-	(VIN,ParamedicID,DriverID,YelloPadID)
-	VALUES
-	(@VIN,@ParamedicID,@OldDriver,@OldYelloPad)
-	
-	END
+					PRINT 'Paramedic ID UpdatedSuccsfully'
+					SET @CounterChecker = @CounterChecker -1
 
-	END
+					INSERT INTO AmbulanceVehicleHistory
+						(VIN,ParamedicID,DriverID,YelloPadID)
+					VALUES
+						(@VIN, @ParamedicID, @OldDriver, @OldYelloPad)
 
-	IF(@YelloPadID <> 0)
+				END
+
+			END
+
+			IF(@YelloPadID <> 0)
 	BEGIN
-	UPDATE AmbulanceMap
+				UPDATE AmbulanceMap
 	SET YelloPadID = @YelloPadID
 	WHERE VIN = @VIN
-	AND (StatusMap <> '04' AND StatusMap <> '01')
+					AND (StatusMap <> '04' AND StatusMap <> '01')
 
-	UPDATE Yellopad
+				UPDATE Yellopad
 	SET YelloPadStatus = '01'
 	WHERE YelloPadID = @YelloPadID
 
-	UPDATE Yellopad
+				UPDATE Yellopad
 	SET YelloPadStatus = '00'
 	WHERE YelloPadID = @OldYelloPad
-	
-	IF EXISTS(SELECT * FROM AmbulanceMap am WHERE am.YelloPadID = @YelloPadID AND am.StatusMap <> '04')
-	BEGIN
-	PRINT 'YelloPad ID UpdatedSuccsfully'
-	SET @CounterChecker = @CounterChecker -1
-	
-	INSERT INTO AmbulanceVehicleHistory
-	(VIN,ParamedicID,DriverID,YelloPadID)
-	VALUES
-	(@VIN,@OldParamedic,@OldDriver,@YelloPadID)
-	
-	END
-	END
 
-	IF(@CounterChecker = 0)
+				IF EXISTS(SELECT *
+				FROM AmbulanceMap am
+				WHERE am.YelloPadID = @YelloPadID AND am.StatusMap <> '04')
 	BEGIN
-	PRINT 'Counter Check true'
-	SET @HexCode = '00' --Updated Succesfully
-	SET @HexMsg = 'Updated Succesfully'
-	END
+					PRINT 'YelloPad ID UpdatedSuccsfully'
+					SET @CounterChecker = @CounterChecker -1
+
+					INSERT INTO AmbulanceVehicleHistory
+						(VIN,ParamedicID,DriverID,YelloPadID)
+					VALUES
+						(@VIN, @OldParamedic, @OldDriver, @YelloPadID)
+
+				END
+			END
+
+			IF(@CounterChecker = 0)
+	BEGIN
+				PRINT 'Counter Check true'
+				SET @HexCode = '00'
+				--Updated Succesfully
+				SET @HexMsg = 'Updated Succesfully'
+			END
 	ELSE
 	BEGIN
-	PRINT 'Counter Check false'
-	SET @HexCode = '01' -- Failed To update
-	SET @HexMsg = 'Failed to update'
-	END
-END
+				PRINT 'Counter Check false'
+				SET @HexCode = '01'
+				-- Failed To update
+				SET @HexMsg = 'Failed to update'
+			END
+		END
 ELSE
 BEGIN
-SET @HexCode = '01'
-SET @HexMsg = 'Error! Please Use Setup Car Page.'
-END
-END
+			SET @HexCode = '01'
+			SET @HexMsg = 'Error! Please Use Setup Car Page.'
+		END
+	END
 END
 GO
 
 GO
 CREATE OR ALTER PROC usp_AmbulanceMap_Exchange
-@VIN INT,
-@ParamedicID INT,
-@DriverID INT,
-@YelloPadID INT,
-@HexCode NVARCHAR(2) OUTPUT,
-@HexMsg NVARCHAR(64) OUTPUT
+	@VIN INT,
+	@ParamedicID INT,
+	@DriverID INT,
+	@YelloPadID INT,
+	@HexCode NVARCHAR(2) OUTPUT,
+	@HexMsg NVARCHAR(64) OUTPUT
 AS
-BEGIN --0
-DECLARE @OldVIN INT
-DECLARE @OldParamedic INT
-DECLARE @OldDriver INT
-DECLARE @OldYelloPad INT
-DECLARE @CurrentBatch BIGINT
-DECLARE @CounterChecker INT
-if(@VIN is NULL)
-BEGIN --1
-	SET @HexCode = '02' --No VIN was sent.
-	SET @HexMsg = 'No VIN was Sent'
-	RETURN 1
-END --1
+BEGIN
+	--0
+	DECLARE @OldVIN INT
+	DECLARE @OldParamedic INT
+	DECLARE @OldDriver INT
+	DECLARE @OldYelloPad INT
+	DECLARE @CurrentBatch BIGINT
+	DECLARE @CounterChecker INT
+	if(@VIN is NULL)
+BEGIN
+		--1
+		SET @HexCode = '02'
+		--No VIN was sent.
+		SET @HexMsg = 'No VIN was Sent'
+		RETURN 1
+	END --1
 	ELSE
-BEGIN --2
+BEGIN
+		--2
 
-SET @CounterChecker = 0
+		SET @CounterChecker = 0
 
-IF NOT EXISTS(SELECT * FROM AmbulanceMap
-	INNER JOIN Employee e ON AmbulanceMap.DriverID = e.EID
-	INNER JOIN Employee e1 ON AmbulanceMap.ParamedicID = e1.EID
-	WHERE (ParamedicID = @ParamedicID OR DriverID = @DriverID)
-	AND e.LogInStatus = '00' AND e1.LogInStatus = '00' 
-	AND (AmbulanceMap.StatusMap <> '04' AND AmbulanceMap.StatusMap <> '01'))
-BEGIN --3
-	SET @HexCode = '01'
-	SET @HexMsg = 'Can''t Perform exchange! Please make sure that Drivers and Paramedics are logged out'
-	RETURN 1
-END --3
+		IF NOT EXISTS(SELECT *
+		FROM AmbulanceMap
+			INNER JOIN Employee e ON AmbulanceMap.DriverID = e.EID
+			INNER JOIN Employee e1 ON AmbulanceMap.ParamedicID = e1.EID
+		WHERE (ParamedicID = @ParamedicID OR DriverID = @DriverID)
+			AND e.LogInStatus = '00' AND e1.LogInStatus = '00'
+			AND (AmbulanceMap.StatusMap <> '04' AND AmbulanceMap.StatusMap <> '01'))
+BEGIN
+			--3
+			SET @HexCode = '01'
+			SET @HexMsg = 'Can''t Perform exchange! Please make sure that Drivers and Paramedics are logged out'
+			RETURN 1
+		END --3
 	ELSE
-BEGIN --4 --Exchange Logic here.
--------------------------------------------------------------
+BEGIN
+			--4 --Exchange Logic here.
+			-------------------------------------------------------------
 
-	
-	IF(@DriverID <> 0)
+
+			IF(@DriverID <> 0)
 	BEGIN
-	PRINT 'Driver ID Sent'
-	SET @CounterChecker = @CounterChecker + 1
-	
-	SET @OldVIN = (SELECT VIN FROM AmbulanceMap
-	WHERE DriverID= @DriverID AND (StatusMap <> '04' AND StatusMap <> '01'))
+				PRINT 'Driver ID Sent'
+				SET @CounterChecker = @CounterChecker + 1
 
-	SELECT @OldParamedic = am.ParamedicID,
-		   @OldDriver = am.DriverID,
-		   @OldYelloPad = am.YelloPadID FROM AmbulanceMap am WHERE am.VIN = @VIN
+				SET @OldVIN = (SELECT VIN
+				FROM AmbulanceMap
+				WHERE DriverID= @DriverID AND (StatusMap <> '04' AND StatusMap <> '01'))
 
-	UPDATE AmbulanceMap
+				SELECT @OldParamedic = am.ParamedicID,
+					@OldDriver = am.DriverID,
+					@OldYelloPad = am.YelloPadID
+				FROM AmbulanceMap am
+				WHERE am.VIN = @VIN
+
+				UPDATE AmbulanceMap
 	SET DriverID = @DriverID
 	WHERE VIN = @VIN AND (StatusMap <> '04' AND StatusMap <> '01')
 
-	UPDATE AmbulanceMap
+				UPDATE AmbulanceMap
 	SET DriverID = @OldDriver
 	WHERE VIN = @OldVIN AND (StatusMap <> '04' AND StatusMap <> '01')
 
-	END
+			END
 
-	IF(@ParamedicID <> 0)
+			IF(@ParamedicID <> 0)
 	BEGIN
-	PRINT 'Paramedic ID Sent'
-	SET @CounterChecker = @CounterChecker + 1
+				PRINT 'Paramedic ID Sent'
+				SET @CounterChecker = @CounterChecker + 1
 
-	SET @OldVIN = (SELECT VIN FROM AmbulanceMap
-	WHERE ParamedicID= @ParamedicID AND (StatusMap <> '04' AND StatusMap <> '01'))
+				SET @OldVIN = (SELECT VIN
+				FROM AmbulanceMap
+				WHERE ParamedicID= @ParamedicID AND (StatusMap <> '04' AND StatusMap <> '01'))
 
-	SELECT @OldParamedic = am.ParamedicID,
-		   @OldDriver = am.DriverID,
-		   @OldYelloPad = am.YelloPadID FROM AmbulanceMap am WHERE am.VIN = @VIN
+				SELECT @OldParamedic = am.ParamedicID,
+					@OldDriver = am.DriverID,
+					@OldYelloPad = am.YelloPadID
+				FROM AmbulanceMap am
+				WHERE am.VIN = @VIN
 
-	UPDATE AmbulanceMap
+				UPDATE AmbulanceMap
 	SET ParamedicID = @ParamedicID
 	WHERE VIN = @VIN AND (StatusMap <> '04' AND StatusMap <> '01')
 
-	UPDATE AmbulanceMap
+				UPDATE AmbulanceMap
 	SET ParamedicID = @OldParamedic
 	WHERE VIN = @OldVIN AND (StatusMap <> '04' AND StatusMap <> '01')
 
-	END
+			END
 
-	IF(@YelloPadID <> 0)
+			IF(@YelloPadID <> 0)
 	BEGIN
-	PRINT 'YelloPad ID Sent'
-	SET @CounterChecker = @CounterChecker + 1
+				PRINT 'YelloPad ID Sent'
+				SET @CounterChecker = @CounterChecker + 1
 
-	SET @OldVIN = (SELECT VIN FROM AmbulanceMap
-	WHERE YelloPadID= @YelloPadID AND (StatusMap <> '04' AND StatusMap <> '01'))
+				SET @OldVIN = (SELECT VIN
+				FROM AmbulanceMap
+				WHERE YelloPadID= @YelloPadID AND (StatusMap <> '04' AND StatusMap <> '01'))
 
-	SELECT @OldParamedic = am.ParamedicID,
-		   @OldDriver = am.DriverID,
-		   @OldYelloPad = am.YelloPadID FROM AmbulanceMap am WHERE am.VIN = @VIN
+				SELECT @OldParamedic = am.ParamedicID,
+					@OldDriver = am.DriverID,
+					@OldYelloPad = am.YelloPadID
+				FROM AmbulanceMap am
+				WHERE am.VIN = @VIN
 
-	UPDATE AmbulanceMap
+				UPDATE AmbulanceMap
 	SET YelloPadID = @YelloPadID
 	WHERE VIN = @VIN AND (StatusMap <> '04' AND StatusMap <> '01')
 
-	UPDATE AmbulanceMap
+				UPDATE AmbulanceMap
 	SET YelloPadID = @OldYelloPad
 	WHERE VIN = @OldVIN AND (StatusMap <> '04' AND StatusMap <> '01')
 
+			END
+
+			SET @HexCode = '00'
+			SET @HexMsg = 'Exchange Successfull'
+			RETURN 0
+
+		-------------------------------------------------------------
+		END
+	--4
+
+
 	END
-
-	SET @HexCode = '00'
-	SET @HexMsg = 'Exchange Successfull'
-	RETURN 0
-
--------------------------------------------------------------
-END --4
-
-
-END --2
+--2
 END --0
 ----------------------------------------NEW SET OF STORED PROCEDURES--------------------------------------------------------------
 -- Medicine Stored Procedures --
@@ -3847,16 +3939,16 @@ as
 select *
 from Medicine
 WHERE  MedicineStatus <>'FF'
-OR CountInStock <> 0
+	OR CountInStock <> 0
 
 GO
 Create  OR ALTER PROC usp_Medicines_SelectThreshold
-@threshold INT
+	@threshold INT
 as
 select *
 from Medicine
 WHERE  MedicineStatus <>'FF'
-AND CountInStock < @threshold
+	AND CountInStock < @threshold
 -- (2.1) Get Medicine By Name --
 GO
 create  OR ALTER PROC usp_Medicine_SelectByName
@@ -4845,8 +4937,9 @@ CREATE OR ALTER PROC get_Employee_AssignedParamedics
 AS
 BEGIN
 
-SELECT EID,Fname,Lname,Email,ContactNumber,PAN,NationalID,EmployeeStatus,Photo,Age FROM dbo.Employee
-WHERE JobID = 2 AND EmployeeStatus = '05' 
+	SELECT EID, Fname, Lname, Email, ContactNumber, PAN, NationalID, EmployeeStatus, Photo, Age
+	FROM dbo.Employee
+	WHERE JobID = 2 AND EmployeeStatus = '05'
 
 END
 GO
@@ -4855,8 +4948,9 @@ CREATE OR ALTER PROC get_Employee_NotAssignedParamedics
 AS
 BEGIN
 
-SELECT EID,Fname,Lname,Email,ContactNumber,PAN,NationalID,EmployeeStatus,Photo,Age FROM dbo.Employee
-WHERE JobID = 2 AND (EmployeeStatus <> '05' AND EmployeeStatus <> '01') 
+	SELECT EID, Fname, Lname, Email, ContactNumber, PAN, NationalID, EmployeeStatus, Photo, Age
+	FROM dbo.Employee
+	WHERE JobID = 2 AND (EmployeeStatus <> '05' AND EmployeeStatus <> '01')
 
 END
 GO
@@ -4865,8 +4959,9 @@ CREATE OR ALTER PROC get_Employee_AssignedDrivers
 AS
 BEGIN
 
-SELECT EID,Fname,Lname,Email,ContactNumber,PAN,NationalID,EmployeeStatus,Photo,Age FROM dbo.Employee
-WHERE JobID = 3 AND EmployeeStatus = '05' 
+	SELECT EID, Fname, Lname, Email, ContactNumber, PAN, NationalID, EmployeeStatus, Photo, Age
+	FROM dbo.Employee
+	WHERE JobID = 3 AND EmployeeStatus = '05'
 
 END
 GO
@@ -4875,9 +4970,10 @@ CREATE OR ALTER PROC get_Employee_NotAssignedDrivers
 AS
 BEGIN
 
-SELECT EID,Fname,Lname,Email,ContactNumber,PAN,NationalID,EmployeeStatus,Photo,Age FROM dbo.Employee
-WHERE JobID = 3 AND (EmployeeStatus <> '05' AND EmployeeStatus <> '01') 
- 
+	SELECT EID, Fname, Lname, Email, ContactNumber, PAN, NationalID, EmployeeStatus, Photo, Age
+	FROM dbo.Employee
+	WHERE JobID = 3 AND (EmployeeStatus <> '05' AND EmployeeStatus <> '01')
+
 END
 
 ----------------------------------------NEW SET OF STORED PROCEDURES--------------------------------------------------------------
@@ -4894,10 +4990,10 @@ BEGIN
 	UPDATE AmbulanceMap
 	SET StatusMap = '02'
 	FROM AmbulanceMap am
-	INNER JOIN Employee e ON am.ParamedicID = e.EID
-	INNER JOIN Employee e1 ON am.DriverID = e1.EID
+		INNER JOIN Employee e ON am.ParamedicID = e.EID
+		INNER JOIN Employee e1 ON am.DriverID = e1.EID
 	WHERE ((e1.EmployeeStatus = '05' AND e1.LogInStatus = '00') OR (e.LogInStatus = '00' AND e.EmployeeStatus = '05')
-	AND am.StatusMap <> 04)
+		AND am.StatusMap <> 04)
 
 END
 
@@ -4912,10 +5008,10 @@ BEGIN
 	UPDATE AmbulanceMap
 	SET StatusMap = '00'
 	FROM AmbulanceMap am
-	INNER JOIN Employee e ON am.ParamedicID = e.EID
-	INNER JOIN Employee e1 ON am.DriverID = e1.EID
+		INNER JOIN Employee e ON am.ParamedicID = e.EID
+		INNER JOIN Employee e1 ON am.DriverID = e1.EID
 	WHERE ((e1.EmployeeStatus = '05' AND e1.LogInStatus = '01') OR (e.LogInStatus = '01' AND e.EmployeeStatus = '05')
-	AND am.StatusMap <> 04)
+		AND am.StatusMap <> 04)
 
 END
 GO
@@ -4929,10 +5025,10 @@ BEGIN
 	UPDATE AmbulanceMap
 	SET StatusMap = '02'
 	FROM AmbulanceMap am
-	INNER JOIN Employee e ON am.ParamedicID = e.EID
-	INNER JOIN Employee e1 ON am.DriverID = e1.EID
+		INNER JOIN Employee e ON am.ParamedicID = e.EID
+		INNER JOIN Employee e1 ON am.DriverID = e1.EID
 	WHERE ((e1.EmployeeStatus = '05' AND e1.LogInStatus = '00') OR (e.LogInStatus = '00' AND e.EmployeeStatus = '05')
-	AND am.StatusMap <> 04)
+		AND am.StatusMap <> 04)
 
 
 END
@@ -4941,17 +5037,19 @@ GO
 CREATE OR ALTER PROC usp_Hospital_getAll
 AS
 BEGIN
-SELECT * FROM Hospital
+	SELECT *
+	FROM Hospital
 END
 
 GO
 
 Create OR Alter PROC usp_Hospital_getByName
-@HospitalName Nvarchar(256)
+	@HospitalName Nvarchar(256)
 AS
 BEGIN
-SELECT * FROM Hospital
-WHERE HospitalName LIKE '%' + @HospitalName + '%'
+	SELECT *
+	FROM Hospital
+	WHERE HospitalName LIKE '%' + @HospitalName + '%'
 END
 GO
 
@@ -4959,292 +5057,465 @@ CREATE OR ALTER PROC usp_AmbulanceVehicle_getAssignedCarsLoggedIn
 AS
 BEGIN
 
-SELECT DISTINCT av.* FROM AmbulanceVehicle av
-INNER JOIN AmbulanceMap am ON av.VIN = am.VIN
-WHERE am.StatusMap = '00'
+	SELECT DISTINCT av.*
+	FROM AmbulanceVehicle av
+		INNER JOIN AmbulanceMap am ON av.VIN = am.VIN
+	WHERE am.StatusMap = '00'
 
 END
 GO
 ----------------------------------------NEW SET OF STORED PROCEDURES--------------------------------------------------------------
 
 CREATE OR ALTER PROC usp_Equipment_Add
-@EquipmentName NVARCHAR(200),
-@EquipmentDescription NVARCHAR(MAX),
-@HexCode NVARCHAR(2) OUTPUT,
-@HexMsg NVARCHAR(64) OUTPUT
+	@EquipmentName NVARCHAR(200),
+	@EquipmentDescription NVARCHAR(MAX),
+	@HexCode NVARCHAR(2) OUTPUT,
+	@HexMsg NVARCHAR(64) OUTPUT
 AS
 BEGIN
 
-IF EXISTS (SELECT * FROM Equipment WHERE EquipmentName = @EquipmentName)
+	IF EXISTS (SELECT *
+	FROM Equipment
+	WHERE EquipmentName = @EquipmentName)
 BEGIN
-SET @HexCode = '01'
-SET @HexMsg = 'Equipment Already Exists.'
-END
+		SET @HexCode = '01'
+		SET @HexMsg = 'Equipment Already Exists.'
+	END
 ELSE
 BEGIN
 
-INSERT INTO Equipment
-(EquipmentName, EquipmentDescription)
-VALUES
-(@EquipmentName, @EquipmentDescription)
+		INSERT INTO Equipment
+			(EquipmentName, EquipmentDescription)
+		VALUES
+			(@EquipmentName, @EquipmentDescription)
 
 
-IF NOT EXISTS(SELECT * FROM Equipment WHERE EquipmentName = @EquipmentName)
+		IF NOT EXISTS(SELECT *
+		FROM Equipment
+		WHERE EquipmentName = @EquipmentName)
 BEGIN
 
-SET @HexCode = '02'
-SET @HexMsg = 'Equipment Addition failed please try again.'
+			SET @HexCode = '02'
+			SET @HexMsg = 'Equipment Addition failed please try again.'
 
-END
+		END
 ELSE
 BEGIN
 
 
-SET @HexCode = '00'
-SET @HexMsg = 'Equipment Added Succesfully.'
+			SET @HexCode = '00'
+			SET @HexMsg = 'Equipment Added Succesfully.'
 
-END
+		END
 
-END
+	END
 END
 
 GO
 CREATE OR ALTER PROC usp_Equipment_getAll
 AS
 BEGIN
-SELECT * FROM Equipment
+	SELECT *
+	FROM Equipment
 END
 
 
 GO
 CREATE OR ALTER PROC usp_Equipment_getByName
-@EquipmentName NVARCHAR(200)
+	@EquipmentName NVARCHAR(200)
 AS
 BEGIN
-SELECT * FROM Equipment WHERE EquipmentName = @EquipmentName
+	SELECT *
+	FROM Equipment
+	WHERE EquipmentName = @EquipmentName
 END
 
 GO
 CREATE OR ALTER PROC usp_Equipment_AssignToAmbulance
-@VIN INT,
-@EquipmentName NVARCHAR(200),
-@HexCode NVARCHAR(2) OUTPUT,
-@HexMsg NVARCHAR(64) OUTPUT
+	@VIN INT,
+	@EquipmentName NVARCHAR(200),
+	@HexCode NVARCHAR(2) OUTPUT,
+	@HexMsg NVARCHAR(64) OUTPUT
 AS
 BEGIN
 
-IF NOT EXISTS(SELECT * FROM AmbulanceVehicle WHERE VIN = @VIN)
+	IF NOT EXISTS(SELECT *
+	FROM AmbulanceVehicle
+	WHERE VIN = @VIN)
 BEGIN
-SET @HexCode = '01'
-SET @HexMsg = 'No Ambulance Vehicle with given VIN'
-RETURN 1
-END
+		SET @HexCode = '01'
+		SET @HexMsg = 'No Ambulance Vehicle with given VIN'
+		RETURN 1
+	END
 
 
-IF NOT EXISTS(SELECT * FROM Equipment WHERE EquipmentName = @EquipmentName )
+	IF NOT EXISTS(SELECT *
+	FROM Equipment
+	WHERE EquipmentName = @EquipmentName )
 BEGIN
-SET @HexCode = '02'
-SET @HexMsg = 'No Equipment with given name'
-RETURN 1
-END
+		SET @HexCode = '02'
+		SET @HexMsg = 'No Equipment with given name'
+		RETURN 1
+	END
 
-IF EXISTS(SELECT Equipment.* FROM Equipment INNER JOIN EquipmentOnCar
-ON EquipmentOnCar.EquipmentName = Equipment.EquipmentName
-WHERE Equipment.EquipmentName = @EquipmentName AND EquipmentOnCar.VIN = @VIN )
+	IF EXISTS(SELECT Equipment.*
+	FROM Equipment INNER JOIN EquipmentOnCar
+		ON EquipmentOnCar.EquipmentName = Equipment.EquipmentName
+	WHERE Equipment.EquipmentName = @EquipmentName AND EquipmentOnCar.VIN = @VIN )
 BEGIN
-SET @HexCode = '03'
-SET @HexMsg = 'Equipment Already On Car'
-RETURN 1
-END
+		SET @HexCode = '03'
+		SET @HexMsg = 'Equipment Already On Car'
+		RETURN 1
+	END
 
-INSERT INTO EquipmentOnCar
-(
-    VIN,
-    EquipmentName
+	INSERT INTO EquipmentOnCar
+		(
+		VIN,
+		EquipmentName
+		)
+	VALUES
+		(
+			@VIN,
+			@EquipmentName
 )
-VALUES
-(
-    @VIN,
-    @EquipmentName
-)
-SET @HexCode = '00'
-SET @HexMsg = 'Assigned to vehicle successfully'
+	SET @HexCode = '00'
+	SET @HexMsg = 'Assigned to vehicle successfully'
 END
 
 GO
 
 CREATE OR ALTER PROC usp_Equipment_OnAmbulance
-@VIN INT
+	@VIN INT
 AS
 BEGIN
 
-SELECT Equipment.* FROM EquipmentOnCar
-Inner Join Equipment
-ON EquipmentOnCar.EquipmentName = Equipment.EquipmentName
-WHERE EquipmentOnCar.VIN = @VIN
+	SELECT Equipment.*
+	FROM EquipmentOnCar
+		Inner Join Equipment
+		ON EquipmentOnCar.EquipmentName = Equipment.EquipmentName
+	WHERE EquipmentOnCar.VIN = @VIN
 
 END
 
 GO
 CREATE OR ALTER PROC usp_Equipment_DeleteOnAmbulance
-@VIN INT,
-@EquipmentName NVARCHAR(200),
-@HexCode NVARCHAR(2) OUTPUT,
-@HexMsg NVARCHAR(64) OUTPUT
+	@VIN INT,
+	@EquipmentName NVARCHAR(200),
+	@HexCode NVARCHAR(2) OUTPUT,
+	@HexMsg NVARCHAR(64) OUTPUT
 AS
 BEGIN
 
 
-IF NOT EXISTS(SELECT * FROM AmbulanceVehicle WHERE VIN = @VIN)
+	IF NOT EXISTS(SELECT *
+	FROM AmbulanceVehicle
+	WHERE VIN = @VIN)
 BEGIN
-SET @HexCode = '01'
-SET @HexMsg = 'No Ambulance Vehicle with given VIN'
-RETURN 1
-END
+		SET @HexCode = '01'
+		SET @HexMsg = 'No Ambulance Vehicle with given VIN'
+		RETURN 1
+	END
 
 
-IF NOT EXISTS(SELECT * FROM Equipment WHERE EquipmentName = @EquipmentName )
+	IF NOT EXISTS(SELECT *
+	FROM Equipment
+	WHERE EquipmentName = @EquipmentName )
 BEGIN
-SET @HexCode = '02'
-SET @HexMsg = 'No Equipment with given name'
-RETURN 1
-END
+		SET @HexCode = '02'
+		SET @HexMsg = 'No Equipment with given name'
+		RETURN 1
+	END
 
-IF NOT EXISTS(SELECT * FROM EquipmentOnCar WHERE EquipmentName = @EquipmentName )
+	IF NOT EXISTS(SELECT *
+	FROM EquipmentOnCar
+	WHERE EquipmentName = @EquipmentName )
 BEGIN
-SET @HexCode = '02'
-SET @HexMsg = 'No Equipment with given name assigned on Ambulance'
-RETURN 1
-END
+		SET @HexCode = '02'
+		SET @HexMsg = 'No Equipment with given name assigned on Ambulance'
+		RETURN 1
+	END
 
-DELETE EquipmentOnCar
+	DELETE EquipmentOnCar
 WHERE VIN = @VIN AND EquipmentName = @EquipmentName
 
-SET @HexCode = '00'
-SET @HexMsg = 'Deleted Succesfully'
+	SET @HexCode = '00'
+	SET @HexMsg = 'Deleted Succesfully'
 
 END
 ----------------------------------------NEW SET OF STORED PROCEDURES--------------------------------------------------------------
 
 GO
 CREATE OR ALTER PROC usp_YelloPads_Insert
-@YelloPadUniqueID NVARCHAR(16),
-@YellopadNetworkcardNo NVARCHAR(64),
-@YelloPadMaintenanceNote NVARCHAR(128),
-@HexCode NVARCHAR(2) OUTPUT,
-@HexMsg NVARCHAR(64) OUTPUT
+	@YelloPadUniqueID NVARCHAR(16),
+	@YellopadNetworkcardNo NVARCHAR(64),
+	@YelloPadMaintenanceNote NVARCHAR(128),
+	@HexCode NVARCHAR(2) OUTPUT,
+	@HexMsg NVARCHAR(64) OUTPUT
 AS
 BEGIN
 
-IF EXISTS(SELECT * FROM YelloPad WHERE YelloPadUniqueID = @YelloPadUniqueID)
+	IF EXISTS(SELECT *
+	FROM YelloPad
+	WHERE YelloPadUniqueID = @YelloPadUniqueID)
 BEGIN
-SET @HexCode = '01'
-SET @HexMsg = 'YelloPad Already Exists'
-END
+		SET @HexCode = '01'
+		SET @HexMsg = 'YelloPad Already Exists'
+	END
 ELSE
 BEGIN
 
-INSERT INTO YelloPad
-	(
-		YelloPadUniqueID,
-		YellopadNetworkcardNo,
-		YelloPadMaintenanceNote
-	)
-VALUES
-	( 	@YelloPadUniqueID, -- YelloPadUniqueID - nvarchar(16)
-		@YellopadNetworkcardNo, -- YellopadNetworkcardNo - nvarchar(64)
-		@YelloPadMaintenanceNote -- Yellopad device Number 
+		INSERT INTO YelloPad
+			(
+			YelloPadUniqueID,
+			YellopadNetworkcardNo,
+			YelloPadMaintenanceNote
+			)
+		VALUES
+			( @YelloPadUniqueID, -- YelloPadUniqueID - nvarchar(16)
+				@YellopadNetworkcardNo, -- YellopadNetworkcardNo - nvarchar(64)
+				@YelloPadMaintenanceNote -- Yellopad device Number 
 	)
 
-IF EXISTS(SELECT * FROM YelloPad WHERE YelloPadUniqueID = @YelloPadUniqueID)
+		IF EXISTS(SELECT *
+		FROM YelloPad
+		WHERE YelloPadUniqueID = @YelloPadUniqueID)
 BEGIN
-SET @HexCode = '00'
-SET @HexMsg = 'YelloPad Added Successfully'
-END
+			SET @HexCode = '00'
+			SET @HexMsg = 'YelloPad Added Successfully'
+		END
 ELSE
 BEGIN
-SET @HexCode = '02'
-SET @HexMsg = 'YelloPad Failed To Insert, Please Try Again.'
-END
-END
+			SET @HexCode = '02'
+			SET @HexMsg = 'YelloPad Failed To Insert, Please Try Again.'
+		END
+	END
 END
 
 GO
 
 CREATE OR ALTER PROC usp_YelloPads_UpdateLocation
-@YelloPadUniqueID NVARCHAR(16),
-@YelloPadLatitude NVARCHAR(16),
-@YelloPadLongitude NVARCHAR(16),
-@HexCode NVARCHAR(2) OUTPUT,
-@HexMsg NVARCHAR(64) OUTPUT
+	@YelloPadUniqueID NVARCHAR(16),
+	@YelloPadLatitude NVARCHAR(16),
+	@YelloPadLongitude NVARCHAR(16),
+	@HexCode NVARCHAR(2) OUTPUT,
+	@HexMsg NVARCHAR(64) OUTPUT
 AS
 BEGIN
 
-IF EXISTS(SELECT * FROM YelloPad WHERE YelloPadUniqueID = @YelloPadUniqueID)
+	IF EXISTS(SELECT *
+	FROM YelloPad
+	WHERE YelloPadUniqueID = @YelloPadUniqueID)
 BEGIN
 
-UPDATE YelloPad
+		UPDATE YelloPad
 SET YelloPadLatitude = @YelloPadLatitude
 WHERE YelloPadUniqueID = @YelloPadUniqueID
 
-UPDATE YelloPad
+		UPDATE YelloPad
 SET YelloPadLongitude = @YelloPadLongitude
 WHERE YelloPadUniqueID = @YelloPadUniqueID
 
-SET @HexCode = '00'
-SET @HexMsg = 'YelloPad Updated Successfully'
+		SET @HexCode = '00'
+		SET @HexMsg = 'YelloPad Updated Successfully'
 
-END
+	END
 ELSE
 BEGIN
-SET @HexCode = '01'
-SET @HexMsg = 'YelloPad Does not Exist'
-END
+		SET @HexCode = '01'
+		SET @HexMsg = 'YelloPad Does not Exist'
+	END
 END
 GO
 ----------------------------------------NEW SET OF STORED PROCEDURES--------------------------------------------------------------
 
 CREATE OR ALTER PROC YelloPad_Check_Database
-@YelloPadUniqueID NVARCHAR(16),
-@HexCode NVARCHAR(2) OUTPUT
+	@YelloPadUniqueID NVARCHAR(16),
+	@HexCode NVARCHAR(2) OUTPUT
 AS
 BEGIN
-SET @HexCode = (
-SELECT DatabaseStatus 
-FROM YelloPad 
-WHERE YelloPadUniqueID = @YelloPadUniqueID
+	SET @HexCode = (
+SELECT DatabaseStatus
+	FROM YelloPad
+	WHERE YelloPadUniqueID = @YelloPadUniqueID
 )
 END
 GO
 
 CREATE OR ALTER PROC YelloPad_Set_DataBase
-@YelloPadUniqueID NVARCHAR(16),
+	@YelloPadUniqueID NVARCHAR(16),
+	@HexCode NVARCHAR(2) OUTPUT,
+	@HexMsg NVARCHAR(100) OUTPUT
+AS
+BEGIN
+
+	UPDATE YelloPad
+SET DatabaseStatus = '01'
+WHERE YelloPadUniqueID = @YelloPadUniqueID
+
+	IF EXISTS(SELECT *
+	FROM YelloPad
+	WHERE DatabaseStatus = '01'
+		AND YelloPadUniqueID = @YelloPadUniqueID)
+BEGIN
+		SET @HexCode = '00'
+		SET @HexMsg = 'Success'
+	END
+ELSE
+BEGIN
+		SET @HexCode = '00'
+		SET @HexMsg = 'Success'
+	END
+END
+GO
+----------------------------------------NEW SET OF STORED PROCEDURES--------------------------------------------------------------
+
+CREATE OR ALTER PROC Insert_Into_Log
+@IPAddress NVARCHAR(50),
+@RequestPath NVARCHAR(500)
+AS
+BEGIN
+
+INSERT INTO ActivityLog
+(
+    IPAddress,
+    RequestPath
+)
+VALUES
+(
+    @IPAddress,
+    @RequestPath
+)
+
+END
+GO
+
+CREATE OR ALTER PROC Get_All_Logs
+AS
+BEGIN
+
+SELECT * FROM ActivityLog
+
+END
+GO
+----------------------------------------NEW SET OF STORED PROCEDURES--------------------------------------------------------------
+
+CREATE OR ALTER PROC Add_AcceptedResponseCode
+@StatusCode NVARCHAR(2),
+@StatusMsg NVARCHAR(100),
 @HexCode NVARCHAR(2) OUTPUT,
 @HexMsg NVARCHAR(100) OUTPUT
 AS
 BEGIN
 
-UPDATE YelloPad
-SET DatabaseStatus = '01'
-WHERE YelloPadUniqueID = @YelloPadUniqueID
-
-IF EXISTS(SELECT * FROM YelloPad WHERE DatabaseStatus = '01'
-AND YelloPadUniqueID = @YelloPadUniqueID)
+IF NOT EXISTS (SELECT * FROM AcceptedResponseStatus WHERE StatusCode = @StatusCode)
 BEGIN
+
+INSERT INTO AcceptedResponseStatus
+(
+    StatusCode,
+    StatusMsg
+)
+VALUES
+(
+    @StatusCode,
+    @StatusMsg
+)
+
 SET @HexCode = '00'
-SET @HexMsg = 'Success' 
+SET @HexMsg = 'Response Status Code Added Successfuly!'
+
+
 END
 ELSE
 BEGIN
-SET @HexCode = '00'
-SET @HexMsg = 'Success'
+SET @HexCode = '01'
+SET @HexMsg = 'Response Status Code Already Exists!'
 END
 END
 GO
-----------------------------------------NEW SET OF STORED PROCEDURES--------------------------------------------------------------
 
-----------------------------------------NEW SET OF STORED PROCEDURES--------------------------------------------------------------
+CREATE OR ALTER PROC Delete_AcceptedResponseCode
+@StatusCode NVARCHAR(2),
+@HexCode NVARCHAR(2) OUTPUT,
+@HexMsg NVARCHAR(100) OUTPUT
+AS
+BEGIN
+IF EXISTS (SELECT * FROM AcceptedResponseStatus WHERE StatusCode = @StatusCode)
+BEGIN
 
+DELETE AcceptedResponseCode
+WHERE StatusCode = @StatusCode
+
+SET @HexCode = '00'
+SET @HexMsg = 'Response Status Code Deleted Successfuly!'
+
+
+END
+ELSE
+BEGIN
+SET @HexCode = '01'
+SET @HexMsg = 'Response Status Code Does Not Exist!'
+END
+END
+GO
+
+CREATE OR ALTER PROC Update_AcceptedResponseCode
+@OldStatusCode NVARCHAR(2),
+@StatusCode NVARCHAR(2),
+@StatusMsg NVARCHAR(100),
+@HexCode NVARCHAR(2) OUTPUT,
+@HexMsg NVARCHAR(100) OUTPUT
+AS
+BEGIN
+
+IF EXISTS (SELECT * FROM AcceptedResponseCode WHERE StatusCode = @StatusCode)
+BEGIN
+SET @HexCode = '02'
+SET @HexMsg = 'New Response Status Code Already Exists!'
+RETURN -1
+END
+
+IF NOT EXISTS (SELECT * FROM AcceptedResponseCode WHERE StatusCode = @StatusCode)
+BEGIN
+SET @HexCode = '03'
+SET @HexMsg = 'Response Status Code Does Not Exist!'
+RETURN -1
+END
+
+
+
+EXEC Delete_AcceptedResponseCode @OldStatusCode,@HexCode OUTPUT,@HexMsg OUTPUT
+
+IF(@HexCode = '00')
+BEGIN
+
+EXEC Add_AcceptedResponseCode
+@StatusCode,
+@StatusMsg,
+@HexCode OUTPUT,
+@HexMsg OUTPUT
+
+IF(@HexCode <> '00')
+BEGIN
+RETURN -1
+END
+RETURN 0
+END
+ELSE
+BEGIN
+RETURN -1
+END
+END
+GO
+
+CREATE OR ALTER PROC Get_AcceptedResponseCode
+AS
+BEGIN
+
+SELECT * FROM AcceptedResponseCode
+
+END
+GO
 ----------------------------------------NEW SET OF STORED PROCEDURES--------------------------------------------------------------
 
 ----------------------------------------NEW SET OF STORED PROCEDURES--------------------------------------------------------------

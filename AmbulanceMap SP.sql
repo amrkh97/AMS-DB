@@ -6,56 +6,77 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 ----------------------------------------NEW SET OF STORED PROCEDURES--------------------------------------------------------------
-
-CREATE OR ALTER PROC [dbo].[usp_AmbulanceMap_Insert]
-@VIN INT,
-@ParamedicID INT,
-@DriverID INT,
-@YelloPadID INT,
-@HexCode NVARCHAR(2) OUTPUT
+CREATE OR ALTER PROC usp_AmbulanceMap_Insert
+	@VIN INT,
+	@ParamedicID INT,
+	@DriverID INT,
+	@YelloPadID INT,
+	@HexCode NVARCHAR(2) OUTPUT
 AS
 BEGIN
-if exists(select * from dbo.AmbulanceMap where VIN = @VIN and (StatusMap = '00' OR StatusMap = '02'))
+
+	IF EXISTS(SELECT *
+	FROM Employee
+	WHERE EmployeeStatus <> '00' AND (EID = @ParamedicID OR EID = @DriverID) )
+	BEGIN
+		-- 3 -> Driver Or Paramedic Not available or already assigned.
+		Set @HexCode = '03'
+		return 3
+	END
+
+	IF EXISTS(SELECT * FROM YelloPad WHERE YelloPadID = @YelloPadID AND YelloPadStatus <> '00')
+	BEGIN
+		-- 4 -> YelloPad Not Available Or Already Assigned.
+		Set @HexCode = '04'
+		return 4
+	END
+
+	if exists(select *
+	from dbo.AmbulanceMap
+	where VIN = @VIN and (StatusMap = '00' OR StatusMap = '02' ))
 BEGIN
--- 1 -> Ambulance was already inserted but not assigned.
-Set @HexCode = '01'
-RETURN 1
-END
-ELSE if exists(select * from dbo.AmbulanceMap where VIN = @VIN and StatusMap ='01')
+		-- 1 -> Ambulance was already inserted but not assigned.
+		Set @HexCode = '01'
+		RETURN 1
+	END
+ELSE if exists(select *
+	from dbo.AmbulanceMap
+	where VIN = @VIN and StatusMap ='01')
 begin
--- 2 -> Ambulance is assigned and already in service.
-Set @HexCode = '02'
- RETURN 2
-end 
+		-- 2 -> Ambulance is assigned and already in service.
+		Set @HexCode = '02'
+		RETURN 2
+	end 
 else begin
-insert into dbo.AmbulanceMap(VIN,ParamedicID,DriverID,YelloPadID)
-VALUES(
-@VIN,
-@ParamedicID,
-@DriverID,
-@YelloPadID
+		insert into dbo.AmbulanceMap
+			(VIN,ParamedicID,DriverID,YelloPadID)
+		VALUES(
+				@VIN,
+				@ParamedicID,
+				@DriverID,
+				@YelloPadID
 )
 
-UPDATE dbo.Yellopad
+		UPDATE dbo.Yellopad
 SET YelloPadStatus = '01'
 WHERE YelloPadID = @YelloPadID
 
-UPDATE dbo.Employee
+		UPDATE dbo.Employee
 SET EmployeeStatus = '05'
 WHERE EID = @ParamedicID
 
-UPDATE dbo.Employee
+		UPDATE dbo.Employee
 SET EmployeeStatus = '05'
 WHERE EID = @DriverID
 
-UPDATE dbo.AmbulanceVehicle
+		UPDATE dbo.AmbulanceVehicle
 SET VehicleStatus = '05'
 WHERE VIN = @VIN
 
--- 0 -> Insertion Successful
-Set @HexCode = '00'
-RETURN 0
-END
+		-- 0 -> Insertion Successful
+		Set @HexCode = '00'
+		RETURN 0
+	end
 END
 
 GO

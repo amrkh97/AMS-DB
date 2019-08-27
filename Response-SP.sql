@@ -170,7 +170,18 @@ CREATE OR ALTER PROC usp_ResponseStatus_UpdateByID
 AS
 BEGIN
 DECLARE @VIN INTEGER
+
+
+
 	IF(@ResponseStatus IS NULL OR @ResponseStatus = '')
+	BEGIN
+		SET @responseMessage = 'MISSING RESPONSE STATUS VALUE TO UPDATED'
+		SELECT @return_Hex_value = 'EE'
+		RETURN -1
+	END
+
+	IF NOT EXISTS(SELECT * FROM AcceptedResponseStatus
+	WHERE StatusCode=@ResponseStatus)
 	BEGIN
 		SET @responseMessage = 'MISSING RESPONSE STATUS VALUE TO UPDATED'
 		SELECT @return_Hex_value = 'EE'
@@ -235,17 +246,27 @@ END
 GO
 
 CREATE OR ALTER PROC usp_Response_TableData
-
+@NumberOfDays INT = 1
 AS
 BEGIN
+DECLARE @dateDiff INT
+SET @dateDiff = 1 --Default Value
 
+IF(@NumberOfDays IS NOT NULL)
+BEGIN
+SET @dateDiff = @NumberOfDays
+END
+
+DECLARE @currentTime DATETIME
+SET @currentTime = GETDATE()
 SELECT
 dbo.Responses.IncidentSQN, dbo.IncidentTypes.TypeName, dbo.Responses.SequenceNumber,
 dbo.Priorities.PriorityName,dbo.Responses.RespStatus,
 dbo.AmbulanceMap.VIN,dbo.AmbulanceMap.ParamedicID,ParamedicTable.Fname,ParamedicTable.Lname,ParamedicTable.ContactNumber,
 dbo.AmbulanceMap.DriverID,DriverTable.Fname,DriverTable.Lname,DriverTable.ContactNumber,
 dbo.AmbulanceVehicle.LicencePlate,dbo.AmbulanceVehicle.Model,
-PatientLoc.FreeFormatAddress
+PatientLoc.FreeFormatAddress, PatientLoc.Latitude, PatientLoc.Longitude,
+DropLoc.FreeFormatAddress, DropLoc.Latitude, DropLoc.Longitude
 FROM dbo.AmbulanceMap
 INNER JOIN dbo.AmbulanceVehicle 
 ON AmbulanceVehicle.VIN = AmbulanceMap.VIN
@@ -263,7 +284,13 @@ INNER JOIN dbo.Priorities
 ON Priorities.PrioritYID = Incident.IncidentPriority
 INNER JOIN dbo.Locations AS PatientLoc
 ON PatientLoc.LocationID = Responses.PickLocationID
-
+INNER JOIN dbo.Locations AS DropLoc
+ON DropLoc.LocationID = Responses.DropLocationID
+WHERE ((Responses.RespStatus <> '0E') 
+OR
+(
+(Responses.RespStatus = '0E') AND (@dateDiff >= DATEDIFF(DAY,Responses.CreationTime,@currentTime)))
+)
 
 END
 GO
