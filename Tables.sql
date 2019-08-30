@@ -1,4 +1,4 @@
-﻿USE KAN_AMO;
+USE KAN_AMO;
 GO
 
 --CREATE TABLE ResponseStatuses
@@ -16,7 +16,7 @@ CREATE TABLE IncidentTypes
 	TypeName NVARCHAR(32),
 	TypeNote NVARCHAR(256)
 
-		PRIMARY KEY (IncidentTypeID)
+	PRIMARY KEY (IncidentTypeID)
 );
 
 INSERT INTO IncidentTypes
@@ -147,13 +147,13 @@ CREATE TABLE PharmaCompany
 	CompanyPhone NVARCHAR(32),
 	CompanyStatus NVARCHAR(32) DEFAULT '00'
 
-		PRIMARY key (CompanyID)
+	PRIMARY key (CompanyID)
 );
 INSERT INTO PharmaCompany
 	(CompanyName,ContactPerson,CompanyAddress,CompanyPhone)
 VALUES
-	('F1', 'Amr', '18, Ibn Al Nafees', '01141837032'),
-	('F2', 'Salah', '15, Ibn Al Nafees', '01141837032')
+	('Pharma Company 1', 'Amr', '18, Ibn Al Nafees', '01141837032'),
+	('Pharma Company 2', 'Salah', '15, Ibn Al Nafees', '01141837032')
 
 
 CREATE TABLE Medicine
@@ -722,6 +722,7 @@ CREATE TABLE Incident
 CREATE TABLE Responses
 (
 	SequenceNumber INT IDENTITY,
+	TicketNumber NVARCHAR(100),
 	AssociatedVehicleVIN INT NOT NULL,
 	CreationTime DATETIME DEFAULT (getdate()),
 	StartLocationID INT,
