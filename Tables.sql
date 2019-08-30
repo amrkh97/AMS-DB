@@ -1,14 +1,45 @@
 USE KAN_AMO;
 GO
 
---CREATE TABLE ResponseStatuses
---(
---	ResponseStatusID NVARCHAR(32),
---	StatusName NVARCHAR(64),
---	StatusNote NVARCHAR(256)
 
---	PRIMARY KEY (ResponseStatusID)
---);
+CREATE TABLE MainDepartments
+(
+	Dep_ID INT IDENTITY,
+	Eng_Dep_Name NVARCHAR(100),
+	Arab_Dep_Name NVARCHAR(100),
+	PRIMARY KEY (Dep_ID)
+);
+
+ INSERT INTO MainDepartments
+ (
+	 Eng_Dep_Name,
+	 Arab_Dep_Name
+ )
+ VALUES
+ (
+	 N'Emergency', --1
+	 N'طوارئ'
+ ),
+  (
+	 N'Care', --2
+	 N'رعاية'
+ ),
+  (
+	 N'Accidents', --3
+	 N'حوادث'
+ ),
+  (
+	 N'Incubators', --4
+	 N'حضانات'
+ ),
+  (
+	 N'Transfers', --5
+	 N'نقل'
+ ),
+  (
+	 N'Other Concerns', --6
+	 N'استفسارات اخري'
+ )
 
 CREATE TABLE IncidentTypes
 (
@@ -68,7 +99,7 @@ VALUES
 	(N'انهيار مبنى', N'انهيار مبنى',3),
 	(N'تسمم', N'تسمم',1),
 	(N'تشنجات و صرع', N'تشنجات و صرع',1),
-	(N'تصادم بشخص/أشخاص', N'تصادم بشخص/أشخاص'),
+	(N'تصادم بشخص/أشخاص', N'تصادم بشخص/أشخاص',3),
 	(N'صعق كهربائى', N'صعق كهربائى',3),
 	(N'ضيق تنفس', N'ضيق تنفس',1),
 	(N'غرق شخص', N'غرق شخص',3),
@@ -1137,43 +1168,6 @@ VALUES
 ('0E')
 
 
-CREATE TABLE MainDepartments
-(
-	Dep_ID INT IDENTITY,
-	Eng_Dep_Name NVARCHAR(100),
-	Arab_Dep_Name NVARCHAR(100),
-	PRIMARY KEY (Dep_ID)
-);
- INSERT INTO MainDepartments
- (
-	 Eng_Dep_Name,
-	 Arab_Dep_Name
- )
- VALUES
- (
-	 N'Emergency', --1
-	 N'طوارئ'
- ),
-  (
-	 N'Care', --2
-	 N'رعاية'
- ),
-  (
-	 N'Accidents', --3
-	 N'حوادث'
- ),
-  (
-	 N'Incubators', --4
-	 N'حضانات'
- ),
-  (
-	 N'Transfers', --5
-	 N'نقل'
- ),
-  (
-	 N'Other Concerns', --6
-	 N'استفسارات اخري'
- )
 ------------------------------------------------------------------------
 -- Creating Indecies --
 -- (1) Medicine BarCode Unique Index -- 
