@@ -722,7 +722,6 @@ CREATE TABLE Incident
 CREATE TABLE Responses
 (
 	SequenceNumber INT IDENTITY,
-	TicketNumber NVARCHAR(100),
 	AssociatedVehicleVIN INT NOT NULL,
 	CreationTime DATETIME DEFAULT (getdate()),
 	StartLocationID INT,
@@ -734,7 +733,7 @@ CREATE TABLE Responses
 	PrimaryResponseSQN INT,
 	RespAlarmLevel INT,
 	PersonCount NVARCHAR(32),
-
+    TicketNumber NVARCHAR(100),
 	FOREIGN KEY (AssociatedVehicleVIN) REFERENCES AmbulanceVehicle(VIN),
 	FOREIGN KEY (StartLocationID) REFERENCES Locations(LocationID),
 	FOREIGN KEY (PickLocationID) REFERENCES Locations(LocationID),
