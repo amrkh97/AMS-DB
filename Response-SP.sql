@@ -305,6 +305,25 @@ WHERE RespSQN = @ResponseID
 END
 GO
 
+CREATE OR ALTER PROC usp_Response_AssignCar
+@ResponseSQN INT,
+@VIN INT,
+@HexCode NVARCHAR(2) OUTPUT,
+@HexMsg NVARCHAR(100) OUTPUT
+AS
+BEGIN
+
+UPDATE Responses
+SET AssociatedVehicleVIN = @VIN
+WHERE SequenceNumber = @ResponseSQN 
+AND AssociatedVehicleVIN IS NULL
+
+SET @HexCode = '00'
+SET @HexMsg = 'Successfully Updated Response.'
+
+END
+GO
+
 --WIP
 CREATE OR ALTER PROC usp_Response_TripsMadeByCar
 @VIN INT
