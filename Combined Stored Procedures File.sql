@@ -164,13 +164,14 @@ AS
 BEGIN
 	SET NOCOUNT ON
 	DECLARE @ResponseStatus NVARCHAR(32)
-	IF(@AssociatedVehicleVIN IS NULL OR @AssociatedVehicleVIN=0)
-	BEGIN
-		SET @responseMessage = 'Missing VIN'
-		SELECT @return_Hex_value = 'AF'
-		RETURN -1
-	END
-	ELSE IF (@StartLocationID IS NULL OR @StartLocationID=0)
+--	IF(@AssociatedVehicleVIN IS NULL OR @AssociatedVehicleVIN=0)
+--	BEGIN
+--		SET @responseMessage = 'Missing VIN'
+--		SELECT @return_Hex_value = 'AF'
+--		RETURN -1
+--	END
+--	ELSE
+	IF (@StartLocationID IS NULL OR @StartLocationID=0)
 	BEGIN
 		SET @responseMessage = 'Missing Start Location'
 		SELECT @return_Hex_value = 'BF'

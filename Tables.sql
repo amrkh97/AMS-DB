@@ -1,4 +1,4 @@
-USE KAN_AMO;
+﻿USE KAN_AMO;
 GO
 
 
@@ -766,7 +766,7 @@ CREATE TABLE MultipleIncidentTypes
 CREATE TABLE Responses
 (
 	SequenceNumber INT IDENTITY,
-	AssociatedVehicleVIN INT NOT NULL,
+	AssociatedVehicleVIN INT,
 	CreationTime DATETIME DEFAULT (getdate()),
 	StartLocationID INT,
 	PickLocationID INT,
@@ -778,7 +778,7 @@ CREATE TABLE Responses
 	RespAlarmLevel INT,
 	PersonCount NVARCHAR(32),
     TicketNumber NVARCHAR(100),
-	FOREIGN KEY (AssociatedVehicleVIN) REFERENCES AmbulanceVehicle(VIN),
+	--FOREIGN KEY (AssociatedVehicleVIN) REFERENCES AmbulanceVehicle(VIN),
 	FOREIGN KEY (StartLocationID) REFERENCES Locations(LocationID),
 	FOREIGN KEY (PickLocationID) REFERENCES Locations(LocationID),
 	FOREIGN KEY (DropLocationID) REFERENCES Locations(LocationID),
