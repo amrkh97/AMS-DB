@@ -489,7 +489,7 @@ VALUES
 CREATE TABLE Locations
 (
 	LocationID INT IDENTITY,
-	FreeFormatAddress NVARCHAR(265) NOT NULL UNIQUE,
+	FreeFormatAddress NVARCHAR(265) NOT NULL,
 	City NVARCHAR(32),
 	Longitude NVARCHAR(32),
 	Latitude NVARCHAR(32),
@@ -752,6 +752,16 @@ CREATE TABLE Incident
 	PRIMARY KEY(IncidentSequenceNumber)
 );
 
+CREATE TABLE MultipleIncidentTypes
+(
+	ID INT IDENTITY,
+	IncidentSequenceNumber INT,
+	IncidentType INT,
+	IncidentName NVARCHAR(100)
+
+	PRIMARY KEY(ID)
+	FOREIGN KEY(IncidentSequenceNumber) REFERENCES Incident(IncidentSequenceNumber)
+);
 
 CREATE TABLE Responses
 (

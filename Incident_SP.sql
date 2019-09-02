@@ -21,9 +21,12 @@ CREATE OR ALTER PROC usp_Incident_Insert
 	BEGIN 
 	SET NOCOUNT ON
 	DECLARE @ISN INT
+	DECLARE @CreationTime DATETIME
+	SET @CreationTime = GETDATE()
 	IF(@IncidentType IS NOT NULL OR  @IncidentPriority IS NOT NULL OR  @IncidentLocationID IS NOT NULL)
 		BEGIN
-			SET @ISN = (SELECT IncidentSequenceNumber FROM dbo.Incident WHERE (IncidentLocationID=@IncidentLocationID AND IncidentPriority=@IncidentPriority AND IncidentType=@IncidentType))
+			SET @ISN = (SELECT IncidentSequenceNumber FROM dbo.Incident WHERE (IncidentLocationID=@IncidentLocationID AND IncidentPriority=@IncidentPriority AND IncidentType=@IncidentType)
+			AND CreationTime=@CreationTime)
 			IF(@ISN IS NOT NULL)
 			BEGIN
 				SET @responseMessage = 'INCIDENT ALREADY EXIST'
@@ -40,15 +43,18 @@ CREATE OR ALTER PROC usp_Incident_Insert
 				(
 				    IncidentType,
 				    IncidentPriority,
-				    IncidentLocationID
+				    IncidentLocationID,
+					CreationTime
 				)
 				VALUES
 				( 
 				    @IncidentType,         -- IncidentType - int
 				    @IncidentPriority,         -- IncidentPriority - int
-				    @IncidentLocationID         -- IncidentLocationID - int
+				    @IncidentLocationID,         -- IncidentLocationID - int
+					@CreationTime
 				)
-				SET @IncidentSequenceNumber = (SELECT IncidentSequenceNumber FROM dbo.Incident WHERE (IncidentLocationID=@IncidentLocationID AND IncidentPriority=@IncidentPriority AND IncidentType=@IncidentType))
+				SET @IncidentSequenceNumber = (SELECT IncidentSequenceNumber FROM dbo.Incident WHERE (IncidentLocationID=@IncidentLocationID AND IncidentPriority=@IncidentPriority AND IncidentType=@IncidentType)
+				AND CreationTime=@CreationTime)
 				IF(@IncidentSequenceNumber IS NULL)
 				BEGIN
 					SET @responseMessage = 'FAILED TO FIND INCIDENT'
@@ -57,7 +63,7 @@ CREATE OR ALTER PROC usp_Incident_Insert
 				END
 				ELSE
 				BEGIN
-					SET @responseMessage = 'IINCIDENT ADDED SUCCESFULLY'
+					SET @responseMessage = 'INCIDENT ADDED SUCCESFULLY'
 					SELECT @return_Hex_value = '00'
 					PRINT @IncidentSequenceNumber
 					RETURN 1
@@ -70,7 +76,7 @@ CREATE OR ALTER PROC usp_Incident_Insert
 			SELECT @return_Hex_value = 'FF'
 			RETURN -1
 		END
-	END
+END
 
 
 GO	
