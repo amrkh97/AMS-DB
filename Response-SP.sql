@@ -324,6 +324,83 @@ SET @HexMsg = 'Successfully Updated Response.'
 END
 GO
 
+CREATE OR ALTER PROC usp_Response_Edit
+@ResponseSQN INT, --1
+@AssociatedVehicleVIN INT, --2
+@StartLocationID INT,--3
+@PickLocationID INT,--4
+@DropLocationID INT,--5
+@DestinationLocationID INT,--6
+@IncidentSQN INT,--7
+@PrimaryResponseSQN INT,--8
+@RespAlarmLevel INT,--9
+@PersonCount NVARCHAR(32),--10
+@TicketNumber NVARCHAR(100), --11
+@HexCode NVARCHAR(2)='FF' OUTPUT,--12
+@HexMsg NVARCHAR(128)='' OUTPUT--13
+AS
+BEGIN
+IF NOT EXISTS(SELECT * FROM Responses WHERE  SequenceNumber=@ResponseSQN)
+BEGIN
+
+SET @HexCode = '01'
+SET @HexMsg = 'Failed to locate response!'
+RETURN -1
+END
+ELSE
+BEGIN
+
+IF (@AssociatedVehicleVIN IS NOT NULL)
+BEGIN
+UPDATE Responses
+SET AssociatedVehicleVIN = @AssociatedVehicleVIN
+WHERE SequenceNumber = @ResponseSQN
+AND RespStatus <> '04'
+END
+
+IF (@StartLocationID IS NOT NULL)
+BEGIN
+UPDATE Responses
+SET @StartLocationID = @StartLocationID
+WHERE SequenceNumber = @ResponseSQN
+AND RespStatus <> '04'
+END
+
+
+IF (@PickLocationID IS NOT NULL)
+BEGIN
+UPDATE Responses
+SET @PickLocationID = @PickLocationID
+WHERE SequenceNumber = @ResponseSQN
+AND RespStatus <> '04'
+END
+
+
+IF (@DropLocationID IS NOT NULL)
+BEGIN
+UPDATE Responses
+SET @DropLocationID = @DropLocationID
+WHERE SequenceNumber = @ResponseSQN
+AND RespStatus <> '04'
+END
+
+
+IF (@DestinationLocationID IS NOT NULL)
+BEGIN
+UPDATE Responses
+SET @DestinationLocationID = @DestinationLocationID
+WHERE SequenceNumber = @ResponseSQN
+AND RespStatus <> '04'
+END
+
+SET @HexCode = '00'
+SET @HexMsg = 'Response Updated Succesfully'
+
+END
+
+END
+GO
+
 --WIP
 CREATE OR ALTER PROC usp_Response_TripsMadeByCar
 @VIN INT
