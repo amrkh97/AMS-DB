@@ -10,9 +10,10 @@ CREATE OR ALTER PROC usp_Response_Insert
 @PrimaryResponseSQN INT,--7
 @RespAlarmLevel INT,--8
 @PersonCount NVARCHAR(32),--9
-@return_Hex_value NVARCHAR(2)='FF' OUTPUT,--10
-@responseMessage NVARCHAR(128)='' OUTPUT,--11
-@ResponseID INT= 0 OUTPUT--12
+@TicketNumber NVARCHAR(100), --10
+@return_Hex_value NVARCHAR(2)='FF' OUTPUT,--11
+@responseMessage NVARCHAR(128)='' OUTPUT,--12
+@ResponseID INT= 0 OUTPUT--13
 AS
 BEGIN
 	SET NOCOUNT ON
@@ -60,7 +61,7 @@ BEGIN
 		RETURN -1
 	END
 	SET @ResponseID = (SELECT SequenceNumber FROM dbo.Responses WHERE (AssociatedVehicleVIN=@AssociatedVehicleVIN AND StartLocationID=@StartLocationID AND PickLocationID=@PickLocationID 
-	AND DropLocationID=@DropLocationID AND DestinationLocationID=@DestinationLocationID AND IncidentSQN=@IncidentSQN AND RespAlarmLevel=@RespAlarmLevel))
+	AND DropLocationID=@DropLocationID AND DestinationLocationID=@DestinationLocationID AND IncidentSQN=@IncidentSQN AND RespAlarmLevel=@RespAlarmLevel AND TicketNumber=@TicketNumber))
 	IF(@ResponseID IS NOT NULL)
 	BEGIN
 		SET @responseMessage = 'Response Already Exist'
@@ -81,7 +82,8 @@ BEGIN
 			IncidentSQN,
 			PrimaryResponseSQN,
 			RespAlarmLevel,
-			PersonCount
+			PersonCount,
+			TicketNumber
 		)
 		VALUES
 		(   
@@ -94,11 +96,12 @@ BEGIN
 			@IncidentSQN,
 			@PrimaryResponseSQN,
 			@RespAlarmLevel,
-			@PersonCount
+			@PersonCount,
+			@TicketNumber
 		)
 	END
 	SET @ResponseID = (SELECT SequenceNumber FROM dbo.Responses WHERE (AssociatedVehicleVIN=@AssociatedVehicleVIN AND StartLocationID=@StartLocationID AND PickLocationID=@PickLocationID 
-	AND DropLocationID=@DropLocationID AND DestinationLocationID=@DestinationLocationID AND IncidentSQN=@IncidentSQN AND RespAlarmLevel=@RespAlarmLevel))
+	AND DropLocationID=@DropLocationID AND DestinationLocationID=@DestinationLocationID AND IncidentSQN=@IncidentSQN AND RespAlarmLevel=@RespAlarmLevel AND TicketNumber=@TicketNumber))
 	IF(@ResponseID IS NULL)
 	BEGIN
 		SET @responseMessage = 'Failed To Add The Response'
@@ -266,7 +269,8 @@ dbo.AmbulanceMap.VIN,dbo.AmbulanceMap.ParamedicID,ParamedicTable.Fname,Paramedic
 dbo.AmbulanceMap.DriverID,DriverTable.Fname,DriverTable.Lname,DriverTable.ContactNumber,
 dbo.AmbulanceVehicle.LicencePlate,dbo.AmbulanceVehicle.Model,
 PatientLoc.FreeFormatAddress, PatientLoc.Latitude, PatientLoc.Longitude,
-DropLoc.FreeFormatAddress, DropLoc.Latitude, DropLoc.Longitude
+DropLoc.FreeFormatAddress, DropLoc.Latitude, DropLoc.Longitude,
+dbo.Responses.TicketNumber
 FROM dbo.AmbulanceMap
 INNER JOIN dbo.AmbulanceVehicle 
 ON AmbulanceVehicle.VIN = AmbulanceMap.VIN
