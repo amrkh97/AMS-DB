@@ -5377,7 +5377,7 @@ CREATE OR ALTER PROC YelloPad_Set_DataBase
 AS
 BEGIN
 
-	UPDATE YelloPad
+UPDATE YelloPad
 SET DatabaseStatus = '01'
 WHERE YelloPadUniqueID = @YelloPadUniqueID
 
@@ -5391,8 +5391,8 @@ BEGIN
 	END
 ELSE
 BEGIN
-		SET @HexCode = '00'
-		SET @HexMsg = 'Success'
+		SET @HexCode = '01'
+		SET @HexMsg = 'Fail'
 	END
 END
 GO
