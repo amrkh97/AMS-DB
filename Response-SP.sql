@@ -304,12 +304,15 @@ WHERE RespSQN = @ResponseID
 
 END
 GO
-
 CREATE OR ALTER PROC usp_Response_AssignCar
 @ResponseSQN INT,
 @VIN INT,
 @HexCode NVARCHAR(2) OUTPUT,
-@HexMsg NVARCHAR(100) OUTPUT
+@HexMsg NVARCHAR(100) OUTPUT,
+@startLocID INT OUTPUT,
+@destLocID INT OUTPUT,
+@alarmLevelID INT OUTPUT,
+@iSQN INT OUTPUT
 AS
 BEGIN
 
@@ -317,6 +320,13 @@ UPDATE Responses
 SET AssociatedVehicleVIN = @VIN
 WHERE SequenceNumber = @ResponseSQN 
 AND AssociatedVehicleVIN IS NULL
+
+SELECT @startLocID = StartLocationID,
+@destLocID = DropLocationID,
+@alarmLevelID = RespAlarmLevel,
+@iSQN = IncidentSQN
+FROM Responses
+WHERE SequenceNumber = @ResponseSQN
 
 SET @HexCode = '00'
 SET @HexMsg = 'Successfully Updated Response.'
