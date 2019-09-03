@@ -340,16 +340,10 @@ CREATE OR ALTER PROC usp_Response_Edit
 @ResponseSQN INT, --1
 @AssociatedVehicleVIN INT, --2
 @StartLocationID INT,--3
-@PickLocationID INT,--4
-@DropLocationID INT,--5
-@DestinationLocationID INT,--6
-@IncidentSQN INT,--7
-@PrimaryResponseSQN INT,--8
-@RespAlarmLevel INT,--9
-@PersonCount NVARCHAR(32),--10
-@TicketNumber NVARCHAR(100), --11
-@HexCode NVARCHAR(2)='FF' OUTPUT,--12
-@HexMsg NVARCHAR(128)='' OUTPUT--13
+@DropLocationID INT,--4
+@IncidentType INT,--5
+@HexCode NVARCHAR(2)='FF' OUTPUT,--6
+@HexMsg NVARCHAR(128)='' OUTPUT--7
 AS
 BEGIN
 IF NOT EXISTS(SELECT * FROM Responses WHERE  SequenceNumber=@ResponseSQN)
@@ -362,47 +356,59 @@ END
 ELSE
 BEGIN
 
-IF (@AssociatedVehicleVIN IS NOT NULL)
+IF (@AssociatedVehicleVIN IS NOT NULL AND @AssociatedVehicleVIN <> 0 )
 BEGIN
 UPDATE Responses
 SET AssociatedVehicleVIN = @AssociatedVehicleVIN
 WHERE SequenceNumber = @ResponseSQN
-AND RespStatus <> '04'
+AND RespStatus <> '0E'
+AND AssociatedVehicleVIN IS NULL
+END
+
+IF (@IncidentType IS NOT NULL AND @IncidentType <> 0 )
+BEGIN
+UPDATE Incident
+SET IncidentType = @IncidentType
+WHERE IncidentSequenceNumber = (
+	SELECT IncidentSQN FROM Responses
+	WHERE SequenceNumber = @ResponseSQN
+AND RespStatus <> '0E'
+)
 END
 
 IF (@StartLocationID IS NOT NULL)
 BEGIN
 UPDATE Responses
-SET @StartLocationID = @StartLocationID
+SET StartLocationID = @StartLocationID
 WHERE SequenceNumber = @ResponseSQN
-AND RespStatus <> '04'
+AND RespStatus <> '0E'
 END
 
 
 IF (@PickLocationID IS NOT NULL)
 BEGIN
 UPDATE Responses
-SET @PickLocationID = @PickLocationID
+SET PickLocationID = @StartLocationID
 WHERE SequenceNumber = @ResponseSQN
-AND RespStatus <> '04'
+AND RespStatus <> '0E'
 END
 
 
 IF (@DropLocationID IS NOT NULL)
 BEGIN
 UPDATE Responses
-SET @DropLocationID = @DropLocationID
+SET DropLocationID = @DropLocationID
 WHERE SequenceNumber = @ResponseSQN
-AND RespStatus <> '04'
+AND RespStatus <> '0E'
 END
 
 
 IF (@DestinationLocationID IS NOT NULL)
 BEGIN
 UPDATE Responses
-SET @DestinationLocationID = @DestinationLocationID
+SET DestinationLocationID = @DropLocationID
 WHERE SequenceNumber = @ResponseSQN
-AND RespStatus <> '04'
+AND RespStatus <> '0E'
 END
 
 SET @HexCode = '00'
@@ -413,9 +419,8 @@ END
 END
 GO
 
---WIP
-CREATE OR ALTER PROC usp_Response_TripsMadeByCar
-@VIN INT
+CREATE OR ALTER PROC usp_Response_TripsByCar
+@VIN INT = 0
 AS
 BEGIN
 
@@ -425,7 +430,9 @@ dbo.Priorities.PriorityName,dbo.Responses.RespStatus,
 dbo.AmbulanceMap.VIN,dbo.AmbulanceMap.ParamedicID,ParamedicTable.Fname,ParamedicTable.Lname,ParamedicTable.ContactNumber,
 dbo.AmbulanceMap.DriverID,DriverTable.Fname,DriverTable.Lname,DriverTable.ContactNumber,
 dbo.AmbulanceVehicle.LicencePlate,dbo.AmbulanceVehicle.Model,
-PatientLoc.FreeFormatAddress
+PatientLoc.FreeFormatAddress, PatientLoc.Latitude, PatientLoc.Longitude,
+DropLoc.FreeFormatAddress, DropLoc.Latitude, DropLoc.Longitude,
+dbo.Responses.TicketNumber
 FROM dbo.AmbulanceMap
 INNER JOIN dbo.AmbulanceVehicle 
 ON AmbulanceVehicle.VIN = AmbulanceMap.VIN
@@ -443,7 +450,9 @@ INNER JOIN dbo.Priorities
 ON Priorities.PrioritYID = Incident.IncidentPriority
 INNER JOIN dbo.Locations AS PatientLoc
 ON PatientLoc.LocationID = Responses.PickLocationID
-
-WHERE AmbulanceMap.VIN = @VIN
+INNER JOIN dbo.Locations AS DropLoc
+ON DropLoc.LocationID = Responses.DropLocationID
+WHERE Responses.AssociatedVehicleVIN = @VIN
 
 END
+GO
