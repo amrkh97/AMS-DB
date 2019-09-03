@@ -17,14 +17,11 @@ CREATE OR ALTER PROC usp_Response_Insert
 AS
 BEGIN
 	SET NOCOUNT ON
+	DECLARE @CreationTime DATETIME
+	SET @CreationTime = GETDATE()
 	DECLARE @ResponseStatus NVARCHAR(32)
-	IF(@AssociatedVehicleVIN IS NULL OR @AssociatedVehicleVIN=0)
-	BEGIN
-		SET @responseMessage = 'Missing VIN'
-		SELECT @return_Hex_value = 'AF'
-		RETURN -1	
-	END
-	ELSE IF (@StartLocationID IS NULL OR @StartLocationID=0)
+
+	IF (@StartLocationID IS NULL OR @StartLocationID=0)
 	BEGIN
 		SET @responseMessage = 'Missing Start Location'
 		SELECT @return_Hex_value = 'BF'
@@ -60,17 +57,9 @@ BEGIN
 		SELECT @return_Hex_value = 'FB'
 		RETURN -1
 	END
-	SET @ResponseID = (SELECT SequenceNumber FROM dbo.Responses WHERE (AssociatedVehicleVIN=@AssociatedVehicleVIN AND StartLocationID=@StartLocationID AND PickLocationID=@PickLocationID 
-	AND DropLocationID=@DropLocationID AND DestinationLocationID=@DestinationLocationID AND IncidentSQN=@IncidentSQN AND RespAlarmLevel=@RespAlarmLevel AND TicketNumber=@TicketNumber))
-	IF(@ResponseID IS NOT NULL)
-	BEGIN
-		SET @responseMessage = 'Response Already Exist'
-		SELECT @return_Hex_value = 'FE'
-		RETURN -1
-	END
-	ELSE 
+
 	SET @ResponseStatus='02' --Car Accepted
-	BEGIN
+
 		INSERT INTO Responses
 		(
 			AssociatedVehicleVIN,
@@ -83,7 +72,8 @@ BEGIN
 			PrimaryResponseSQN,
 			RespAlarmLevel,
 			PersonCount,
-			TicketNumber
+			TicketNumber,
+			CreationTime
 		)
 		VALUES
 		(   
@@ -97,10 +87,11 @@ BEGIN
 			@PrimaryResponseSQN,
 			@RespAlarmLevel,
 			@PersonCount,
-			@TicketNumber
+			@TicketNumber,
+			@CreationTime
 		)
-	END
-	SET @ResponseID = (SELECT SequenceNumber FROM dbo.Responses WHERE (AssociatedVehicleVIN=@AssociatedVehicleVIN AND StartLocationID=@StartLocationID AND PickLocationID=@PickLocationID 
+
+	SET @ResponseID = (SELECT SequenceNumber FROM dbo.Responses WHERE (CreationTime=@CreationTime AND StartLocationID=@StartLocationID AND PickLocationID=@PickLocationID 
 	AND DropLocationID=@DropLocationID AND DestinationLocationID=@DestinationLocationID AND IncidentSQN=@IncidentSQN AND RespAlarmLevel=@RespAlarmLevel AND TicketNumber=@TicketNumber))
 	IF(@ResponseID IS NULL)
 	BEGIN
@@ -113,6 +104,8 @@ BEGIN
 		SET @responseMessage = 'Response Has Been Added'
 		SELECT @return_Hex_value = '00'
 		
+		IF (@AssociatedVehicleVIN IS NOT NULL)
+		BEGIN
 		UPDATE dbo.AmbulanceMap
 		SET StatusMap = '01' --Ambulance Is Busy And Assigned
 		WHERE VIN = @AssociatedVehicleVIN AND StatusMap = '00'
@@ -120,6 +113,7 @@ BEGIN
 		UPDATE dbo.AmbulanceVehicle
 		SET VehicleStatus = '06'
 		WHERE VIN = @AssociatedVehicleVIN
+		END --VIN was sent
 
 
 			INSERT INTO ResponseUpdateLog
@@ -129,7 +123,7 @@ BEGIN
 			)
 			VALUES
 			(
-				@@ResponseID,
+				@ResponseID,
 				@ResponseStatus
 			)
 
@@ -307,6 +301,114 @@ BEGIN
 
 SELECT * FROM ResponseUpdateLog
 WHERE RespSQN = @ResponseID
+
+END
+GO
+CREATE OR ALTER PROC usp_Response_AssignCar
+@ResponseSQN INT,
+@VIN INT,
+@HexCode NVARCHAR(2) OUTPUT,
+@HexMsg NVARCHAR(100) OUTPUT,
+@startLocID INT OUTPUT,
+@destLocID INT OUTPUT,
+@alarmLevelID INT OUTPUT,
+@iSQN INT OUTPUT,
+@ticketNumber NVARCHAR(32) OUTPUT
+AS
+BEGIN
+
+UPDATE Responses
+SET AssociatedVehicleVIN = @VIN
+WHERE SequenceNumber = @ResponseSQN 
+AND AssociatedVehicleVIN IS NULL
+
+SELECT @startLocID = StartLocationID,
+@destLocID = DropLocationID,
+@alarmLevelID = RespAlarmLevel,
+@iSQN = IncidentSQN,
+@ticketNumber = TicketNumber
+FROM Responses
+WHERE SequenceNumber = @ResponseSQN
+
+SET @HexCode = '00'
+SET @HexMsg = 'Successfully Updated Response.'
+
+END
+GO
+
+CREATE OR ALTER PROC usp_Response_Edit
+@ResponseSQN INT, --1
+@AssociatedVehicleVIN INT, --2
+@StartLocationID INT,--3
+@PickLocationID INT,--4
+@DropLocationID INT,--5
+@DestinationLocationID INT,--6
+@IncidentSQN INT,--7
+@PrimaryResponseSQN INT,--8
+@RespAlarmLevel INT,--9
+@PersonCount NVARCHAR(32),--10
+@TicketNumber NVARCHAR(100), --11
+@HexCode NVARCHAR(2)='FF' OUTPUT,--12
+@HexMsg NVARCHAR(128)='' OUTPUT--13
+AS
+BEGIN
+IF NOT EXISTS(SELECT * FROM Responses WHERE  SequenceNumber=@ResponseSQN)
+BEGIN
+
+SET @HexCode = '01'
+SET @HexMsg = 'Failed to locate response!'
+RETURN -1
+END
+ELSE
+BEGIN
+
+IF (@AssociatedVehicleVIN IS NOT NULL)
+BEGIN
+UPDATE Responses
+SET AssociatedVehicleVIN = @AssociatedVehicleVIN
+WHERE SequenceNumber = @ResponseSQN
+AND RespStatus <> '04'
+END
+
+IF (@StartLocationID IS NOT NULL)
+BEGIN
+UPDATE Responses
+SET @StartLocationID = @StartLocationID
+WHERE SequenceNumber = @ResponseSQN
+AND RespStatus <> '04'
+END
+
+
+IF (@PickLocationID IS NOT NULL)
+BEGIN
+UPDATE Responses
+SET @PickLocationID = @PickLocationID
+WHERE SequenceNumber = @ResponseSQN
+AND RespStatus <> '04'
+END
+
+
+IF (@DropLocationID IS NOT NULL)
+BEGIN
+UPDATE Responses
+SET @DropLocationID = @DropLocationID
+WHERE SequenceNumber = @ResponseSQN
+AND RespStatus <> '04'
+END
+
+
+IF (@DestinationLocationID IS NOT NULL)
+BEGIN
+UPDATE Responses
+SET @DestinationLocationID = @DestinationLocationID
+WHERE SequenceNumber = @ResponseSQN
+AND RespStatus <> '04'
+END
+
+SET @HexCode = '00'
+SET @HexMsg = 'Response Updated Succesfully'
+
+END
 
 END
 GO
