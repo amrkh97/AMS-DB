@@ -5674,7 +5674,7 @@ AND RespStatus <> '0E'
 )
 END
 
-IF (@StartLocationID IS NOT NULL AND @StartLocation <> 0)
+IF (@StartLocationID IS NOT NULL AND @StartLocationID <> 0)
 BEGIN
 UPDATE Responses
 SET StartLocationID = @StartLocationID
@@ -5687,7 +5687,7 @@ WHERE SequenceNumber = @ResponseSQN
 AND RespStatus <> '0E'
 END
 
-IF (@DropLocationID IS NOT NULL AND @DropLocation <> 0)
+IF (@DropLocationID IS NOT NULL AND @DropLocationID <> 0)
 BEGIN
 UPDATE Responses
 SET DropLocationID = @DropLocationID
