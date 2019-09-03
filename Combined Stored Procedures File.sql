@@ -5680,17 +5680,12 @@ UPDATE Responses
 SET StartLocationID = @StartLocationID
 WHERE SequenceNumber = @ResponseSQN
 AND RespStatus <> '0E'
-END
 
-
-IF (@PickLocationID IS NOT NULL)
-BEGIN
 UPDATE Responses
 SET PickLocationID = @StartLocationID
 WHERE SequenceNumber = @ResponseSQN
 AND RespStatus <> '0E'
 END
-
 
 IF (@DropLocationID IS NOT NULL)
 BEGIN
@@ -5698,15 +5693,12 @@ UPDATE Responses
 SET DropLocationID = @DropLocationID
 WHERE SequenceNumber = @ResponseSQN
 AND RespStatus <> '0E'
-END
 
-
-IF (@DestinationLocationID IS NOT NULL)
-BEGIN
 UPDATE Responses
 SET DestinationLocationID = @DropLocationID
 WHERE SequenceNumber = @ResponseSQN
 AND RespStatus <> '0E'
+
 END
 
 SET @HexCode = '00'
