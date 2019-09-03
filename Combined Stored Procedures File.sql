@@ -5572,7 +5572,8 @@ CREATE OR ALTER PROC usp_Response_AssignCar
 @startLocID INT OUTPUT,
 @destLocID INT OUTPUT,
 @alarmLevelID INT OUTPUT,
-@iSQN INT OUTPUT
+@iSQN INT OUTPUT,
+@ticketNumber NVARCHAR(32) OUTPUT
 AS
 BEGIN
 
@@ -5584,7 +5585,8 @@ AND AssociatedVehicleVIN IS NULL
 SELECT @startLocID = StartLocationID,
 @destLocID = DropLocationID,
 @alarmLevelID = RespAlarmLevel,
-@iSQN = IncidentSQN
+@iSQN = IncidentSQN,
+@ticketNumber = TicketNumber
 FROM Responses
 WHERE SequenceNumber = @ResponseSQN
 

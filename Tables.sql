@@ -777,7 +777,7 @@ CREATE TABLE Responses
 	PrimaryResponseSQN INT,
 	RespAlarmLevel INT,
 	PersonCount NVARCHAR(32),
-    TicketNumber NVARCHAR(100),
+    TicketNumber NVARCHAR(32),
 	--FOREIGN KEY (AssociatedVehicleVIN) REFERENCES AmbulanceVehicle(VIN),
 	FOREIGN KEY (StartLocationID) REFERENCES Locations(LocationID),
 	FOREIGN KEY (PickLocationID) REFERENCES Locations(LocationID),
