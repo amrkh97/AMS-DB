@@ -5660,7 +5660,7 @@ UPDATE Responses
 SET AssociatedVehicleVIN = @AssociatedVehicleVIN
 WHERE SequenceNumber = @ResponseSQN
 AND RespStatus <> '0E'
-AND AssociatedVehicleVIN IS NULL
+AND AssociatedVehicleVIN = 0
 END
 
 IF (@IncidentType IS NOT NULL AND @IncidentType <> 0 )
